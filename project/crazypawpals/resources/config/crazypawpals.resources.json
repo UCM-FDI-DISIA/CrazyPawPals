@@ -694,6 +694,46 @@
     {
       "id": "ready_selected",
       "file": "resources/images/ui/buttons/ready_selected.png"
+    },
+    {
+    "id": "multiplayer",
+    "file": "resources/images/ui/buttons/multiplayer.png"
+    },
+    {
+        "id": "multiplayer_selected",
+        "file": "resources/images/ui/buttons/multiplayer_selected.png"
+    },
+    {
+        "id": "client",
+        "file": "resources/images/ui/buttons/client.png"
+    },
+    {
+        "id": "client_selected",
+        "file": "resources/images/ui/buttons/client_selected.png"
+    },
+    {
+        "id": "host",
+        "file": "resources/images/ui/buttons/host.png"
+    },
+    {
+        "id": "host_selected",
+        "file": "resources/images/ui/buttons/host_selected.png"
+    },
+    {
+        "id": "back2",
+        "file": "resources/images/ui/buttons/back2.png"
+    },
+    {
+        "id": "back2_selected",
+        "file": "resources/images/ui/buttons/back2_selected.png"
+    },
+    {
+        "id": "copyip",
+        "file": "resources/images/ui/buttons/copyip.png"
+    },
+    {
+        "id": "copyip_selected",
+        "file": "resources/images/ui/buttons/copyip_selected.png"
     }
 
   ],

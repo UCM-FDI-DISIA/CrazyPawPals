@@ -19,6 +19,7 @@
 #include "scenes/GameOverScene.h"
 #include "scenes/RewardScene.h"
 #include "scenes/TutorialScene.h"
+#include "scenes/MultiplayerMenu.h"
 #include "scenes/VictoryScene.h"
 #include "scenes/MythicScene.h"
 #include <cassert>
@@ -176,6 +177,7 @@ void Game::initGame()
 	_scenes[GAMESCENE] = new GameScene();
 	_scenes[TUTORIAL] = new TutorialScene();
 	_scenes[MAINMENU] = new MainMenuScene();
+	_scenes[MULTIPLAYERMENU] = new MultiplayerMenu();
 	_scenes[SELECTIONMENU] = new SelectionMenuScene();
 	_scenes[REWARDSCENE] = new RewardScene();
 	_scenes[MYTHICSCENE] = new MythicScene();

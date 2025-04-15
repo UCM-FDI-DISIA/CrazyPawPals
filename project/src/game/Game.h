@@ -22,6 +22,7 @@ public:
 		GAMEOVER,
 		VICTORY,
 		TUTORIAL,
+		MULTIPLAYERMENU,
 		NUM_SCENE,
 	};
 	friend Singleton<Game>;
