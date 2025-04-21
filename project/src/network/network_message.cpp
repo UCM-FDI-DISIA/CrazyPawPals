@@ -1,0 +1,7 @@
+#include "network_message.hpp"
+
+extern inline bool network_message_connection_client_from_host_valid(const network_message_connection_client_from_host message);
+extern inline bool network_message_connection_client_from_host_accepted(const network_message_connection_client_from_host message);
+
+extern inline network_message_connection_client_from_host network_message_connection_client_from_host_create_accepted();
+extern inline network_message_connection_client_from_host network_message_connection_client_from_host_create_rejected();

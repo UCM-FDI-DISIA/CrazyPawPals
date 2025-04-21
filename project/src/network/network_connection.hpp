@@ -20,4 +20,12 @@ struct network_context_connections {
 #endif
 
 
+template <network_connection_size MaximumConnections>
+inline network_context_connections<MaximumConnections> network_context_connections_create_empty() {
+    return network_context_connections<MaximumConnections>{
+        .connections = {},
+        .connection_count = 0,
+    };
+}
+
 #endif
