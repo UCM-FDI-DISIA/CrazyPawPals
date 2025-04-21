@@ -430,7 +430,7 @@ void RewardScene::create_my_deck_cards() {
     auto _m_deck = mngr->getComponent<Deck>(player);
     auto& pDeck = _m_deck->move_discard_to_draw(true).card_list();
 
-    float umbral = 0.095f;
+    float umbral = 0.11f;
     auto iterator = pDeck.begin();
     GameStructs::CardButtonProperties propTemplate = {
         { {0.01f, 0.8f}, {0.1f, 0.175f} },
@@ -447,7 +447,7 @@ void RewardScene::create_my_deck_cards() {
         iterator++;
     }
     propTemplate.iterator = nullptr;
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < 6; ++i) {
         propTemplate.sprite_key = "initial_info";
         create_a_deck_card(propTemplate);
         propTemplate.rect.position.x += umbral;
@@ -618,15 +618,18 @@ void RewardScene::check_number()
         _activate_exchange_button = false;
         _activate_confirm_button = true;
     }
-    else if (pDeck.size() >= 6 && pDeck.size() < 8)
+    else if (pDeck.size() >= 6 && pDeck.size() < 10)
     {
         _activate_exchange_button = true;
         _activate_confirm_button = true;
     }
-    else if (pDeck.size() == 8)
+    else if (pDeck.size() == 10)
     {
         _activate_confirm_button = false;
         _activate_exchange_button = true;
+        auto imgExc = mngr->getComponent<ImageForButton>(mngr->getHandler(ecs::hdlr::EXCHANGEBUTTON));
+        imgExc->destination_rect.position.x = 0.438f;
+
     }
 }
 
@@ -660,8 +663,11 @@ void RewardScene::create_reward_exchange_button(const GameStructs::ButtonPropert
 
             auto imgNext = mngr->getComponent<ImageForButton>(mngr->getHandler(ecs::hdlr::NEXTROUNDREWARD));
             imgNext->destination_rect.position = { 0.4f, 0.35f };
-            imgNext->destination_rect.size = { 0.2f, 0.125f };
+            imgNext->destination_rect.size = { 0.3f, 0.125f * 1.25f };
 
+            auto imgConfirm = mngr->getComponent<ImageForButton>(mngr->getHandler(ecs::hdlr::CONFIRMREWARD));
+
+            imgConfirm->destination_rect.position.x += 100.0f;
             imgComp->destination_rect.position.x += 100.0f;
         });
     buttonComp->connectHover([buttonComp, imgComp, this]() {
