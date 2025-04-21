@@ -19,6 +19,22 @@ inline bool network_context_host_connected(const network_context_host &host) {
     return host.host_socket != nullptr;
 }
 network_context_host network_context_host_create(const uint16_t port);
+void network_context_host_connect_alloc(network_context_host &host);
+
+enum network_context_host_accept_connection_status {
+    network_context_host_accept_connection_status_none = 0,
+    network_context_host_accept_connection_status_accepted = 1 << 0,
+    network_context_host_accept_connection_status_rejected = 1 << 1,
+    network_context_host_accept_connection_status_full = 1 << 2,
+    network_context_host_accept_connection_status_error = 1 << 3,
+    network_context_host_accept_connection_status_invalid = 1 << 4,
+};
+using network_context_host_accept_connection_status_flags = uint8_t;
+network_context_host_accept_connection_status_flags network_context_host_accept_connection(
+    network_context_host &host,
+    network_connection_size &out_connection_index 
+);
+
 
 struct network_context_client {
     TCPsocket socket_to_master;

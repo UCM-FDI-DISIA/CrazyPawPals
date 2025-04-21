@@ -28,6 +28,106 @@ network_context_host network_context_host_create(const uint16_t port) {
     return host;
 }
 
+void network_context_host_connect_alloc(network_context_host &host) {
+    assert(network_context_host_resolved(host) && "error: host context must be resolved before connecting");
+    assert(!network_context_host_connected(host) && "error: host context must not be connected before connecting");
+
+    TCPsocket host_socket = SDLNet_TCP_Open(&host.ip_self);
+    if (host_socket == nullptr) {
+        assert(false && "fatal error: SDLNet_TCP_Open failed");
+        std::exit(EXIT_FAILURE);
+    }
+
+    host.host_socket = host_socket;
+    host.clients_host_set = SDLNet_AllocSocketSet(network_context_host_maximum_connections + 1);
+    if (host.clients_host_set == nullptr) {
+        assert(false && "fatal error: SDLNet_AllocSocketSet failed");
+        std::exit(EXIT_FAILURE);
+    }
+    const int add_socket_result = SDLNet_TCP_AddSocket(host.clients_host_set, host.host_socket);
+    if (add_socket_result == network_utility_sdl_net_failure) {
+        assert(false && "fatal error: SDLNet_TCP_AddSocket failed");
+        std::exit(EXIT_FAILURE);
+    } else if (add_socket_result != 1) {
+        assert(false && "fatal error: SDLNet_TCP_AddSocket invalid number of sockets added");
+        std::exit(EXIT_FAILURE);
+    }
+    
+    assert(network_context_host_connected(host) && "fatal error: network_context_host_connect_alloc invalid");
+}
+
+network_context_host_accept_connection_status_flags network_context_host_accept_connection(
+    network_context_host &host,
+    network_connection_size &out_connection_index
+) {
+    assert(network_context_host_connected(host) && "error: host context must be connected before accepting connections");
+    if (SDLNet_SocketReady(host.host_socket)) {
+        const TCPsocket client = SDLNet_TCP_Accept(host.host_socket);
+        if (host.sockets_to_clients.connection_count >= host.sockets_to_clients.connections.size()) {
+            const auto rejection_message =
+                network_message_connection_client_from_host_create_rejected();
+            const int send_result = SDLNet_TCP_Send(
+                client,
+                &rejection_message,
+                sizeof(rejection_message)
+            );
+            if (send_result == network_utility_sdl_net_failure) {
+                assert(false && "fatal error: SDLNet_TCP_Send failed");
+                std::exit(EXIT_FAILURE);
+            } else if (send_result != sizeof(rejection_message)) {
+                assert(false && "fatal error: SDLNet_TCP_Send invalid number of bytes sent");
+                std::exit(EXIT_FAILURE);
+            }
+            
+            network_utility_sdlnet_drain_and_close(client);
+            return network_context_host_accept_connection_status_rejected
+                | network_context_host_accept_connection_status_full;
+        } else {
+            const network_connection_size connection_count =
+                host.sockets_to_clients.connection_count;
+            TCPsocket &connection = host.sockets_to_clients.connections[connection_count];
+            assert(connection == nullptr && "error: connection must be null before accepting connection");
+
+            connection = client;
+            ++host.sockets_to_clients.connection_count;
+            const int add_socket_result = SDLNet_TCP_AddSocket(
+                host.clients_host_set,
+                connection
+            );
+            if (add_socket_result == network_utility_sdl_net_failure) {
+                assert(false && "fatal error: SDLNet_TCP_AddSocket failed");
+                std::exit(EXIT_FAILURE);
+            } else if (add_socket_result != host.sockets_to_clients.connection_count + 1) {
+                assert(
+                    false
+                    && "fatal error: SDLNet_TCP_AddSocket invalid number of sockets added."
+                    "number of sockets added must be equal to the number of connections (clients) + 1 (host socket)"
+                );
+                std::exit(EXIT_FAILURE);
+            }
+            const auto acceptance_message =
+                network_message_connection_client_from_host_create_accepted();
+            const int send_result = SDLNet_TCP_Send(
+                connection,
+                &acceptance_message,
+                sizeof(acceptance_message)
+            );
+            if (send_result == network_utility_sdl_net_failure) {
+                assert(false && "fatal error: SDLNet_TCP_Send failed");
+                std::exit(EXIT_FAILURE);
+            } else if (send_result != sizeof(acceptance_message)) {
+                assert(false && "fatal error: SDLNet_TCP_Send invalid number of bytes sent");
+                std::exit(EXIT_FAILURE);
+            }
+            out_connection_index = connection_count;
+            return network_context_host_accept_connection_status_accepted;
+        }
+    } else {
+        return network_context_host_accept_connection_status_none;
+    }
+}
+
+
 extern inline bool network_context_client_resolved(const network_context_client &client);
 extern inline bool network_context_client_connected(const network_context_client &client);
 network_context_client network_context_client_create(const char *host, const uint16_t port) {
