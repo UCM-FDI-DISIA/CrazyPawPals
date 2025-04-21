@@ -351,7 +351,7 @@ void GameScene::spawn_super_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene)
 			"super_michi_mafioso", // sprite_key
 			posVec,				   // start_pos
 			GameStructs::DEFAULT,  // enemy_type
-			20,					   // health
+			25,					   // health
 			1.75f,				   // width
 			2.25f,				   // height
 			GameStructs::CLOSEST,  // target_strategy
@@ -494,7 +494,18 @@ void GameScene::spawn_catkuza(Vector2D posVec, ecs::sceneId_t scene)
 	auto &&manager = *Game::Instance()->get_mngr();
 	auto &&weapon = *new WeaponCatKuza();
 
-	auto e = create_enemy(GameStructs::EnemyProperties{"catkuza", posVec, GameStructs::DEFAULT, 5, 2.0f, 2.25f, GameStructs::CLOSEST, {0.0f, 0.0f}, 0.0f, 2.0f}, scene, static_cast<Weapon *>(&weapon));
+	auto e = create_enemy(GameStructs::EnemyProperties{
+		"catkuza", 
+		posVec, 
+		GameStructs::DEFAULT, 
+		25, 
+		2.0f, 
+		2.25f, 
+		GameStructs::CLOSEST, 
+		{0.0f, 0.0f}, 
+		0.0f, 
+		2.0f}, 
+		scene, static_cast<Weapon *>(&weapon));
 
 	auto playerEntities = manager.getEntities(ecs::grp::PLAYER);
 
