@@ -440,15 +440,8 @@ void RewardScene::create_my_deck_cards() {
     for (const auto& it : pDeck) {
 #pragma region convert a class name to a string
         std::string typeName = it->get_name();
-        /* Unnecessary
-        std::string prefix = "class ";
-        if (typeName.find(prefix) == 0) {  // Si empieza con "class "
-            typeName = typeName.substr(prefix.size());  // Elimina "class "
-            typeName[0] = tolower(typeName[0]);
-        }
-        */
 #pragma endregion
-        propTemplate.sprite_key = /*"card_"+*/typeName;
+        propTemplate.sprite_key = typeName;
         create_a_deck_card(propTemplate);
         propTemplate.rect.position.x += umbral;
         iterator++;

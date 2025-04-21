@@ -233,4 +233,5 @@ void Game::set_volumes() {
 	sdlutils().soundEffects().at("round_start").setVolume(45);
 	sdlutils().soundEffects().at("round_start_event").setVolume(45);
 	sdlutils().musics().at("main_menu_bgm").setMusicVolume(30);
+	sdlutils().soundEffects().at("reward").setVolume(30);
 }
