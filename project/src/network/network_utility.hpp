@@ -4,6 +4,7 @@
 #include <SDL_net.h>
 #include <cstdint>
 #include <cassert>
+#include <cstdlib>
 
 #define NETWORK_UTILITY_SDL_NET_FAILURE (-1)
 constexpr const int network_utility_sdl_net_failure = NETWORK_UTILITY_SDL_NET_FAILURE;
