@@ -662,7 +662,7 @@ void RewardScene::create_reward_exchange_button(const GameStructs::ButtonPropert
             _last_deck_card_img->destination_rect.position.y += 0.05f;
 
             auto imgNext = mngr->getComponent<ImageForButton>(mngr->getHandler(ecs::hdlr::NEXTROUNDREWARD));
-            imgNext->destination_rect.position = { 0.4f, 0.35f };
+            imgNext->destination_rect.position = { 0.35f, 0.32f };
             imgNext->destination_rect.size = { 0.3f, 0.125f * 1.25f };
 
             auto imgConfirm = mngr->getComponent<ImageForButton>(mngr->getHandler(ecs::hdlr::CONFIRMREWARD));
