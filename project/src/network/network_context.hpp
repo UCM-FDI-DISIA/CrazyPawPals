@@ -65,5 +65,17 @@ struct network_context {
     network_context_profile profile;
     network_context_profile_status_option profile_status;
 };
+inline network_context network_context_create_host(const uint16_t port) {
+    return network_context{
+        .profile = {.host = network_context_host_create(port)},
+        .profile_status = network_context_profile_status_host,
+    };
+}
+inline network_context network_context_create_client(const char *host, const uint16_t port) {
+    return network_context{
+        .profile = {.client = network_context_client_create(host, port)},
+        .profile_status = network_context_profile_status_client,
+    };
+}
 
 #endif

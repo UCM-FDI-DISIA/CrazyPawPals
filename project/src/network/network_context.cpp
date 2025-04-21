@@ -203,3 +203,7 @@ bool network_context_client_connect_alloc(network_context_client &client) {
     }
 }
 
+
+extern inline network_context network_context_create_host(const uint16_t port);
+extern inline network_context network_context_create_client(const char *host, const uint16_t port);
+
