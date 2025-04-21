@@ -557,6 +557,46 @@
       "file": "resources/images/ui/mythics/m_demonic_scratcher.png"
     },
     {
+      "id": "mythic_blood_claw",
+      "file": "resources/images/ui/infos/mythic_blood_claw_info.png"
+    },
+    {
+      "id": "mythic_claw_file_info",
+      "file": "resources/images/ui/infos/mythic_claw_file_info.png"
+    },
+    {
+      "id": "mythic_curtain_reaper_info",
+      "file": "resources/images/ui/infos/mythic_curtain_reaper_info.png"
+    },
+    {
+      "id": "mythic_blood_pact_info",
+      "file": "resources/images/ui/infos/mythic_blood_pact_info.png"
+    },
+    {
+      "id": "mythic_incense_info",
+      "file": "resources/images/ui/infos/mythic_incense_info.png"
+    },
+    {
+      "id": "mythic_quick_draw_deck_info",
+      "file": "resources/images/ui/infos/mythic_quick_draw_deck_info.png"
+    },
+    {
+      "id": "mythic_dream_recicler_info",
+      "file": "resources/images/ui/infos/mythic_dream_recicler_info.png"
+    },
+    {
+      "id": "mythic_uranium_socks_info",
+      "file": "resources/images/ui/infos/mythic_uranium_socks_info.png"
+    },
+    {
+      "id": "mythic_zoomies_inducer_info",
+      "file": "resources/images/ui/infos/mythic_zoomies_inducer_info.png"
+    },
+    {
+      "id": "mythic_demonic_scratcher_info",
+      "file": "resources/images/ui/infos/mythic_demonic_scratcher_info.png"
+    },
+    {
       "id": "meteroid",
       "file": "resources/images/projectiles/meteroid.png"
     },
