@@ -48,7 +48,17 @@ inline bool network_context_client_connected(const network_context_client &clien
     return client.socket_to_master != nullptr;
 }
 network_context_client network_context_client_create(const char *host, const uint16_t port);
-bool network_context_client_connect_alloc(network_context_client &client);
+
+enum network_context_client_connect_status {
+    network_context_client_connect_status_none = 0,
+    network_context_client_connect_status_connected = 1 << 0,
+    network_context_client_connect_status_error = 1 << 1,
+    network_context_client_connect_status_rejected = 1 << 2,
+    network_context_client_connect_status_invalid = 1 << 3,
+};
+using network_context_client_connect_status_flags = uint8_t;
+network_context_client_connect_status_flags network_context_client_connect_alloc(network_context_client &client);
+
 
 union network_context_profile {
     network_context_host host;

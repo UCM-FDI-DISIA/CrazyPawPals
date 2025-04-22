@@ -150,14 +150,20 @@ network_context_client network_context_client_create(const char *host, const uin
     return client;
 }
 
-bool network_context_client_connect_alloc(network_context_client &client) {
+network_context_client_connect_status_flags network_context_client_connect_alloc(network_context_client &client) {
     assert(network_context_client_resolved(client) && "error: client context must be resolved before connecting");
     assert(!network_context_client_connected(client) && "error: client context must not be connected before connecting");
 
     const TCPsocket socket_to_master = SDLNet_TCP_Open(&client.ip_host);
     if (socket_to_master == nullptr) {
-        assert(false && "fatal error: SDLNet_TCP_Open failed");
-        std::exit(EXIT_FAILURE);
+        // either the host did not try to open a connection for clients
+        // or the host ip address is invalid
+        // which, is the same because it just means it is a machine not executing that part of the host programme,
+        // either not executing our application or not executing the host part of our application
+
+        // this does not constitute a fatal error
+        return network_context_client_connect_status_error
+            | network_context_client_connect_status_invalid;
     }
 
     uint8_t message_buffer[sizeof(network_message_connection_client_from_host)];
@@ -196,10 +202,11 @@ bool network_context_client_connect_alloc(network_context_client &client) {
         }
 
         assert(network_context_client_connected(client) && "fatal error: network_context_client_connect_alloc invalid");
-        return true;
+        return network_context_client_connect_status_connected;
     } else {
         SDLNet_TCP_Close(socket_to_master);
-        return false;
+        return network_context_client_connect_status_error
+            | network_context_client_connect_status_rejected;
     }
 }
 
