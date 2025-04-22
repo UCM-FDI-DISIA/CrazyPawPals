@@ -29,7 +29,7 @@ VictoryScene::VictoryScene() : Scene(ecs::scene::VICTORYSCENE) {}
 VictoryScene::~VictoryScene() {}
 
 void VictoryScene::initScene() {
-    create_static_background(&sdlutils().images().at("game_over"));
+    create_static_background(&sdlutils().images().at("victory"));
     create_enter_button();
     create_exit_button();
 }
@@ -73,8 +73,8 @@ void VictoryScene::create_enter_button() {
 void VictoryScene::create_exit_button()
 {
     GameStructs::ButtonProperties bp = {
-       { {0.375f, 0.7f},{0.3f, 0.125f} },
-       0.0f, "exit_game"
+       { {0.375f, 0.8f},{0.3f, 0.125f} },
+       0.0f, "exit"
     };
     auto* mngr = Game::Instance()->get_mngr();
     auto e = create_button(bp);

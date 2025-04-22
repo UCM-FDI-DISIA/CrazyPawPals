@@ -216,5 +216,13 @@ void Game::change_Scene(State nextScene){
 }
 void Game::set_volumes() {
 	sdlutils().soundEffects().at("button_hover").setVolume(20);
+	sdlutils().soundEffects().at("enemy_shot").setVolume(35);
+	sdlutils().soundEffects().at("player_shot").setVolume(35);
+	sdlutils().soundEffects().at("card_mill").setVolume(25);
+	sdlutils().soundEffects().at("card_play").setVolume(35);
+	sdlutils().soundEffects().at("shuffle").setVolume(25);
+	sdlutils().soundEffects().at("round_start").setVolume(45);
+	sdlutils().soundEffects().at("round_start_event").setVolume(45);
 	sdlutils().musics().at("main_menu_bgm").setMusicVolume(30);
+	sdlutils().soundEffects().at("reward").setVolume(30);
 }

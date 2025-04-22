@@ -13,10 +13,22 @@ public:
 	~Follow() {};
 
 	void initComponent() override;
+
+	void update(uint32_t delta_time) override;
+
 	void act_follow();
 	inline Transform* get_act_follow() const{
 		return _act_follow;
 	};
+
+	inline void set_act_follow(Transform* tr) {
+		_act_follow = tr;
+	};
+
+	inline void set_follow_type(GameStructs::EnemyFollow type) {
+		_my_follow_type = type;
+	};
+
 private:
 	void search_closest_player();
 	void search_furthest_player();
@@ -26,4 +38,6 @@ private:
 	Transform *_my_tr;
 	Transform *_act_follow;
 	GameStructs::EnemyFollow _my_follow_type;
+
+	uint32_t last_time_act;
 };

@@ -239,6 +239,7 @@ void SelectionMenuScene::create_weapon_button(GameStructs::WeaponType wt, const 
 
     });
     buttonComp->connectHover([buttonComp, imgComp, mngr, wt]() {
+        sdlutils().soundEffects().at("button_hover").play();
         std::string s;
         auto info = mngr->getHandler(ecs::hdlr::WEAPONINFO);
         auto infoImg = mngr->getComponent<transformless_dyn_image>(info);
@@ -334,6 +335,7 @@ void SelectionMenuScene::create_deck_button(GameStructs::DeckType dt, const Game
 
     buttonComp->connectHover([buttonComp, imgComp]() {
         imgComp->_filter = true;
+        sdlutils().soundEffects().at("button_hover").play();
         });
     buttonComp->connectExit([buttonComp, imgComp]() {
         imgComp->_filter = false;
@@ -412,7 +414,9 @@ void SelectionMenuScene::create_enter_button() {
             Game::Instance()->change_Scene(Game::GAMESCENE);
         }
     }); 
-    buttonComp->connectHover([buttonComp, imgComp, this]() { imgComp->_filter = true;});
+    buttonComp->connectHover([buttonComp, imgComp, this]() {         
+        sdlutils().soundEffects().at("button_hover").play(); 
+        imgComp->_filter = true;});
     buttonComp->connectExit([buttonComp, imgComp, this]() { imgComp->_filter = false;});
 }
 void SelectionMenuScene::update(uint32_t delta_time) {

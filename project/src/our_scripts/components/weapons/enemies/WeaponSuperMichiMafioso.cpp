@@ -5,15 +5,15 @@
 #include <our_scripts/components/WaveManager.h>
 
 
-WeaponSuperMichiMafioso::WeaponSuperMichiMafioso() 
-	: Weapon(4, 200, 20.0f, 0.1f, "p_super_michi_mafioso", 1.0f, 1.0f), _currentPattern(ATTACK1),_warning(false){ }
+WeaponSuperMichiMafioso::WeaponSuperMichiMafioso()
+	: Weapon(4, 200, 20.0f, 0.1f, "p_super_michi_mafioso", 1.0f, 1.0f),_warning(false){ }
 
 WeaponSuperMichiMafioso::~WeaponSuperMichiMafioso() {}
 
-void WeaponSuperMichiMafioso::attack1(Vector2D shootDir) {
+void WeaponSuperMichiMafioso::attack1() {
 	int scale = 2;
 	GameStructs::BulletProperties bp = GameStructs::BulletProperties();
-	bp.dir = shootDir;
+	bp.dir = Vector2D();
 	bp.speed = 0;
 	bp.width = _attack_width * scale;
 	bp.height = _attack_height * scale;
@@ -27,7 +27,7 @@ void WeaponSuperMichiMafioso::attack1(Vector2D shootDir) {
 		_warning = false;
 	}
 	else {
-		_last_shootPos = _player_tr->getPos();
+		_last_shootPos = _player_pos;
 		bp.init_pos = _last_shootPos;
 		bp.damage = 0;
 		bp.life_time = 0.4f;
@@ -38,8 +38,9 @@ void WeaponSuperMichiMafioso::attack1(Vector2D shootDir) {
 
 	Game::Instance()->get_currentScene()->create_proyectile(bp, ecs::grp::BULLET);
 }
-void WeaponSuperMichiMafioso::attack2(Vector2D shootPos, Vector2D shootDir) {
+void WeaponSuperMichiMafioso::attack2(Vector2D shootPos) {
 	GameStructs::BulletProperties bp = GameStructs::BulletProperties();
+	Vector2D shootDir = (_player_pos - shootPos).normalize();
 	bp.dir = shootDir;
 	bp.init_pos = shootPos;
 	bp.speed = _speed;
@@ -54,10 +55,12 @@ void WeaponSuperMichiMafioso::attack2(Vector2D shootPos, Vector2D shootDir) {
 	Game::Instance()->get_currentScene()->create_proyectile(bp, ecs::grp::BULLET);
 }
 
-void WeaponSuperMichiMafioso::attack3(Vector2D shootPos, Vector2D shootDir) {
+void WeaponSuperMichiMafioso::attack3(Vector2D shootPos) {
 	const int numAreas = 5;
 	const float radius = 1.5f; 
 	const float angle = 60.0f;
+
+	Vector2D shootDir = (_player_pos - shootPos).normalize();
 
 	GameStructs::BulletProperties bp = GameStructs::BulletProperties();
 	Vector2D initialRot = bp.dir = shootDir;
@@ -86,27 +89,6 @@ void WeaponSuperMichiMafioso::generate_michi_mafioso() {
 	Game::Instance()->get_mngr()->getComponent<WaveManager>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::WAVE))->newEnemy();
 }
 
-void
-WeaponSuperMichiMafioso::callback(Vector2D shootPos, Vector2D shootDir) {
-
-	switch (_currentPattern) {
-		case ATTACK1: 
-			attack1(shootDir); 
-			break;
-		case ATTACK2: 
-			attack2(shootPos, shootDir); 
-			break;
-		case ATTACK3: 
-			attack3(shootPos, shootDir); 
-			break;
-		case SPAWN_MICHI_MAFIOSO: 
-			generate_michi_mafioso(); 
-			break;
-		default:
-			break;
-	}
-}
-
-void WeaponSuperMichiMafioso::setAttackPattern(Pattern pattern) {
-	_currentPattern = pattern;
+void WeaponSuperMichiMafioso::set_player_pos(Vector2D _pl) {
+	_player_pos = _pl;
 }

@@ -10,11 +10,12 @@ DashingState::DashingState(Transform* tr, MovementController* movementController
 
 void 
 DashingState::enter() {
-    
+    assert(_tr != nullptr);
+    assert(_movementController != nullptr);
+    assert(_fll != nullptr);
 
     Vector2D direction = _fll->get_act_follow()->getPos() - _tr->getPos();
     direction = direction.normalize();
-
     Vector2D dash_target = _fll->get_act_follow()->getPos() + direction * _extra_space;
     _movementController->dash(dash_target, _time);
 }

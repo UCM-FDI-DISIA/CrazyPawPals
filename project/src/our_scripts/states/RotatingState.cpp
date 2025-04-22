@@ -1,12 +1,13 @@
 #include "RotatingState.h"
 #include "../components/movement/Transform.h"
+#include "../components/movement/Follow.h"
 #include "../components/movement/MovementController.h"
 
-RotatingState::RotatingState(Transform* tr, Transform* playerTr, MovementController* mc)
-    : _tr(tr), _movementController(mc), _player_tr(playerTr), _angle(0.0f), _center(), _radius(0.0f) {}
+RotatingState::RotatingState(Transform* tr, Follow* follow, MovementController* mc)
+    : _tr(tr), _movementController(mc), _fll(follow), _angle(0.0f), _center(), _radius(0.0f) {}
 void
 RotatingState::enter() {
-    _center = { _player_tr->getPos().getX() + (_player_tr->getWidth() / 2),_player_tr->getPos().getY() + (_player_tr->getHeight() / 2) };
+    _center = { _fll->get_act_follow()->getPos().getX() + (_fll->get_act_follow()->getWidth() / 2),_fll->get_act_follow()->getPos().getY() + (_fll->get_act_follow()->getHeight() / 2) };
     _radius = (_tr->getPos() - _center).magnitude();
     _angle = std::atan2(_tr->getPos().getY() - _center.getY(), _tr->getPos().getX() - _center.getX());
 }

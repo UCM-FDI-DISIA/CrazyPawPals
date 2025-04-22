@@ -63,6 +63,7 @@ private:
     bool is_wave_finished();
     void erase_all_enemies();
     void erase_all_bullets();
+    void select_event();
 
     uint32_t change_to_rewards_time;
 #ifdef GENERATE_LOG
@@ -81,6 +82,9 @@ private:
     int time_max_between_enemy_spawns_on_this_wave;
     int tokens_for_this_wave;
     std::unique_ptr<wave_event> _current_wave_event;
+
+    int _event_pity; // tracks waves since last event
+    const int _max_event_pity = 3; // maximum number of waves w/o events
 
     bool _wave_active = false;
 

@@ -28,7 +28,8 @@ WaveManager::WaveManager() :
     _enemiesSpawned(0),
     _enemiesKilled(0),
     _numEnemies(0),
-    _current_wave_event(new no_event(this))
+    _current_wave_event(new no_event(this)),
+    _event_pity(0)
 {
     event_system::event_manager::Instance()->suscribe_to_event(event_system::enemy_dead, this, &event_system::event_receiver::event_callback0);
     event_system::event_manager::Instance()->suscribe_to_event(event_system::player_dead, this, &event_system::event_receiver::event_callback1);
@@ -109,12 +110,14 @@ void WaveManager::spawn_next_group_of_enemies()
     //tokens can only be -1 at worst at end of the round (cause I know that there will always be at least a 2 cost enemy on the group)
     while ((tokens_for_this_wave - enemy_spawn_data[_enemy_types_for_current_wave[index]].enemies_group_spawn_cost) < -1) {
         index = ++index % 3;
-        std::cout << (tokens_for_this_wave - enemy_spawn_data[_enemy_types_for_current_wave[index]].enemies_group_spawn_cost) << std::endl;
+        //std::cout << (tokens_for_this_wave - enemy_spawn_data[_enemy_types_for_current_wave[index]].enemies_group_spawn_cost) << std::endl;
     }
     tokens_for_this_wave -= enemy_spawn_data[_enemy_types_for_current_wave[index]].enemies_group_spawn_cost;
     //spawn enemies
     enemy_spawn_caller* esc;
     std::string tipoEnemigo;
+    std::cout << tipoEnemigo << std::endl;
+
     switch ((enemyType)_enemy_types_for_current_wave[index])
     {
         case sarno_rata:
@@ -246,7 +249,8 @@ void WaveManager::start_new_wave()
 
 void WaveManager::reset_wave_manager()
 {
-    _currentWave = 0;
+    _currentWave = -1;
+    _event_pity = 0;
 }
 
 void WaveManager::endwave()
@@ -314,13 +318,32 @@ void WaveManager::event_callback1(const Msg& m)
     fog->setFog(false);
 }
 
-void WaveManager::choose_new_event()
+void WaveManager::select_event()
 {
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<int> rnd_gen(NONE,EVENTS_MAX - 1);
+    std::uniform_int_distribution<int> rnd_gen(ICE_SKATE, EVENTS_MAX - 1);
     _current_event = events(rnd_gen(gen));
-    
+    _event_pity = 0;
+}
+void WaveManager::choose_new_event()
+{
+    if (_event_pity == _max_event_pity) {
+        select_event();
+    }
+    else {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<int> has_event(0, 2);
+        if (has_event(gen) == 2) {
+            select_event();
+        }
+        else {
+            _current_event = NONE;
+            _event_pity++;
+        }
+    }
+
     switch(_current_event) {
     case NONE:
         _current_wave_event = (std::unique_ptr<wave_event>)new no_event(this);

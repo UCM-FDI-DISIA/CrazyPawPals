@@ -3,10 +3,11 @@
 
 class MovementController;
 class Transform;
+class Follow;
 class RotatingState : public State
 {
 public:
-	RotatingState(Transform* tr, Transform* playerTr, MovementController* mc);
+	RotatingState(Transform* tr, Follow* follow, MovementController* mc);
 	void enter() override;
 	void update(uint32_t delta_time) override;
 	void exit() override;
@@ -14,7 +15,7 @@ public:
 protected:
 	Transform* _tr;
 	MovementController* _movementController;
-	Transform* _player_tr;
+	Follow* _fll;
 	float _angle;
 	Vector2D _center;
 	float _radius;

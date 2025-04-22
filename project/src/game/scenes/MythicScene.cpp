@@ -206,15 +206,15 @@ void MythicScene::create_reward_mythic_button(const GameStructs::ButtonPropertie
         //std::cout << "hover -> Reward button: " << std::endl;
         //filter
         imgComp->_filter = true;
-        /*auto& sp = mngr->getComponent<MythicDataComponent>(e)->sprite();
-        ri->set_texture(&sdlutils().images().at(sp + "_info"));*/
+        auto& sp = mngr->getComponent<MythicDataComponent>(e)->sprite();
+        ri->set_texture(&sdlutils().images().at(sp + "_info"));
 
         });
     buttonComp->connectExit([buttonComp, imgComp, ri]() {
         //std::cout << "exit -> Reward button: " << std::endl;
         //filter
         imgComp->_filter = false;
-        /*ri->set_texture(&sdlutils().images().at("initial_info"));*/
+        ri->set_texture(&sdlutils().images().at("initial_info"));
         });
 
 }

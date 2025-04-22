@@ -31,14 +31,10 @@ private:
 public:
     // Métodos para evaluar condiciones
 
-    bool is_player_near(Transform* _player, Transform* _enemy, float _dist) const {
+    bool is_player_near(const Transform* _player, const Transform* _enemy, float _dist) const {
 		if (!_player || !_enemy) return false;
         float distance = (_player->getPos() - _enemy->getPos()).magnitude();
         return distance < _dist;
-    }
-
-    bool is_enemy_dead(Health* _enemy) const {
-        return _enemy->getHealth() <= 0;
     }
 
     void set_cooldown(const std::string& state, uint32_t cooldown) {

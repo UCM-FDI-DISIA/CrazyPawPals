@@ -73,11 +73,17 @@ void bullet_collision_component::apply_weapon_effect(GameStructs::WeaponType typ
     }
     case GameStructs::WeaponType::CATKUZA_WEAPON: {
         auto player = manager.getHandler(ecs::hdlr::PLAYER);
+        auto d = manager.getComponent<Deck>(player);
+        auto sum = d->get_total_cards_num();
+        if (sum <10)
         manager.getComponent<Deck>(player)->add_card_to_deck(new CatKuzaCard());
         break;
     }
     case GameStructs::WeaponType::SUPER_MICHI: {
         auto player = manager.getHandler(ecs::hdlr::PLAYER);
+        auto d = manager.getComponent<Deck>(player);
+        auto sum = d->get_total_cards_num();
+        if (sum < 10)
         manager.getComponent<Deck>(player)->add_card_to_deck(new SuperMichiCard());
         manager.getComponent<MovementController>(player)->frozen(1000);
 

@@ -20,8 +20,7 @@ void AttackingState::enter() {
 		_contador++;
 		Vector2D _target = _fll->get_act_follow()->getPos();
 		_weapon->shoot(_target);
-		sdlutils().soundEffects().at("enemy_shot").play();
-
+		if (_weapon->shoot(_target))	sdlutils().soundEffects().at("enemy_shot").play();
 		if (_on_attack_callback) _on_attack_callback();
 	}
 }

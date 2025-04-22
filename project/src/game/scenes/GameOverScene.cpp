@@ -79,7 +79,7 @@ void GameOverScene::create_exit_button()
 {
     GameStructs::ButtonProperties bp = {
        { {0.375f, 0.7f},{0.3f, 0.125f} },
-       0.0f, "exit_game"
+       0.0f, "exit"
     };
     auto* mngr = Game::Instance()->get_mngr();
     auto e = create_button(bp);
