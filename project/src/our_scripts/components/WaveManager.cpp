@@ -299,6 +299,7 @@ void WaveManager::endwave()
 
 #endif
     if (_currentWave == 2) {
+        Game::Instance()->get_mngr()->getComponent<WaveManager>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::WAVE))->reset_wave_manager();
         Game::Instance()->change_Scene(Game::State::VICTORY);
     }
     else {
