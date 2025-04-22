@@ -189,7 +189,7 @@ Si al comenzar una nueva oleada no se ha escogido recompensa, empezarán a parpa
 **Distribución de recompensas**
 
 *En una oleada normal:*
-- Curación (10-20% vida).
+- Curación (40% vida).
 - Nuevas cartas.
 
 *En una oleada con Eventos:*
