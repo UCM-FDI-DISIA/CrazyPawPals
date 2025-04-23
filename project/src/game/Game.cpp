@@ -31,7 +31,8 @@
 #include "scenes/TutorialScene.h"
 #include "scenes/VictoryScene.h"
 #include "scenes/MythicScene.h"
-
+#include <cassert>
+#include <cstdlib>
 
 #ifdef GENERATE_LOG
 #include "../our_scripts/log_writer_to_csv.hpp"
@@ -40,16 +41,40 @@
 
 using namespace std;
 
-Game::Game() : _mngr(nullptr){}
+Game::Game() : _mngr(nullptr), network{
+	.profile = {},
+	.profile_status = network_context_profile_status_none,
+} {
 
+}
+
+static void game_destroy_network_context(network_context &ctx) {
+	switch (ctx.profile_status) {
+	case network_context_profile_status_none:
+		break;
+	case network_context_profile_status_host: {
+		network_context_host_destroy(ctx.profile.host);
+		break;
+	}
+	case network_context_profile_status_client: {
+		network_context_client_destroy(ctx.profile.client);
+		break;
+	}
+	default: {
+		assert(false && "fatal error: invalid network context profile status");
+		std::exit(EXIT_FAILURE);
+	}
+	}
+	ctx.profile_status = network_context_profile_status_none;
+}
 Game::~Game() {
-
 	for (auto scene : _scenes) {
 		if (scene != nullptr) {
 			delete scene;
 		}
 	}
 	_scenes.clear();
+	game_destroy_network_context(network);
 
 	// release InputHandler if the instance was created correctly.
 	if (InputHandler::HasInstance())
@@ -65,8 +90,35 @@ Game::~Game() {
 
 }
 
+static void game_init_network_context(network_context &ctx) {
+#ifdef DBG_NETWORK
+#if !defined(DBG_NETWORK_HOST) || !defined(DBG_NETWORK_CLIENT) || !defined(DBG_NETWORK_HOST_IP) && !defined(DBG_NETWORK_HOST_PORT)
+	static_assert(
+		false,
+		"static error: DBG_NETWORK_HOST and DBG_NETWORK_CLIENT must be defined at the same time"
+		"as well as DBG_NETWORK_HOST_IP and DBG_NETWORK_HOST_PORT"
+	);
+#endif
+
+#if DBG_NETWORK_HOST && DBG_NETWORK_CLIENT
+	static_assert(
+		false,
+		"static error: DBG_NETWORK_HOST and DBG_NETWORK_CLIENT cannot be defined at the same time"
+	);
+#elif DBG_NETWORK_HOST
+	ctx = network_context_create_host(DBG_NETWORK_HOST_PORT);
+#elif DBG_NETWORK_CLIENT
+	ctx = network_context_create_client(DBG_NETWORK_HOST_IP, DBG_NETWORK_HOST_PORT);
+#else
+	static_assert(
+		false,
+		"static error: DBG_NETWORK_HOST or DBG_NETWORK_CLIENT must be defined at the same time"
+	);
+#endif
+#endif
+}
 bool Game::init() {
-	
+	SDLNet_Init();
 	// initialize the SDL singleton
 	if (!SDLUtils::Init("crazy paw pals", _screen_size.first, _screen_size.second,
 		"resources/config/crazypawpals.resources.json")) {
@@ -95,7 +147,8 @@ bool Game::init() {
 		return false;
 	}
 #endif
-	
+	game_init_network_context(network);
+
 	// enable the cursor visibility
 	SDL_ShowCursor(SDL_ENABLE);
 	// disable mipmap
@@ -144,6 +197,9 @@ bool Game::init() {
 	return true;
 }
 
+static void game_start_network_dbg(network_context &ctx) {
+	// TODO
+}
 void Game::start() {
 
 	// a boolean to exit the loop

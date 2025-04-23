@@ -4,6 +4,7 @@
 #include "../ecs/ecs.h"
 #include "../utils/EventsSystem.hpp"
 #include <vector>
+#include "../network/network_context.hpp"
 
 namespace ecs {
 class Manager;
@@ -48,5 +49,6 @@ private:
 	std::pair<int, int> _screen_size = std::make_pair(960,540);
 	Game();
 	ecs::Manager* _mngr;
+	network_context network;
 	void set_volumes();
 };

@@ -88,6 +88,12 @@ project(CrazyPawPals C CXX)
         -D RIGIDBODY_COMPONENT_DEGEN_RESTITUTION_OFF
         -DDBG_COLLISIONS=false
         #-DGENERATE_LOG
+        -DDBG_NETWORK=true
+        -DDBG_NETWORK_HOST=false
+        -DDBG_NETWORK_CLIENT=true
+        
+        -DDBG_NETWORK_HOST_IP="localhost"
+        -DDBG_NETWORK_HOST_PORT=1234
     )
     
     target_include_directories(
