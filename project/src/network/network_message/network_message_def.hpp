@@ -56,7 +56,7 @@ inline network_message_header network_message_header_create(
 network_message_header network_message_header_receive(TCPsocket socket);
 void network_message_header_send(TCPsocket socket, const network_message_header header);
 
-
+// Aqui se pone el nombre/tipo de mensaje
 enum network_message_content_type {
     network_message_content_type_none = 0,
     network_message_content_type_dbg = 1 << 0,
@@ -65,6 +65,7 @@ enum network_message_content_type {
 };
 using network_message_content_type_option = uint8_t;
 
+
 template <typename T, typename = std::enable_if_t<std::is_trivially_copyable_v<T>>>
 struct network_message_payload {
     network_message_content_type_option type;
@@ -72,6 +73,7 @@ struct network_message_payload {
 };
 
 template <size_t ArgumentsSize>
+// Contenido del mensaje
 struct network_message_content_dbg_print {
     size_t args_size_n;
     enum network_message_content_dbg_print_type {
