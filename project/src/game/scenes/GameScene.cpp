@@ -213,7 +213,7 @@ void GameScene::enterScene()
 	auto e = wm->get_current_event();
 	RewardScene::will_have_mythic(e != NONE);
 	manager.getComponent<HUD>(manager.getHandler(ecs::hdlr::HUD_ENTITY))->start_new_wave();
-	spawn_catkuza(Vector2D{5.0f, 0.0f});
+	//spawn_catkuza(Vector2D{5.0f, 0.0f});
 	//spawn_super_michi_mafioso(Vector2D{5.0f, 0.0f});
 #ifdef GENERATE_LOG
 	log_writer_to_csv::Instance()->add_new_log();
@@ -878,7 +878,7 @@ void GameScene::spawn_boom(Vector2D posVec, ecs::sceneId_t scene)
 
 	auto walkingState = std::make_shared<WalkingState>(tr, mc, fll);
 	auto attackingState = std::make_shared<AttackingState>(tr, fll, &weapon, false,
-														   [&health]()
+														   [health]()
 														   { health->takeDamage(health->getMaxHealth()); });
 
 	state->add_state("Walking", walkingState);
