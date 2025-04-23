@@ -292,12 +292,12 @@ void WaveManager::endwave()
         Game::Instance()->change_Scene(Game::State::VICTORY);
     }
     else {
+        fog->setFog(false);
         _wave_active = false;
         change_to_rewards_time = sdlutils().virtualTimer().currTime() + 3000;
         _current_wave_event->end_wave_callback();
         _currentWave++;
         _all_enemies_already_spawned = false;
-        fog->setFog(false);
         erase_all_bullets();
         erase_all_enemies();
         //enterRewardsMenu();
