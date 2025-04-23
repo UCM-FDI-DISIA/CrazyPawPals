@@ -18,52 +18,91 @@
 </head>
 
 <body>
-  <h1>Crazy Paw Pals</h1>
-  <h2>¡Únete a la gatalla!</h2>
-  <p>Crazy Paw Pals es un juego de acción roguelike en el que deberás defender un café de gatos a lo largo de varias oleadas.</p>
-
-  <!-- Ambos bloques -->
-  <div style="display: flex; justify-content: space-between;">
-
-    <!-- Bloque izq -->
-    <div style="width: 45%; display: flex; align-items: center;">
-      <!-- Título e Imagen -->
-      <div style="display: flex;">
-        <!-- Título -->
-        <div style="width: 50%;">
-          <h3>¡Zarpa a zarpa!</h3>
-        </div>
-  
-        <!-- Imagen -->
-        <div style="width: 50%; text-align: center;">
-          <img src="img/michi_mafioso.png" width=50 height=50>
-        </div>
-      </div>
-      <!-- Texto -->
-      <p>El café será sitiado por numerosos enemigos. ¡Neutraliza su ofensiva y contraataca con tu propia!</p>
+    <h1>Crazy Paw Pals</h1>
+    <h2>¡Únete a la gatalla!</h2>
+    <div class="tab">
+        <button id="StartingButton"class="tablinks" onclick="openTab(event, 'Information')">About CPP</button>
+        <button class="tablinks" onclick="openTab(event, 'Dev')">Dev Team</button>
+        <button class="tablinks" onclick="openTab(event, 'Trailer')">Trailer</button>
+        <button class="tablinks" onclick="openTab(event, 'Play')">Play</button>
     </div>
-    
-    <div style="width: 45%; display: flex; align-items: center;">
-      <div style="width: 50%;">
-        <h3>¡Construye tu miauzo!</h3>
-        <p>Tus cartas serán tu línea de defensa ante las amenazas. ¡Experimenta con arquetipos variados para alcanzar la victoria!</p>
-      </div>
-      <div style="width: 50%; text-align: center;">
-        <img src="img/sarno_rata.png" width=50 height=50>
-      </div>
+
+    <div id="Information" class="tabcontent">
+        <p>Crazy Paw Pals es un juego de acción roguelike en el que deberás defender un café de gatos a lo largo de varias oleadas.</p>
+
+        <!-- Ambos bloques -->
+        <div style="display: flex; justify-content: space-between;">
+
+            <!-- Bloque izq -->
+            <div style="width: 45%; display: flex; align-items: center;">
+                <!-- Título e Imagen -->
+                <div style="display: flex;">
+                    <!-- Título -->
+                    <div style="width: 50%;">
+                        <h3>¡Zarpa a zarpa!</h3>
+                    </div>
+
+                    <!-- Imagen -->
+                    <div style="width: 50%; text-align: center;">
+                        <img src="img/michi_mafioso.png" width=50 height=50>
+                    </div>
+                </div>
+                <!-- Texto -->
+                <p>El café será sitiado por numerosos enemigos. ¡Neutraliza su ofensiva y contraataca con tu propia!</p>
+            </div>
+
+            <div style="width: 45%; display: flex; align-items: center;">
+                <div style="width: 50%;">
+                    <h3>¡Construye tu miauzo!</h3>
+                    <p>Tus cartas serán tu línea de defensa ante las amenazas. ¡Experimenta con arquetipos variados para alcanzar la victoria!</p>
+                </div>
+                <div style="width: 50%; text-align: center;">
+                    <img src="img/sarno_rata.png" width=50 height=50>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- <div style = "text-align:center;"> -->
+        <div class="centered">
+            <img src="img/bocetoPersonaje1.png" width=10% height=10%>
+        </div>
+
+        <div class="footer">
+            Curtain Reaper, 2025.
+            <div class="iconimage"><img src="img/curtainreaper32.png"></div>
+        </div>
     </div>
-  </div>
 
+    <div id="Dev" class="tabcontent">
+    </div>
+    <div id="Trailer" class="tabcontent">
+    </div>
+    <div id="Play" class="tabcontent">
+    </div>
 
+    <script>
+        function openTab(evt, id_to_show) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(id_to_show).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
 
-  <!-- <div style = "text-align:center;"> -->
-  <div class="centered">
-    <img src="img/bocetoPersonaje1.png" width=10% height=10%>
-  </div>
-  
-  <div class="footer">Curtain Reaper, 2025.
-  <div class="iconimage"><img src="img/curtainreaper32.png"></div>
-  </div>
+        window.onload = () => {
+            document.getElementById("Information").style.display = "block";
+            document.getElementById("StartingButton").className += " active";
+        };
+    </script>
+
 
 </body>
 </html>

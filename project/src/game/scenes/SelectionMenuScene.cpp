@@ -34,9 +34,9 @@ SelectionMenuScene::~SelectionMenuScene()
 }
 void SelectionMenuScene::create_weapon_buttons() {
     float umbral = 0.0075f;
-    float offsetX = 0.05f;  // Distance between buttons on the X axis
-    float startX = 0.725f;   // Starting position of the first button on X
-    float startY = 0.025f; // Starting position of the first button on Y
+    float offsetX = 0.06f;  // Distance between buttons on the X axis
+    float startX = 0.7f;   // Starting position of the first button on X
+    float startY = 0.075f; // Starting position of the first button on Y
 
     GameStructs::ButtonProperties buttonPropTemplate = {
         { { startX, startY }, {0.05f, 0.1f} },
@@ -86,7 +86,7 @@ void SelectionMenuScene::create_deck_buttons() {
     float umbral = 0.0875f;
     //create the first button prop
     GameStructs::ButtonProperties buttonPropTemplate = {
-         { {0.025f, 0.025f},{0.085f, 0.135f} },
+         { {0.0075f, 0.075f},{0.085f, 0.135f} },
          0.0f, "", ecs::grp::DECKBUTTON
     };
     GameStructs::ButtonProperties deck1B = buttonPropTemplate;
@@ -355,7 +355,7 @@ void SelectionMenuScene::create_deck_info(const rect_f32& rect) {
 }
 void SelectionMenuScene::create_deck_infos() {
     float umbral = 0.14f;
-    rect_f32 r = {{ 0.035f, 0.175f }, { 0.3f, 0.1425f }};
+    rect_f32 r = {{ 0.0285f, 0.3f  }, { 0.3f, 0.1425f }};
     for (int i = 0; i < _num_cards_of_deck; ++i) {
         create_deck_info(r); 
         r.position.y += umbral;
@@ -363,7 +363,7 @@ void SelectionMenuScene::create_deck_infos() {
 }
 void SelectionMenuScene::create_weapon_info() {
    // rect_f32 rect = {{1.3f, 0.25f} ,{0.75f, 0.5f}};
-    rect_f32 rect = { {0.7f, 0.15f} ,{0.3f, 0.225f} };
+    rect_f32 rect = { {0.695f, 0.225f} ,{0.3f, 0.25f} };
     ecs::entity_t e = create_entity(
         ecs::grp::UI,
         ecs::scene::SELECTIONMENUSCENE,
@@ -390,7 +390,7 @@ void SelectionMenuScene::set_concrete_deck_info(const std::list<Card*>& cl) {
 }
 void SelectionMenuScene::create_enter_button() {
     GameStructs::ButtonProperties bp = {
-         { {0.425f, 0.4f},{0.2f, 0.095f} },
+         { {0.35f, 0.4f},{0.35f, 0.25f} },
          0.0f, "new_round", ecs::grp::UI
     };
     auto* mngr = Game::Instance()->get_mngr();
@@ -398,7 +398,7 @@ void SelectionMenuScene::create_enter_button() {
     mngr->setHandler(ecs::hdlr::TOGAMEBUTTON, e);
     auto imgComp = mngr->addComponent<ImageForButton>(e,
         &sdlutils().images().at("initial_info"),
-        &sdlutils().images().at(bp.sprite_key),
+        &sdlutils().images().at(bp.sprite_key+"_selected"),
         bp.rect,
         0,
         Game::Instance()->get_mngr()->getComponent<camera_component>(
@@ -414,10 +414,16 @@ void SelectionMenuScene::create_enter_button() {
             Game::Instance()->change_Scene(Game::GAMESCENE);
         }
     }); 
-    buttonComp->connectHover([buttonComp, imgComp, this]() {         
+    buttonComp->connectHover([buttonComp, imgComp, this]() {     
+        if (!_activate_play_button) return;
         sdlutils().soundEffects().at("button_hover").play(); 
-        imgComp->_filter = true;});
-    buttonComp->connectExit([buttonComp, imgComp, this]() { imgComp->_filter = false;});
+        imgComp->_filter = true;
+        imgComp->swap_textures();
+        });
+    buttonComp->connectExit([buttonComp, imgComp, this]() { 
+        if (!_activate_play_button) return;
+        imgComp->_filter = false;
+    imgComp->swap_textures();});
 }
 void SelectionMenuScene::update(uint32_t delta_time) {
     Scene::update(delta_time);
@@ -425,7 +431,7 @@ void SelectionMenuScene::update(uint32_t delta_time) {
     if (!_activate_play_button && _last_weapon_button != nullptr && _last_deck_button != nullptr) {
         auto* mngr = Game::Instance()->get_mngr();
         auto imgComp = mngr->getComponent<ImageForButton>(mngr->getHandler(ecs::hdlr::TOGAMEBUTTON));
-        imgComp->swap_textures();
+        imgComp->set_texture(&sdlutils().images().at("new_round"));
         _activate_play_button = true;
     }
 }
