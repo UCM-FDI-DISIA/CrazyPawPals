@@ -214,7 +214,7 @@ void Game::start() {
 	sdlutils().virtualTimer().resetTime();
 	while (!exit) {
 		const uint64_t frame_start_tick = SDL_GetTicks64();
-		const uint32_t delta_time_milliseconds = frame_start_tick - last_frame_start_tick;
+		const uint32_t delta_time_milliseconds = uint32_t(frame_start_tick - last_frame_start_tick);
 		assert(delta_time_milliseconds > 0 && "fatal error: delta time must be strictly positive");
 		sdlutils().virtualTimer() = VirtualTimer{
 			.current_time = frame_start_tick

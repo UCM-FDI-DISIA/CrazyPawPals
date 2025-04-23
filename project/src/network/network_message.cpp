@@ -11,12 +11,14 @@ std::unique_ptr<network_message_pack<uint8_t *>> network_message_pack_receive_dy
     network_message_header header = network_message_header_receive(socket);
     const size_t payload_size = size_t(SDLNet_Read16(&header.payload_size_n));
     
-    auto buffer = std::make_unique<uint8_t[]>(
-        offsetof(network_message_pack<uint8_t *>, payload) + payload_size
-    );
+    auto buffer = std::unique_ptr<uint8_t[]>{
+        new uint8_t[offsetof(network_message_pack<uint8_t *>, payload) + payload_size],
+        std::default_delete<uint8_t[]>{}
+    };
     std::unique_ptr<network_message_pack<uint8_t *>> message{
         reinterpret_cast<network_message_pack<uint8_t *> *>(buffer.get())
     };
+    // TODO
     message->header = header;
 
     const int recv_result = SDLNet_TCP_Recv(
