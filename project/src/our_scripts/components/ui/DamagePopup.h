@@ -16,6 +16,7 @@ public:
     void update(uint32_t dt) override;
 private:
     Transform* _tr;
+    float _target_y;
     //dyn_image* _img;
 
     uint32_t _time_since_spawn;

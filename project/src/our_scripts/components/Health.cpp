@@ -38,13 +38,13 @@ Health::takeDamage(int damage)
 	auto tr = new Transform(_tr->getPos(), { 0.0f,0.0f },0.0f,0.0f);
 	auto img = new dyn_image(
 		rect_f32{ {0, 0}, {1, 1} },
-		*new rect_component( 0, 0, 0.2, 0.1),
+		*new rect_component( 0, 0, damage >= 10 ? 1.0 : 0.5, 0.9),
 		Game::Instance()->get_mngr()->getComponent<camera_component>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA))->cam,
 		*new Texture(
 			sdlutils().renderer(),
 			std::to_string(damage),
 			sdlutils().fonts().at("ARIAL16"),
-			SDL_Color(200, 200, 200, 255)
+			SDL_Color(255, 50, 20, 255)
 		),
 		*tr);
 	auto popup = new DamagePopup();
