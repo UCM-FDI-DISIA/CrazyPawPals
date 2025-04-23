@@ -390,7 +390,7 @@ void SelectionMenuScene::set_concrete_deck_info(const std::list<Card*>& cl) {
 }
 void SelectionMenuScene::create_enter_button() {
     GameStructs::ButtonProperties bp = {
-         { {0.35f, 0.4f},{0.35f, 0.25f} },
+         { {0.4f, 0.4f},{0.2f, 0.15f} },
          0.0f, "new_round", ecs::grp::UI
     };
     auto* mngr = Game::Instance()->get_mngr();
