@@ -65,6 +65,7 @@ enum network_message_payload_type {
 };
 using network_message_payload_type_option = uint8_t;
 
+
 template <typename T, typename = std::enable_if_t<std::is_trivially_copyable_v<T>>>
 struct network_message_payload {
     network_message_payload_type_option type;
