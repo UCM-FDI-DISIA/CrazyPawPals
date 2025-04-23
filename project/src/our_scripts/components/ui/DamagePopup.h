@@ -20,6 +20,6 @@ private:
     //dyn_image* _img;
 
     uint32_t _time_since_spawn;
-    const uint32_t _total_time = 1000;
-    const uint32_t _movement_time = 500;
+    const uint32_t _total_time = 700; // time the popup is active for 
+    const uint32_t _movement_time = 500; // time the popup is in motion for
 };
