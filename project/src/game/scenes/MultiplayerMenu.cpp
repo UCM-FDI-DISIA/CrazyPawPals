@@ -16,17 +16,66 @@
 
 MultiplayerMenu::MultiplayerMenu() : Scene(ecs::scene::MULTIPLAYERMENUSCENE)
 {
-    create_static_background(&sdlutils().images().at("background"));
-
-    GameStructs::ButtonProperties buttonPropTemplate = {
-        { {0.35f, 0.22f},{0.30f, 0.25f} },
-        0.0f, ""
-    };
+    create_static_background(&sdlutils().images().at("selection"));
 
     //Button back
-    GameStructs::ButtonProperties backB = buttonPropTemplate;
+    GameStructs::ButtonProperties backB = {
+        { {0.025f, 0.025f},{0.10f, 0.07f} },
+        0.0f, ""
+    };
     backB.sprite_key = "back2";
     create_back_button(backB);
+
+    //Button play
+    GameStructs::ButtonProperties playB = {
+        { {0.35f, 0.75f}, { 0.30f, 0.25f } },
+            0.0f, ""
+    };
+    playB.sprite_key = "enter_game";
+    create_play_button(playB);
+
+    // --- BUTTONS FOR SKINS ---
+     //Button mimi
+    GameStructs::ButtonProperties skinMimiB = {
+        { {0.2f, 0.15f}, { 0.15f, 0.25f } },
+            0.0f, ""
+    };
+    skinMimiB.sprite_key = "mimibutton";
+    create_skin_button(skinMimiB);
+
+    //Button piu
+    GameStructs::ButtonProperties skinPiuB = {
+        { {0.2f, 0.5f}, { 0.15f, 0.25f } },
+            0.0f, ""
+    };
+    skinPiuB.sprite_key = "piubutton";
+    create_skin_button(skinPiuB);
+
+
+    // --- BUTTONS ABOUT MULTIPLAYER ---
+    //Button host
+    GameStructs::ButtonProperties hostB = {
+        { {0.5f, 0.15f}, { 0.20f, 0.15f } },
+            0.0f, ""
+    };
+    hostB.sprite_key = "host";
+    create_host_button(hostB);
+
+    //Button copy ip
+    GameStructs::ButtonProperties copyB = {
+        { {0.7f, 0.15f}, { 0.20f, 0.15f } },
+            0.0f, ""
+    };
+    copyB.sprite_key = "copyip";
+    create_copy_ip_button(copyB);
+
+    //Button client
+    GameStructs::ButtonProperties clientB = {
+        { {0.5f, 0.35f}, { 0.20f, 0.15f } },
+            0.0f, ""
+    };
+    clientB.sprite_key = "client";
+    create_client_button(clientB);
 
 }
 
@@ -107,6 +156,8 @@ void MultiplayerMenu::create_host_button(const GameStructs::ButtonProperties& bp
         imgComp->swap_textures();
         
         //TODO
+        std::cout << "You are the host.";
+        //Activates the button regarding copy ip
 
         });
 
@@ -141,6 +192,9 @@ void MultiplayerMenu::create_copy_ip_button(const GameStructs::ButtonProperties&
         imgComp->swap_textures();
 
         //TODO
+        std::cout << "Your ip is copied.";
+        //Sends it to players
+
 
         });
 
@@ -174,7 +228,10 @@ void MultiplayerMenu::create_client_button(const GameStructs::ButtonProperties& 
         imgComp->_filter = false;
         imgComp->swap_textures();
 
+
         //TODO
+        std::cout << "Your are a client.";
+        //Activates the button regarding enter ip
 
         });
 
@@ -225,4 +282,36 @@ void MultiplayerMenu::create_back_button(const GameStructs::ButtonProperties& bp
 
 void MultiplayerMenu::create_skin_button(const GameStructs::ButtonProperties& bp)
 {
+    auto* mngr = Game::Instance()->get_mngr();
+    auto e = create_button(bp);
+
+    auto imgComp = mngr->addComponent<ImageForButton>(e,
+        &sdlutils().images().at(bp.sprite_key),
+        &sdlutils().images().at(bp.sprite_key + "_selected"),
+        bp.rect,
+        0,
+        Game::Instance()->get_mngr()->getComponent<camera_component>(
+            Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA))->cam
+    );
+
+    auto buttonComp = mngr->getComponent<Button>(e);
+    buttonComp->connectClick([buttonComp, imgComp, mngr]() {
+        imgComp->_filter = false;
+        imgComp->swap_textures();
+
+        //TODO
+        std::cout << "You choosed your skin.";
+        //Sends it to players
+
+        });
+
+    buttonComp->connectHover([buttonComp, imgComp]() {
+        imgComp->_filter = true;
+        imgComp->swap_textures();
+        });
+
+    buttonComp->connectExit([buttonComp, imgComp]() {
+        imgComp->_filter = false;
+        imgComp->swap_textures();
+        });
 }
