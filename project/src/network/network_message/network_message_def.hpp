@@ -18,7 +18,7 @@ struct network_message_header {
     uint8_t unused : 1;
     uint8_t illegal : 7;
     network_message_type_option type;
-    network_message_header_size size_n;
+    network_message_header_size payload_size_n;
 };
 static_assert(
     sizeof(network_message_header) == 4,
@@ -31,19 +31,19 @@ inline bool network_message_header_valid(const network_message_header header) {
     return header.unused == 0 && header.illegal == network_message_header_illegal_bitpattern;
 }
 inline bool network_message_header_in_network_endian(const network_message_header header) {
-    return SDLNet_Read16(&header.size_n) == header.size_n;
+    return SDLNet_Read16(&header.payload_size_n) == header.payload_size_n;
 }
 
 inline network_message_header network_message_header_create(
     const network_message_type_option type,
-    const network_message_header_size size_h
+    const network_message_header_size payload_size_h
 ) {
     network_message_header header{
         .unused = 0,
         .illegal = network_message_header_illegal_bitpattern,
         .type = type
     };
-    SDLNet_Write16(size_h, &header.size_n);
+    SDLNet_Write16(payload_size_h, &header.payload_size_n);
     assert(
         network_message_header_valid(header) && "error: header must be valid after creation"
     );
@@ -52,12 +52,15 @@ inline network_message_header network_message_header_create(
     );
     return header;
 }
+network_message_header network_message_header_receive(TCPsocket socket);
+void network_message_header_send(TCPsocket socket, const network_message_header header);
 
 
 enum network_message_content_type {
     network_message_content_type_none = 0,
     network_message_content_type_dbg = 1 << 0,
-    network_message_content_type_print_args = 1 << 1,
+    network_message_content_dynamic = 1 << 1,
+    network_message_content_type_print_args = 1 << 2,
 };
 using network_message_content_type_option = uint8_t;
 
@@ -84,7 +87,9 @@ network_message_dbg_print<ArgumentsSize> network_message_dbg_print_str_create(
     std::string_view str
 ) {
     network_message_dbg_print<ArgumentsSize> msg;
-    msg.type = network_message_content_dbg_print_type::network_message_content_dbg_print_type_str;
+    msg.type = network_message_dbg_print<ArgumentsSize>
+        ::network_message_content_dbg_print_type
+        ::network_message_content_dbg_print_type_str;
     msg.content.args_size_n = str.size();
     assert(
         str.size() <= ArgumentsSize && "error: string size exceeds buffer size"
@@ -93,4 +98,5 @@ network_message_dbg_print<ArgumentsSize> network_message_dbg_print_str_create(
     return msg;
 }
 
-#endif 
+
+#endif
