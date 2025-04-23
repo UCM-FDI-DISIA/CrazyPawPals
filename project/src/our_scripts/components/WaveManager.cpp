@@ -251,7 +251,7 @@ void WaveManager::start_new_wave()
 
 void WaveManager::reset_wave_manager()
 {
-    _currentWave = -1;
+    _currentWave = 0;
     _event_pity = 0;
 }
 
