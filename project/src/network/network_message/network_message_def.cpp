@@ -1,5 +1,5 @@
-#include "network_message_def.h"
 #include "network_message_def.hpp"
+#include "../network_utility.hpp"
 
 extern inline bool network_message_header_valid(const network_message_header header);
 extern inline bool network_message_header_in_network_endian(const network_message_header header);

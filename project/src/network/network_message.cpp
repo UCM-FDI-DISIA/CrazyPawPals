@@ -1,4 +1,5 @@
 #include "network_message.hpp"
+#include <SDL_net.h>
 
 extern inline bool network_message_connection_client_from_host_valid(const network_message_connection_client_from_host message);
 extern inline bool network_message_connection_client_from_host_accepted(const network_message_connection_client_from_host message);

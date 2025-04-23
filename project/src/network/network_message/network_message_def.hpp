@@ -41,7 +41,8 @@ inline network_message_header network_message_header_create(
     network_message_header header{
         .unused = 0,
         .illegal = network_message_header_illegal_bitpattern,
-        .type = type
+        .type = type,
+        .payload_size_n = 0,
     };
     SDLNet_Write16(payload_size_h, &header.payload_size_n);
     assert(
