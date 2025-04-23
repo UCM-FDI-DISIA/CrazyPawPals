@@ -52,7 +52,7 @@ struct network_message_pack {
 template <typename T>
 network_message_pack<T> network_message_pack_create(
     const network_message_type_option header_type,
-    const network_message_content_type_option content_type,
+    const network_message_payload_type_option content_type,
     const T &content
 ) {
     const network_message_pack<T> message{
@@ -60,7 +60,7 @@ network_message_pack<T> network_message_pack_create(
             header_type,
             sizeof(network_message_payload<T>)
         ),
-        .content = network_message_payload<T>{
+        .payload = network_message_payload<T>{
             .type = content_type,
             .content = content,
         },

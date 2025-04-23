@@ -57,45 +57,36 @@ network_message_header network_message_header_receive(TCPsocket socket);
 void network_message_header_send(TCPsocket socket, const network_message_header header);
 
 
-enum network_message_content_type {
-    network_message_content_type_none = 0,
-    network_message_content_type_dbg = 1 << 0,
-    network_message_content_dynamic = 1 << 1,
-    network_message_content_type_print_args = 1 << 2,
+enum network_message_payload_type {
+    network_message_payload_type_none = 0,
+    network_message_payload_type_dbg = 1 << 0,
+    network_message_payload_dynamic = 1 << 1,
+    network_message_payload_type_print_args = 1 << 2,
 };
-using network_message_content_type_option = uint8_t;
+using network_message_payload_type_option = uint8_t;
 
 template <typename T, typename = std::enable_if_t<std::is_trivially_copyable_v<T>>>
 struct network_message_payload {
-    network_message_content_type_option type;
+    network_message_payload_type_option type;
     T content;
 };
 
 template <size_t ArgumentsSize>
-struct network_message_content_dbg_print {
+struct network_message_payload_dbg_print {
     size_t args_size_n;
-    enum network_message_content_dbg_print_type {
-        network_message_content_dbg_print_type_none = 0,
-        network_message_content_dbg_print_type_str
-    } type;
     std::array<uint8_t, ArgumentsSize> args;
 };
-template <size_t ArgumentsSize>
-using network_message_dbg_print = network_message_payload<network_message_content_dbg_print<ArgumentsSize>>;
 
 template <size_t ArgumentsSize>
-network_message_dbg_print<ArgumentsSize> network_message_dbg_print_str_create(
+network_message_payload_dbg_print<ArgumentsSize> network_message_payload_dbg_print_create(
     std::string_view str
 ) {
-    network_message_dbg_print<ArgumentsSize> msg;
-    msg.type = network_message_dbg_print<ArgumentsSize>
-        ::network_message_content_dbg_print_type
-        ::network_message_content_dbg_print_type_str;
-    msg.content.args_size_n = str.size();
+    network_message_payload_dbg_print<ArgumentsSize> msg;
+    msg.args_size_n = str.size();
     assert(
         str.size() <= ArgumentsSize && "error: string size exceeds buffer size"
     );
-    std::copy(str.begin(), str.end(), msg.content.args.begin());
+    std::copy(str.begin(), str.end(), msg.args.begin());
     return msg;
 }
 

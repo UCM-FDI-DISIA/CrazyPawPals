@@ -34,6 +34,8 @@
 #include <cassert>
 #include <cstdlib>
 
+#include "../network/network_message.hpp"
+
 #ifdef GENERATE_LOG
 #include "../our_scripts/log_writer_to_csv.hpp"
 #endif
@@ -198,7 +200,72 @@ bool Game::init() {
 }
 
 static void game_start_network_dbg(network_context &ctx) {
-	// TODO
+	switch (ctx.profile_status) {
+	case network_context_profile_status_none: 
+		break;
+	case network_context_profile_status_host: {
+		network_context_host_connect_alloc(ctx.profile.host);
+
+		while (true) {
+			if (SDLNet_CheckSockets(ctx.profile.host.clients_host_set, 60 * 1000) > 0) {
+				if (SDLNet_SocketReady(ctx.profile.host.host_socket)) {
+					network_connection_size connection_index;
+					network_context_host_accept_connection_status_flags status = network_context_host_accept_connection(
+						ctx.profile.host,
+						connection_index
+					);
+					if (status & network_context_host_accept_connection_status_accepted) {
+						std::cout << "Accepted connection. Connection index: " << connection_index << std::endl;
+					}
+					else if (status & network_context_host_accept_connection_status_rejected) {
+						std::cout << "Rejected connection" << std::endl;
+					}
+					
+					if (status & network_context_host_accept_connection_status_full) {
+						std::cout << "Connection full" << std::endl;
+					}
+					else if (status & network_context_host_accept_connection_status_error) {
+						std::cerr << "Error accepting connection" << std::endl;
+					}
+				}
+				for (network_connection_size i = 0; i < ctx.profile.host.sockets_to_clients.connection_count; ++i) {
+					TCPsocket &connection = ctx.profile.host.sockets_to_clients.connections[i];
+					if (SDLNet_SocketReady(connection)) {
+						network_message_pack<network_message_payload_dbg_print<256>> message =
+							network_message_pack_receive_static<network_message_payload_dbg_print<256>>(
+							connection
+						);
+						if (message.payload.type == network_message_payload_type_print_args) {
+							message.payload.content.args[message.payload.content.args_size_n] = '\0';
+							std::cout << "Received message: " << message.payload.content.args.data() << std::endl;
+						}
+					}
+				}
+			}
+		}
+		break;
+	}
+	case network_context_profile_status_client: {
+		network_context_client_connect_alloc(ctx.profile.client);
+		network_message_pack_send(
+			ctx.profile.client.socket_to_master,
+			network_message_pack_create(
+				network_message_type_message,
+				network_message_payload_type_print_args,
+				network_message_payload_dbg_print_create<256>(
+					"Hello from client!"
+				)
+			)
+		);
+		// while (true) {
+		// 	if (SDLNet_CheckSockets(ctx.profile.client.client_set,))
+		// }
+	}
+	default: {
+		assert(false && "fatal error: invalid network context profile status");
+		std::exit(EXIT_FAILURE);
+	}
+	}
 }
 void Game::start() {
 
