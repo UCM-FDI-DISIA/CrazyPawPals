@@ -5,6 +5,9 @@
 #include "rendering/dyn_image.hpp"
 #include "rendering/dyn_image_with_frames.hpp"
 #include <algorithm>
+#include "ui/DamagePopup.h"
+#include "movement/Transform.h"
+#include "rendering/camera_component.hpp"
 #ifdef GENERATE_LOG
 #include "../../our_scripts/log_writer_to_csv.hpp"
 #endif
@@ -15,6 +18,7 @@ Health::~Health() {};
 
 void Health::initComponent()
 {
+	_tr = Game::Instance()->get_mngr()->getComponent<Transform>(_ent);
 	_dy = Game::Instance()->get_mngr()->getComponent<dyn_image>(_ent);
 	if (!_dy) _dy = Game::Instance()->get_mngr()->getComponent<dyn_image_with_frames>(_ent);
 	
@@ -28,7 +32,25 @@ Health::heal(int health) {
 int Health::getMaxHealth() const { return _maxHealth; }
 
 void
-Health::takeDamage(int damage) {
+Health::takeDamage(int damage) 
+{
+	// damage popup
+	auto tr = new Transform(_tr->getPos(), { 0.0f,0.0f },0.0f,0.0f);
+	auto img = new dyn_image(
+		rect_f32{ {0, 0}, {1, 1} },
+		*new rect_component( 0, 0, damage >= 10 ? 1.0 : 0.5, 0.9),
+		Game::Instance()->get_mngr()->getComponent<camera_component>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA))->cam,
+		*new Texture(
+			sdlutils().renderer(),
+			std::to_string(damage),
+			sdlutils().fonts().at("ARIAL16"),
+			SDL_Color(255, 50, 20, 255)
+		),
+		*tr);
+	auto popup = new DamagePopup();
+	auto ent = Game::Instance()->get_mngr()->addEntity(ecs::scene::GAMESCENE, ecs::grp::DEFAULT);
+	Game::Instance()->get_mngr()->addExistingComponent(ent, tr, img, popup);
+	
 	if (_shield <= damage) {
 		damage -= _shield;
 		_shield = 0;
