@@ -25,7 +25,7 @@ public:
 		NUM_SCENE,
 	};
 	friend Singleton<Game>;
-	virtual ~Game();
+	virtual ~Game() override;
 	bool init();
 	void start();
 

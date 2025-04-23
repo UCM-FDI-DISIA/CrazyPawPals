@@ -7,6 +7,7 @@
 #include <string>
 #include <cassert>
 #include <iostream>
+#include <cstdint>
 
 #include "Font.h"
 
@@ -87,7 +88,7 @@ public:
 	// with rotation
 	inline void render(const SDL_Rect &dest, float rotation) {
 		SDL_Rect src = { 0, 0, _width, _height };
-		render(src, dest, rotation);
+		render(src, dest, double(rotation));
 	}
 
 	inline auto &&get_texture() {
@@ -95,7 +96,7 @@ public:
 	}
 
 	inline void apply_filter(int r, int g, int b) {
-		SDL_SetTextureColorMod(_texture, r, g, b);
+		SDL_SetTextureColorMod(_texture, uint8_t(r), uint8_t(g), uint8_t(b));
 	}
 
 private:

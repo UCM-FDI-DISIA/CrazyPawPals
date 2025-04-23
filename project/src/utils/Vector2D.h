@@ -5,6 +5,7 @@
 #include <cassert>
 #include <cmath>
 #include <ostream>
+#include <utility>
 
 /*
  * A class implementing a 2-dimensional vector and corresponding
@@ -17,23 +18,11 @@ class Vector2D {
 public:
 
 	// various constructors
-	Vector2D() noexcept :
+	constexpr Vector2D() noexcept :
 			_x(), _y() {
 	}
-
-	Vector2D(const Vector2D &v) noexcept :
-			_x(v.getX()), _y(v.getY()) {
-	}
-
-	Vector2D(Vector2D &&v) noexcept :
-			_x(v.getX()), _y(v.getY()) {
-	}
-
-	Vector2D(float x, float y) noexcept :
+	constexpr Vector2D(float x, float y) noexcept :
 			_x(x), _y(y) {
-	}
-
-	~Vector2D() {
 	}
 
 	// various getters
@@ -63,14 +52,7 @@ public:
 		_x = v._x;
 		_y = v._y;
 	}
-
-	// copy assignment
-	inline Vector2D& operator=(const Vector2D &v) noexcept {
-		_x = v._x;
-		_y = v._y;
-		return *this;
-	}
-
+	
 	// v[0] is the first coordinate and v[1] is the second
 	inline float& operator[](int i) noexcept {
 		assert(i == 0 || i == 1);
@@ -84,12 +66,12 @@ public:
 	}
 
 	inline bool operator==(const Vector2D& v) const {
-		return _x == v._x && _y == v._y;
+		return std::equal_to<float>()(_x, v._x)
+			&& std::equal_to<float>()(_y, v._y);
 	}
 
 	inline bool operator!=(const Vector2D& v) const {
-		return !(_x == v._x && _y == v._y);
-		
+		return !(*this == v);
 	}
 	// ** various operations
 
@@ -100,7 +82,8 @@ public:
 
 	// vector in the same direction of length 1
 	inline Vector2D normalize() const {
-		if (this->_x == 0 && this->_y == 0)
+		constexpr static const Vector2D zero = {0, 0};
+		if (*this == zero)
 			return *this;
 		else
 			return *this / magnitude();

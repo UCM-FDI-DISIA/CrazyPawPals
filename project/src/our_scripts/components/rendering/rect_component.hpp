@@ -6,7 +6,7 @@
 
 
 struct rect_component : public ecs::Component {
-    __CMPID_DECL__(ecs::cmp::RECT);
+    __CMPID_DECL__(ecs::cmp::RECT)
     rect_f32 rect;
 
     inline rect_component(const rect_f32 rect) : rect(rect) {}

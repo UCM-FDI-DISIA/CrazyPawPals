@@ -39,7 +39,7 @@ public:
 	}
 
 	inline int play(int loops = 0, int channel = -1) const {
-		_CHECK_CHANNEL_(channel);
+		_CHECK_CHANNEL_(channel)
 		assert(loops >= -1);
 		return Mix_PlayChannel(channel, _chunk, loops);
 	}
@@ -52,22 +52,22 @@ public:
 	// static methods for sound effects
 	//
 	inline static void pauseChannel(int channel = -1) {
-		_CHECK_CHANNEL_(channel);
+		_CHECK_CHANNEL_(channel)
 		Mix_Pause(channel);
 	}
 
 	inline static void resumeChannel(int channel = -1) {
-		_CHECK_CHANNEL_(channel);
+		_CHECK_CHANNEL_(channel)
 		Mix_Resume(channel);
 	}
 
 	inline static void haltChannel(int channel = -1) {
-		_CHECK_CHANNEL_(channel);
+		_CHECK_CHANNEL_(channel)
 		Mix_HaltChannel(channel);
 	}
 
 	inline static int setChannelVolume(int volume, int channel = -1) {
-		_CHECK_CHANNEL_(channel);
+		_CHECK_CHANNEL_(channel)
 		assert(volume >= 0 && volume <= 128);
 		return Mix_Volume(channel, volume);
 	}

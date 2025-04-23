@@ -56,6 +56,32 @@ void network_context_host_connect_alloc(network_context_host &host) {
     assert(network_context_host_connected(host) && "fatal error: network_context_host_connect_alloc invalid");
 }
 
+void network_context_host_destroy(network_context_host &host) {
+    assert(network_context_host_connected(host) && "error: host context must be connected before destroying");
+    
+    for (network_connection_size i = 0; i < host.sockets_to_clients.connection_count; ++i) {
+        TCPsocket &connection = host.sockets_to_clients.connections[i];
+        assert(connection != nullptr && "fatal error: connection must not be null before destroying");
+        network_utility_sdlnet_drain_and_close(connection);
+        connection = nullptr;
+    }
+    for (network_connection_size i = host.sockets_to_clients.connection_count; i < host.sockets_to_clients.connections.size(); ++i) {
+        assert(
+            host.sockets_to_clients.connections[i] == nullptr
+            && "fatal error: connection must be null after destroying"
+        );
+    }
+    host.sockets_to_clients.connection_count = 0;
+
+    SDLNet_FreeSocketSet(host.clients_host_set);
+    network_utility_sdlnet_drain_and_close(host.host_socket);
+    host.host_socket = nullptr;
+    host.clients_host_set = nullptr;
+    host.ip_self.host = INADDR_NONE;
+    assert(!network_context_host_connected(host) && "fatal error: network_context_host_destroy invalid");
+    assert(!network_context_host_resolved(host) && "fatal error: network_context_host_destroy invalid");
+}
+
 network_context_host_accept_connection_status_flags network_context_host_accept_connection(
     network_context_host &host,
     network_connection_size &out_connection_index
@@ -74,7 +100,7 @@ network_context_host_accept_connection_status_flags network_context_host_accept_
             if (send_result == network_utility_sdl_net_failure) {
                 assert(false && "fatal error: SDLNet_TCP_Send failed");
                 std::exit(EXIT_FAILURE);
-            } else if (send_result != sizeof(rejection_message)) {
+            } else if (send_result != int(sizeof(rejection_message))) {
                 assert(false && "fatal error: SDLNet_TCP_Send invalid number of bytes sent");
                 std::exit(EXIT_FAILURE);
             }
@@ -97,7 +123,7 @@ network_context_host_accept_connection_status_flags network_context_host_accept_
             if (add_socket_result == network_utility_sdl_net_failure) {
                 assert(false && "fatal error: SDLNet_TCP_AddSocket failed");
                 std::exit(EXIT_FAILURE);
-            } else if (add_socket_result != host.sockets_to_clients.connection_count + 1) {
+            } else if (add_socket_result != int(host.sockets_to_clients.connection_count + 1)) {
                 assert(
                     false
                     && "fatal error: SDLNet_TCP_AddSocket invalid number of sockets added."
@@ -148,6 +174,18 @@ network_context_client network_context_client_create(const char *host, const uin
     };
     assert(network_context_client_resolved(client) && "fatal error: network_context_client_create invalid");
     return client;
+}
+
+void network_context_client_destroy(network_context_client &client) {
+    assert(network_context_client_connected(client) && "error: client context must be connected before destroying");
+    
+    SDLNet_FreeSocketSet(client.client_set);
+    network_utility_sdlnet_drain_and_close(client.socket_to_master);
+    client.socket_to_master = nullptr;
+    client.client_set = nullptr;
+    client.ip_host.host = INADDR_NONE;
+    assert(!network_context_client_connected(client) && "fatal error: network_context_client_destroy invalid");
+    assert(!network_context_client_resolved(client) && "fatal error: network_context_client_destroy invalid");
 }
 
 network_context_client_connect_status_flags network_context_client_connect_alloc(network_context_client &client) {

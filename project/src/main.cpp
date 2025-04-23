@@ -1,7 +1,7 @@
 // This file is part of the course TPV2@UCM - Samir Genaim
-#define _CRTDBG_MAP_ALLOC
+// #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
-#include<crtdbg.h>
+#include <crtdbg.h>
 #include <iostream>
 
 #include "game/Game.h"

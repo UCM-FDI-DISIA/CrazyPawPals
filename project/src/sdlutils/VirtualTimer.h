@@ -16,11 +16,11 @@ struct VirtualTimer {
 	}
 
 	inline Uint32 currRealTime() const {
-		return current_time;
+		return uint32_t(current_time);
 	}
 
 	inline Uint32 currTime() const {
-		return current_time;
+		return uint32_t(current_time);
 	}
 
 	uint64_t current_time;

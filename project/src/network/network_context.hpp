@@ -20,6 +20,7 @@ inline bool network_context_host_connected(const network_context_host &host) {
 }
 network_context_host network_context_host_create(const uint16_t port);
 void network_context_host_connect_alloc(network_context_host &host);
+void network_context_host_destroy(network_context_host &host);
 
 enum network_context_host_accept_connection_status {
     network_context_host_accept_connection_status_none = 0,
@@ -48,6 +49,8 @@ inline bool network_context_client_connected(const network_context_client &clien
     return client.socket_to_master != nullptr;
 }
 network_context_client network_context_client_create(const char *host, const uint16_t port);
+void network_context_client_destroy(network_context_client &client);
+
 
 enum network_context_client_connect_status {
     network_context_client_connect_status_none = 0,

@@ -55,7 +55,7 @@ public:
 		return _mngr;
 	}
 	*/
-	inline int get_currCmps_size() { return _currCmps.size(); }
+	inline int get_currCmps_size() { return int(_currCmps.size()); }
 	inline int get_scene() { return _sId; }
 
 private:

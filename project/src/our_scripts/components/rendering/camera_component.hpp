@@ -8,7 +8,7 @@
 #include "../movement/Transform.h"
 
 struct camera_component : public ecs::Component {
-	__CMPID_DECL__(ecs::cmp::CAMERA);
+	__CMPID_DECL__(ecs::cmp::CAMERA)
 	camera_screen cam;
 
 	inline camera_component(const camera_screen cam) : cam(cam) {}
@@ -16,7 +16,7 @@ struct camera_component : public ecs::Component {
 };
 
 struct camera_follow : public ecs::Component {
-	__CMPID_DECL__(ecs::cmp::CAMERA_FOLLOW);
+	__CMPID_DECL__(ecs::cmp::CAMERA_FOLLOW)
 	camera_follow_descriptor descriptor;
 	camera_component &cam;
 	const Transform &target;
@@ -27,7 +27,7 @@ struct camera_follow : public ecs::Component {
 };
 
 struct camera_clamp : public ecs::Component {
-	__CMPID_DECL__(ecs::cmp::CAMERA_CLAMP);
+	__CMPID_DECL__(ecs::cmp::CAMERA_CLAMP)
 	camera_clamp_descriptor clamp;
 	camera_component &cam;
 

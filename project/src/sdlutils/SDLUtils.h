@@ -65,7 +65,7 @@ public:
 		}
 	};
 
-	virtual ~SDLUtils();
+	virtual ~SDLUtils() override;
 
 	// cannot copy/move
 	SDLUtils(SDLUtils&) = delete;

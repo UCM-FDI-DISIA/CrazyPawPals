@@ -263,7 +263,7 @@ public:
 	inline void change_ent_scene(entity_t e, ecs::sceneId_t new_scene_id) {
 		//Quitar de escena actual
 		
-		//añadir a la cola de otra escena
+		//anyadir a la cola de otra escena
 		e->_sId = new_scene_id;
 		_pendingEntities.push_back(e);
 	}

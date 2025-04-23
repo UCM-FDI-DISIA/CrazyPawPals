@@ -1,6 +1,8 @@
 #ifndef NETWORK_MESSAGE_HPP
 #define NETWORK_MESSAGE_HPP
 
+#include "network_message/network_message_def.hpp"
+
 #include <cstdint>
 #include <cassert>
 
@@ -31,5 +33,18 @@ inline network_message_connection_client_from_host network_message_connection_cl
         .unused = 0,
     };
 }
+
+using network_message_connection = network_message_connection_client_from_host;
+union network_message_header_union {
+    network_message_connection connection_header_message;
+    network_message_header header;
+};
+
+
+template <typename T>
+struct network_message_pack {
+    network_message_header header;
+    network_message_payload<T> content;
+};
 
 #endif

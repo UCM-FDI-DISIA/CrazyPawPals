@@ -18,7 +18,7 @@
 #endif
 
 struct rigidbody_component : public ecs::Component {
-    __CMPID_DECL__(ecs::cmp::RIGIDBODY);
+    __CMPID_DECL__(ecs::cmp::RIGIDBODY)
     rect_f32 rect;
     inverse_mass_f32 inverse_mass;
     float restitution_coefficient;
@@ -43,7 +43,7 @@ enum collisionable_option {
 typedef uint8_t collisionable_flags;
 
 struct collisionable : public ecs::Component {
-    __CMPID_DECL__(ecs::cmp::COLLISIONABLE);
+    __CMPID_DECL__(ecs::cmp::COLLISIONABLE)
 
     Transform &transform;
     rigidbody_component &rigidbody;
@@ -77,7 +77,7 @@ static constexpr int8_t collision_manifolds_capacity = 32;
 
 template <ecs::cmp::cmpId COMPONENT_ID>
 struct collision_manifolds : ecs::Component {
-    __CMPID_DECL__(COMPONENT_ID);
+    __CMPID_DECL__(COMPONENT_ID)
     std::array<collision_manifold, collision_manifolds_capacity> manifolds;
     uint8_t count = 0;
     /*
@@ -111,7 +111,7 @@ struct on_collision : public ecs::Component {
     void update(uint32_t delta_time) override {
         (void)delta_time;
         static_assert((collision_manifolds_capacity & (collision_manifolds_capacity - 1)) == 0);
-        for (ptrdiff_t i = ((ptrdiff_t)manifolds->count - 1) & (manifolds->manifolds.size() - 1); i >= 0; --i) {
+        for (ptrdiff_t i = (ptrdiff_t(manifolds->count) - 1) & (manifolds->manifolds.size() - 1); i >= 0; --i) {
             auto& my_manifold = manifolds->manifolds[i];
             if (my_manifold.collision_tick != last_collision_tick[i]) {
                 static_cast<OnCollisionComponent*>(this)->on_contact(my_manifold);
@@ -137,7 +137,7 @@ struct on_trigger : public ecs::Component {
     void update(uint32_t delta_time) override {
         (void)delta_time;
         static_assert((collision_manifolds_capacity & (collision_manifolds_capacity - 1)) == 0);
-        for (ptrdiff_t i = ((ptrdiff_t)manifolds->count - 1) & (manifolds->manifolds.size() - 1); i >= 0; --i) {
+        for (ptrdiff_t i = (ptrdiff_t(manifolds->count) - 1) & (manifolds->manifolds.size() - 1); i >= 0; --i) {
             auto& my_manifold = manifolds->manifolds[i];
             if (my_manifold.collision_tick != last_collision_tick[i]) {
                 static_cast<OnTriggerComponent*>(this)->on_contact(my_manifold);

@@ -1,9 +1,5 @@
 cmake_minimum_required(VERSION 3.15..3.30)
 
-enable_language(CXX)
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
  add_definitions(-D_CRTDBG_MAP_ALLOC)
  endif()
@@ -21,14 +17,24 @@ else()
         -Wall
         -Wextra
         -Wpedantic
-        -Werror
+        # -Werror
+
+        -Wno-c++98-compat
+        -Wno-c++98-compat-pedantic
+        -Wno-reserved-identifier
+
+        -Wno-shadow-field
+        -Wno-shadow-field-in-constructor
+
+        -Wno-c++20-extensions
     )
 endif()
 
+project(CrazyPawPals C CXX)
+    set(CMAKE_CXX_STANDARD 20)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
+    set(CMAKE_CXX_EXTENSIONS OFF)
 
-
-
-project(CrazyPawPals)
     set(
         CrazyPawPals_PROJECT_DIRECTORY
         ${CMAKE_CURRENT_SOURCE_DIR}/project
@@ -91,6 +97,7 @@ project(CrazyPawPals)
     )
     target_include_directories(
         ${PROJECT_NAME}
+        SYSTEM
         PUBLIC
         ${SDL2_DIRECTORY}/include
         ${SDL2_IMAGE_DIRECTORY}/include

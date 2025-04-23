@@ -16,8 +16,8 @@ public:
 		_music = Mix_LoadMUS(fileName.c_str());
 		/*assert(_music != nullptr);*/
 		if (_music == nullptr) {
-			std::cerr << "Error cargando música (" << fileName << "): " << Mix_GetError() << std::endl;
-			assert(false); // Forzar el fallo con más contexto
+			std::cerr << "Error cargando musica (" << fileName << "): " << Mix_GetError() << std::endl;
+			assert(false); // Forzar el fallo con mas contexto
 		}
 
 	}
