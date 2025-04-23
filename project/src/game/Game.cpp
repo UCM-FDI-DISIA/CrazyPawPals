@@ -134,8 +134,8 @@ bool Game::init() {
 	_scenes[MULTIPLAYERMENU] = new MultiplayerMenu();
 	_scenes[MULTIPLAYERMENU]->initScene();
 	
-	//_scenes[VICTORY] = new VictoryScene(); 
-	//_scenes[VICTORY]->initScene();
+	_scenes[VICTORY] = new VictoryScene(); 
+	_scenes[VICTORY]->initScene();
 
 	change_Scene(MAINMENU);
 	return true;
