@@ -1,4 +1,4 @@
-#include "MultiplayerMenuScene.h"
+#include "MultiplayerMenu.h"
 #include "../../our_scripts/components/ui/Button.h"
 #include "../../our_scripts/components/rendering/transformless_dyn_image.h"
 #include "../../our_scripts/components/rendering/ImageForButton.h"
@@ -26,7 +26,7 @@ MultiplayerMenu::MultiplayerMenu() : Scene(ecs::scene::MULTIPLAYERMENUSCENE)
     //Button back
     GameStructs::ButtonProperties backB = buttonPropTemplate;
     backB.sprite_key = "back2";
-    create_start_button(backB);
+    create_back_button(backB);
 
 }
 

@@ -30,13 +30,13 @@ MainMenuScene::MainMenuScene() : Scene(ecs::scene::MAINMENUSCENE)
     //Button multiplauer
     buttonPropTemplate.rect.position.y += 0.18f;
     GameStructs::ButtonProperties multi = buttonPropTemplate;
-    multi.sprite_key = "controls_button";
-    create_controls_button(multi);
+    multi.sprite_key = "multiplayer";
+    create_multiplayer_button(multi);
 
     //Button tutorial
     buttonPropTemplate.rect.position.y += 0.18f;
     GameStructs::ButtonProperties controlsB = buttonPropTemplate;
-    controlsB.sprite_key = "multiplayer";
+    controlsB.sprite_key = "controls_button";
     create_controls_button(controlsB);
 
     //Button exit
