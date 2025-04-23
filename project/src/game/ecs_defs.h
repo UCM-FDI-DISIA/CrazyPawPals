@@ -50,7 +50,8 @@
 	TRANSFORMLESS_DYN_IMAGE, \
 	TRIGGER_MANIFOLD, \
 	WEAPON, \
-	WAVEMANAGER
+	WAVEMANAGER, \
+	DAMAGE_POPUP
 
 // Groups list - must have at least one element
 //
