@@ -44,6 +44,8 @@ void
 WaveManager::initComponent() {
 	fog = Game::Instance()->get_mngr()->getComponent<Fog>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::FOGGROUP));
     assert(fog != nullptr);
+
+	nPlayers = Game::Instance()->get_mngr()->getEntities(ecs::grp::PLAYER).size();
 }
 
 bool WaveManager::can_spawn_next_enemy()
@@ -80,7 +82,7 @@ void WaveManager::erase_all_bullets()
 //Chooses enemies in _enemy_types_for_current_wave
 void WaveManager::initialize_next_wave_params(bool normal_wave)
 {
-    tokens_for_this_wave = _currentWave * spawn_tokens_gained_per_wave + spawn_tokens_at_wave_0;
+	tokens_for_this_wave = (_currentWave * spawn_tokens_gained_per_wave) * (nPlayers == 1 ? 1 : nPlayers / 1.3f) + spawn_tokens_at_wave_0;
 
     uint8_t cheaper_enemy;
     for (uint8_t i = 0; i < 3; ++i) {
