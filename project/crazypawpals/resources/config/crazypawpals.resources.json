@@ -513,6 +513,10 @@
       "file": "resources/images/ui/buttons/start.png"
     },
     {
+      "id": "new_round_selected",
+      "file": "resources/images/ui/buttons/start_selected.png"
+    },
+    {
       "id": "next",
       "file": "resources/images/ui/buttons/next.png"
     },
