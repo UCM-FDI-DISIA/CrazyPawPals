@@ -58,108 +58,7 @@ public:
 	}
 
 	// update the state with a new event
-	inline void update(const SDL_Event &event) {
-
-		switch (event.type) {
-		case SDL_JOYAXISMOTION:
-			//std::cout << "?:  " << std::to_string(event.jaxis.axis) << std::endl;
-			//DEAD_ZONE
-			//if ((event.jaxis.value < -3200) || (event.jaxis.value > 3200))
-			//{
-				//X axis
-			switch (event.jaxis.axis) {
-			case 0: {
-				_lStickPos.setX(event.jaxis.value / 32767.0);
-				break;
-				//std::cout << "X:  " << event.jaxis.value << std::endl;
-			}
-			case 1: {
-				_lStickPos.setY(-event.jaxis.value / 32767.0);
-				break;
-				//std::cout << "Y:  " << event.jaxis.value << std::endl;
-			}
-			case 2: {
-				_rStickPos.setX(event.jaxis.value / 32767.0);
-				break;
-			}
-			case 3: {
-				_rStickPos.setY(-event.jaxis.value / 32767.0);
-				break;
-			}
-				  //LT
-			case 4: {
-				bool aux = event.jaxis.value > 0;
-				_controller_buttons_pressed[LT] = aux && !_controller_buttons_pressed[_aux_LT];
-				_controller_buttons_pressed[_aux_LT] = aux;
-				break;
-			}
-				  //RT
-			case 5: {
-				bool aux = event.jaxis.value > 0;
-				_controller_buttons_pressed[RT] = aux && !_controller_buttons_pressed[_aux_RT];
-				_controller_buttons_pressed[_aux_RT] = aux;
-				break;
-			}
-			}
-			if (abs(event.jaxis.value) > 3000) _last_active_device = CONTROLLER;
-			break;
-		case SDL_JOYBUTTONDOWN: {
-			//uint8_t i = event.jbutton.button;
-			_controller_buttons_pressed[event.jbutton.button] = true;
-			_last_active_device = CONTROLLER;
-			break;
-		}
-		case SDL_JOYBUTTONUP: {
-			//uint8_t i = event.jbutton.button;
-			_controller_buttons_pressed[event.jbutton.button] = false;
-			_last_active_device = CONTROLLER;
-			break;
-		}
-		case SDL_KEYDOWN:
-			onKeyDown(event);
-			_last_active_device = KEYBOARD;
-			break;
-		case SDL_KEYUP:
-			onKeyUp(event);
-			_last_active_device = KEYBOARD;
-			break;
-		case SDL_MOUSEMOTION:
-			onMouseMotion(event);
-			_last_active_device = KEYBOARD;
-			break;
-		case SDL_MOUSEBUTTONDOWN:
-			onMouseButtonDown(event);
-			_last_active_device = KEYBOARD;
-			break;
-		case SDL_MOUSEBUTTONUP:
-			onMouseButtonUp(event);
-			_last_active_device = KEYBOARD;
-			break;
-		case SDL_WINDOWEVENT:
-			handleWindowEvent(event);
-			break;
-		case SDL_JOYDEVICEADDED:
-			SDL_JoystickEventState(SDL_ENABLE);
-			assert(SDL_NumJoysticks() < 4);
-			for(int i = 0; i < SDL_NumJoysticks(); ++i)
-				_joystick[i] = SDL_JoystickOpen(i);
-			break;
-		default:
-			break;
-		}
-
-		//Callback managing
-		//Obtenemos el indice de nuestro enumerado, segun el evento actual
-		//si el evento no est� registrado esto devuelve -1s
-		//int mapIndex = getInputEvent(event);
-
-		//si el evento est� registrado
-		/*if (inputMap.find(mapIndex) != inputMap.end()) {
-			// llama a todas las funciones registradas en un evento especifico
-			for (SDLEventCallback callback : inputMap.at(mapIndex)) {
-				callback();
-		}*/
-	}
+	void update(const SDL_Event& event);
 
 	// refresh
 	inline void refresh() {
@@ -355,6 +254,12 @@ private:
 	Vector2D _lStickPos;
 	Vector2D _rStickPos;
 	LAST_DEVICE_ACTIVE _last_active_device = KEYBOARD;
+
+	int _joystick_dead_zone = 3000;
+
+	int16_t _time_till_next_click_ms = 500;
+	uint16_t _next_RT_click = 0;
+	uint16_t _next_LT_click = 0;
 }
 ;
 
