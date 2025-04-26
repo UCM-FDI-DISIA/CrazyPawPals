@@ -391,8 +391,8 @@ void SelectionMenuScene::set_concrete_deck_info(const std::list<Card*>& cl) {
 }
 void SelectionMenuScene::create_enter_button() {
     GameStructs::ButtonProperties bp = {
-         { {0.425f, 0.4f},{0.2f, 0.095f} },
-         0.0f, "new_round", ecs::grp::UI
+         { {0.4f, 0.4f},{0.2f, 0.15f} },
+         0.0f, "ready", ecs::grp::UI
     };
     auto* mngr = Game::Instance()->get_mngr();
     auto e = create_button(bp);
@@ -426,7 +426,7 @@ void SelectionMenuScene::update(uint32_t delta_time) {
     if (!_activate_play_button && _last_weapon_button != nullptr && _last_deck_button != nullptr) {
         auto* mngr = Game::Instance()->get_mngr();
         auto imgComp = mngr->getComponent<ImageForButton>(mngr->getHandler(ecs::hdlr::TOGAMEBUTTON));
-        imgComp->swap_textures();
+        imgComp->set_texture(&sdlutils().images().at("ready"));
         _activate_play_button = true;
     }
 }

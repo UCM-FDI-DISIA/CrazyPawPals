@@ -76,7 +76,7 @@ void RewardScene::exitScene()
         eImg->swap_textures();
         eImg->_filter = false;
     }
-    else if (_exchange) {
+    else if (_exchange || (!_exchange && _heal)) {
         auto eImg = mngr->getComponent<ImageForButton>(eb);
         eImg->destination_rect.position.x = 1.1f;
         eImg->_filter = false;
@@ -213,7 +213,7 @@ void RewardScene::change_pos(bool enter) {
 void RewardScene::create_reward_buttons() {
     float umbral = 0.2f;
     GameStructs::ButtonProperties buttonPropTemplate = {
-        { {0.45f, 0.115f}, {0.125f, 0.2f} },
+        { {0.45f, 0.18f}, {0.125f, 0.2f} },
         0.0f, "", ecs::grp::REWARDCARDS
     };
 
@@ -241,7 +241,7 @@ void RewardScene::create_reward_buttons() {
     //selected button
     buttonPropTemplate.ID = ecs::grp::UI;
     buttonPropTemplate.sprite_key = "confirm_reward";
-    buttonPropTemplate.rect.position = { 0.438f, 0.55f };
+    buttonPropTemplate.rect.position = { 0.438f, 0.57f };
     buttonPropTemplate.rect.size = { 0.15f, 0.075f };
     create_reward_selected_button(buttonPropTemplate);
 
@@ -513,16 +513,14 @@ void RewardScene::create_reward_selected_button(const GameStructs::ButtonPropert
             //heal a 50%
             int hn = phealth->getMaxHealth() * 5 / 10;
             phealth->heal(hn);
-            _selected = true;
         }
         //we only select a reward if previously we have chosen something
         else if (_lr != nullptr && !_selected) {
             imgComp->_filter = false;
             _lr->swap_textures();
-            _selected = true;
             add_new_reward_card();
         }
-
+        _selected = true;
         imgComp->destination_rect.position.x += 100.0f;
         auto imgNext = mngr->getComponent<ImageForButton>(mngr->getHandler(ecs::hdlr::NEXTROUNDREWARD));
         imgNext->destination_rect.position = { 0.35f, 0.32f };
@@ -686,7 +684,7 @@ void RewardScene::update(uint32_t delta_time) {
        auto mngr = Game::Instance()->get_mngr();
        auto imgCompConfirm = mngr->getComponent<ImageForButton>(mngr->getHandler(ecs::hdlr::CONFIRMREWARD));
        auto imgCompExchange = mngr->getComponent<ImageForButton>(mngr->getHandler(ecs::hdlr::EXCHANGEBUTTON));
-       imgCompExchange->swap_textures();
+
        imgCompExchange->destination_rect.position = { imgCompConfirm->destination_rect.position.x - 0.185f, imgCompExchange->destination_rect.position.y};
 
        imgCompConfirm->destination_rect.position = { imgCompConfirm->destination_rect.position.x + 0.185f, imgCompConfirm->destination_rect.position.y };
@@ -714,7 +712,7 @@ void RewardScene::create_next_round_button(const GameStructs::ButtonProperties& 
 void RewardScene::create_reward_info() {
     auto e = create_entity(ecs::grp::UI,
         _scene_ID,
-        new transformless_dyn_image({ { 0.315f,0.335f }, {0.4f,0.2f} },
+        new transformless_dyn_image({ { 0.315f,0.375f }, {0.4f,0.2f} },
             0,
             Game::Instance()->get_mngr()->getComponent<camera_component>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA))->cam,
             &sdlutils().images().at("initial_info")));

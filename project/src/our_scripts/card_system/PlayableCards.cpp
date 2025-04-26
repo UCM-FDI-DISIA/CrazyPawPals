@@ -385,12 +385,10 @@ CatKuzaCard::on_play(Deck& d, const Vector2D* player_position, const Vector2D* t
 	(void)d;
 	(void)player_position;
 	(void)target_position;
-	_times_since_played += 1;
+	_times_since_played++;
 	std::cout << "CatKuzaCard played " << _times_since_played << " times" << std::endl;
 	if(_times_since_played >= 3){
 		_play_destination = DESTROY;
-		std::cout << "AL descartes" << std::endl;
-
 	} 
 }
 #pragma endregion
@@ -404,7 +402,7 @@ SuperMichiCard::on_play(Deck& d, const Vector2D* player_position, const Vector2D
 	(void)d;
 	(void)player_position;
 	(void)target_position;
-	_times_since_played += 1;
+	_times_since_played++;
 	if (_times_since_played >= 10) {
 		_play_destination = DESTROY;
 	}
