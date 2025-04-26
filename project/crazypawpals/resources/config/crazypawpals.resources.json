@@ -481,8 +481,16 @@
       "file": "resources/images/ui/buttons/confirm_reward.png"
     },
     {
+      "id": "confirm_reward_selected",
+      "file": "resources/images/ui/buttons/confirm_reward_selected.png"
+    },
+    {
       "id": "exchange_reward",
       "file": "resources/images/ui/buttons/exchange_reward.png"
+    },
+    {
+      "id": "exchange_reward_selected",
+      "file": "resources/images/ui/buttons/exchange_reward_selected.png"
     },
     {
       "id": "game_over",
@@ -502,7 +510,11 @@
     },
     {
       "id": "next",
-      "file": "resources/images/ui/buttons/start.png"
+      "file": "resources/images/ui/buttons/next.png"
+    },
+    {
+      "id": "next_selected",
+      "file": "resources/images/ui/buttons/next_selected.png"
     },
     {
       "id": "start_initial",
