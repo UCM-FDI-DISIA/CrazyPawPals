@@ -272,7 +272,7 @@ void Commune::on_play(Deck& d, const Vector2D* player_position, const Vector2D* 
 	bp.life_time = 0.2;
 	bp.sprite_key = "card_commune";
 	bp.collision_filter = GameStructs::collide_with::enemy;
-	bp.damage = amp * 6+6;
+	bp.damage = amp * 8+4;
 	Game::Instance()->get_currentScene()->create_proyectile(bp, ecs::grp::BULLET);
 }
 #pragma endregion
@@ -314,7 +314,7 @@ void Fulgur::on_play(Deck& d, const Vector2D* player_position, const Vector2D* t
 	bp.life_time = 0.5;
 	bp.collision_filter = GameStructs::collide_with::enemy;
 	bp.sprite_key = "p_lighting";
-	bp.damage = 9;
+	bp.damage = 13;
 	Game::Instance()->get_currentScene()->create_proyectile(bp, ecs::grp::BULLET);
 
 	// If Primed
