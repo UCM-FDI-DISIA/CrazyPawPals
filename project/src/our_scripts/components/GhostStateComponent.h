@@ -14,11 +14,10 @@ public:
 
     GhostStateComponent();
 
-    virtual ~GhostStateComponent() {};
+    virtual ~GhostStateComponent();
 
     void initComponent() override;
 
-    void setGhostState(bool ghost);
     void change_state();
 
     inline bool isGhost() { return _isGhost; }

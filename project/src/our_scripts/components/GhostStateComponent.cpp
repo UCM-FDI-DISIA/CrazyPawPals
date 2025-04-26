@@ -13,6 +13,12 @@ GhostStateComponent::GhostStateComponent()
     :_dy(nullptr), _mc(nullptr), _mana(nullptr), _deck(nullptr), _weapon(nullptr),
     _normal_state(),_ghost_state(), _isGhost(false) {}
 
+GhostStateComponent::~GhostStateComponent()
+{
+    _dy->_current_filter = filter{ 255, 255, 255, 255 };
+    setState(_normal_state);
+}
+
 void GhostStateComponent::initComponent()
 {
     auto* manager = Game::Instance()->get_mngr();
@@ -47,11 +53,8 @@ void GhostStateComponent::initComponent()
         .reload = _normal_state.reload * 2,
         .mana_regen = _normal_state.mana_regen / 2
     };
-}
 
-void GhostStateComponent::setGhostState(bool ghost)
-{
-    if (_isGhost != ghost) change_state();
+    change_state();
 }
 
 void GhostStateComponent::change_state()

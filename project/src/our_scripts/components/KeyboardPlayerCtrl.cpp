@@ -10,9 +10,9 @@
 #include "movement/MovementController.h"
 #include "Health.h"
 #include "MythicComponent.h"
-#include "GhostStateComponent.h"
 #include "../mythic/MythicItems.h"
 #include "AnimationComponent.h"
+#include "GhostStateComponent.h"
 #ifdef GENERATE_LOG
 #include "../log_writer_to_csv.hpp"
 #endif
@@ -55,7 +55,6 @@ KeyboardPlayerCtrl::initComponent() {
     _dy = Game::Instance()->get_mngr()->getComponent<AnimationComponent>(_ent);
     assert(_dy != nullptr);
 
-    _g = Game::Instance()->get_mngr()->getComponent<GhostStateComponent>(_ent);
 }
 
 void KeyboardPlayerCtrl::update(Uint32 delta_time) {
@@ -100,13 +99,6 @@ void KeyboardPlayerCtrl::update(Uint32 delta_time) {
     }
     if (ihdlr.keyDownEvent() && ihdlr.isKeyDown(SDL_SCANCODE_Z)) {
         _my->add_mythic(new Incense());
-    }
-    if (ihdlr.keyDownEvent() && ihdlr.isKeyDown(SDL_SCANCODE_X)) {
-        _my->add_mythic(new ZoomiesInducer());
-    }
-
-    if (ihdlr.keyDownEvent() && ihdlr.isKeyDown(SDL_SCANCODE_V)) {
-        _g->change_state();
     }
     ////
 

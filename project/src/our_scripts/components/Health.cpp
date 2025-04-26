@@ -1,4 +1,4 @@
-#include "Health.h"
+﻿#include "Health.h"
 #include "../../sdlutils/SDLUtils.h"
 #include "../../ecs/Manager.h"
 #include "../../game/Game.h"
@@ -8,12 +8,13 @@
 #include "ui/DamagePopup.h"
 #include "movement/Transform.h"
 #include "rendering/camera_component.hpp"
+#include "GhostStateComponent.h"
 #ifdef GENERATE_LOG
 #include "../../our_scripts/log_writer_to_csv.hpp"
 #endif
 
 Health::Health(int maxHealth, bool isPlayer) 
-	: _is_player(isPlayer), _currentHealth(maxHealth), _maxHealth(maxHealth), _shield(0), _shieldTime(0), _dy(nullptr) {};
+	: _is_player(isPlayer), _currentHealth(maxHealth), _maxHealth(maxHealth), _shield(0), _shieldTime(0), _dy(nullptr), _tr(nullptr) {};
 Health::~Health() {};
 
 void Health::initComponent()
@@ -34,6 +35,14 @@ int Health::getMaxHealth() const { return _maxHealth; }
 void
 Health::takeDamage(int damage) 
 {
+	//si ya es fantasma no recibe damage
+	if (_is_player) {
+		auto* manager = Game::Instance()->get_mngr();
+		if (manager->hasComponent<GhostStateComponent>(_ent)) {
+			return;
+		}
+	}
+
 	// damage popup
 	auto tr = new Transform(_tr->getPos(), { 0.0f,0.0f },0.0f,0.0f);
 	auto img = new dyn_image(

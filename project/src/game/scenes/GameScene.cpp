@@ -203,7 +203,6 @@ void GameScene::enterScene()
 	d->reload();
 
 	manager.getComponent<fog_collision_component>(manager.getHandler(ecs::hdlr::FOGGROUP))->reset();
-	manager.addComponent<GhostStateComponent>(player);
 	manager.addComponent<KeyboardPlayerCtrl>(player);
 	manager.addComponent<GamePadPlayerCtrl>(player);
 	manager.addComponent<PlayerHUD>(player);
@@ -281,9 +280,9 @@ void GameScene::reset_player()
 	mngr.removeComponent<KeyboardPlayerCtrl>(player);
 	mngr.removeComponent<GamePadPlayerCtrl>(player);
 	mngr.removeComponent<PlayerHUD>(player);
+	mngr.removeComponent<GhostStateComponent>(player);
 
 	mngr.getComponent<MythicComponent>(player)->reset();
-	mngr.getComponent<GhostStateComponent>(player)->setGhostState(false);
 	mngr.getComponent<dyn_image_with_frames>(player)->isDamaged = false;
 	auto tr = mngr.getComponent<Transform>(player);
 	tr->setPos({0.0f, 0.0f});
@@ -917,7 +916,7 @@ void GameScene::spawn_ratatouille(Vector2D posVec, ecs::sceneId_t scene)
 	auto &&rigidbody = *new rigidbody_component{rect_f32{{0.0f, -0.15f}, {0.5f, 0.6f}}, mass_f32{3.0f}, 0.05f};
 	auto &&tr_a = *new Transform(ec.start_pos, ec.dir, ec.r, ec.s * randSize);
 	auto &&fll = *new Follow(ec.follow);
-	auto &&col = *new collisionable{tr_a, rigidbody, rect, collisionable_option_none};
+	auto &&col = *new collisionable{tr_a, rigidbody, rect, collisionable_option_trigger};
 	auto &&mc = *new MovementController(ec.max_speed, ec.acceleration, ec.decceleration * deccel_spawned_creatures_multi);
 	auto &&state = *new StateMachine();
 
@@ -1166,9 +1165,13 @@ void GameScene::event_callback0(const event_system::event_receiver::Msg &m)
 void GameScene::event_callback1(const event_system::event_receiver::Msg &m)
 {
 	auto &&mngr = *Game::Instance()->get_mngr();
-	reset_player();
 	deccel_spawned_creatures_multi = 1;
 	mngr.getComponent<WaveManager>(mngr.getHandler(ecs::hdlr::WAVE))->reset_wave_manager();
 
+	//si es multiplayer hay que hacer add del componente fantastma
+	/*auto player = mngr.getHandler(ecs::hdlr::PLAYER);
+	if (!mngr.hasComponent<GhostStateComponent>(player)) mngr.addComponent<GhostStateComponent>(player);*/
+	// sino se resetea al jugador y pasa al gameOver
+	reset_player();
 	Game::Instance()->change_Scene(Game::GAMEOVER);
 }
