@@ -412,7 +412,7 @@ void SelectionMenuScene::create_enter_button() {
     buttonComp->connectClick([buttonComp, mngr, imgComp,this]() {
         if (_weapon_selected && _deck_selected) {
             imgComp->_filter = false;
-            Game::Instance()->change_Scene(Game::REWARDSCENE);
+            Game::Instance()->change_Scene(Game::GAMESCENE);
         }
     }); 
     buttonComp->connectHover([buttonComp, imgComp, this]() {         
