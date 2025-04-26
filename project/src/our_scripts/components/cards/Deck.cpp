@@ -137,6 +137,7 @@ std::pair<bool, Card*> Deck::mill() noexcept
 void Deck::reload() noexcept
 {
 	if (!_is_reloading) {
+		/*
 #ifdef GENERATE_LOG
 		if (empty_hand())
 			log_writer_to_csv::Instance()->add_new_log("RELOAD STARTED", "AUTOMATIC RELOAD");
@@ -145,6 +146,7 @@ void Deck::reload() noexcept
 		}
 		times_reloaded++;
 #endif
+*/
 		//TODO -> block player action
 		_is_reloading = true;
 		_time_till_reload_finishes = _reload_time;

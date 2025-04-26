@@ -166,9 +166,11 @@ void WaveManager::spawn_next_group_of_enemies()
     for (uint8_t i = 0; i < enemy_spawn_data[enemies_premade_waves[_currentWave][enemy_index]].number_of_enemies_simultaneous_spawn; ++i) {
         esc->spawn_callback();
     }
+/*
 #ifdef GENERATE_LOG
     log_writer_to_csv::Instance()->add_new_log("SPAWN ENEMIES", "TIPO", tipoEnemigo, "Numero", std::to_string(enemy_spawn_data[_enemy_types_for_current_wave[index]].number_of_enemies_simultaneous_spawn));
 #endif
+*/
 
     delete esc;
     _numEnemies += enemy_spawn_data[enemies_premade_waves[_currentWave][enemy_index]].number_of_enemies_simultaneous_spawn;

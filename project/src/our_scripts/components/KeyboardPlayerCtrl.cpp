@@ -141,6 +141,7 @@ void KeyboardPlayerCtrl::update(Uint32 delta_time) {
             //_w->shoot(mousePos);
             if (!_dc->empty_hand() && _w->shoot(_mouse_pos)) {
                 sdlutils().soundEffects().at("player_shot").play();
+                /*
 #ifdef GENERATE_LOG
                 log_writer_to_csv::Instance()->add_new_log("M1", "CARD DISCARDED:", _dc->hand()->get_name(), "CURRENT MANA:", _m->mana_count(), "MOUSE POS", "X", _mouse_pos.getX(), "Y", _mouse_pos.getY());
                 times_m1_used++;
@@ -149,31 +150,34 @@ void KeyboardPlayerCtrl::update(Uint32 delta_time) {
                     cards_discarded_this_round[_dc->hand()->get_name()] = 1;
                 else
                     (*aux).second++;
-#endif
+#endif*/
                 //position2_f32 mouse_pos = Game::Instance()->get_mngr()->getComponent<camera_component>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA))->mouse_world_position; 
                 _dc->discard_card();
             }
-#ifdef GENERATE_LOG
+/*#ifdef GENERATE_LOG
+
             else {
                 if (_dc->empty_hand())
                     log_writer_to_csv::Instance()->add_new_log("M1", "FAILED", "NO CARD IN HAND");
                 else
                     log_writer_to_csv::Instance()->add_new_log("M1", "FAILED", "WEAPON IN CD", "CARD TRYING TO DISCARD:", _dc->hand()->get_name(), "CURRENT MANA:", _m->mana_count());
             }
-#endif
+#endif*/
         }
         //use card
         else if (ihdlr.getMouseButtonState(InputHandler::RIGHT)) {
             //send message to use a card
             //Vector2D* vec = new Vector2D{ converted_mouse_pos.position.x,  converted_mouse_pos.position.y };
+            /*
 #ifdef GENERATE_LOG
             Card* c = _dc->hand();
             if (
-#endif
-                _dc->use_card(&_mouse_pos)
+#endif*/
+            _dc->use_card(&_mouse_pos);
 #ifndef GENERATE_LOG
-                ;
+                //;
 #endif
+                /*
 #ifdef GENERATE_LOG
             ) {
                 log_writer_to_csv::Instance()->add_new_log("M2", "CARD USED:", c->get_name(), "MANA LEFT", "MOUSE POS", "X", _mouse_pos.getX(), "Y", _mouse_pos.getY());
@@ -192,7 +196,7 @@ void KeyboardPlayerCtrl::update(Uint32 delta_time) {
                     times_m2_failed_to_use_cards++;
                 }
             }
-#endif
+#endif*/
         }
 
     }

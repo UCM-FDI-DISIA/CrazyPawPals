@@ -361,7 +361,7 @@ void GameScene::spawn_super_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene)
 	auto&& weapon = *new WeaponSuperMichiMafioso(_p_tr);
 	auto&& tr = *new Transform(posVec, { 0.0f,0.0f }, 0.0f, 2.0f);
 
-	auto e = create_enemy(EnemySpawnConfig{ &tr, "super_michi_mafioso", static_cast<Weapon*>(&weapon), 20, 1.75f, 2.25f }, scene);
+	auto e = create_enemy(EnemySpawnConfig{ &tr, "super_michi_mafioso", static_cast<Weapon*>(&weapon), 40, 1.75f, 2.25f }, scene);
 	auto&& mc = *manager.addExistingComponent<MovementController>(e, new MovementController(0.01, 3.0f, 15.0f*deccel_spawned_creatures_multi));
 
 	auto state = manager.addComponent<StateMachine>(e);
@@ -471,7 +471,7 @@ GameScene::spawn_catkuza(Vector2D posVec, ecs::sceneId_t scene) {
 	auto&& weapon = *new WeaponCatKuza();
 	auto&& tr = *new Transform(posVec, { 0.0f,0.0f }, 0.0f, 2.0f);
 
-	auto e = create_enemy(EnemySpawnConfig{ &tr, "catkuza", static_cast<Weapon*>(&weapon), 5, 2.0f, 2.25f }, scene);
+	auto e = create_enemy(EnemySpawnConfig{ &tr, "catkuza", static_cast<Weapon*>(&weapon), 10, 2.0f, 2.25f }, scene);
 
 	auto&& mc = *manager.addExistingComponent<MovementController>(e, new MovementController(0.05f, 5.0f, 20.0 * deccel_spawned_creatures_multi));
 
@@ -665,7 +665,7 @@ GameScene::spawn_sarno_rata(Vector2D posVec, ecs::sceneId_t scene)
 	auto &&weapon = *new WeaponSarnoRata();
 	auto &&tr = *new Transform(posVec, { 0.0f,0.0f }, 0.0f, 1.0f);
 
-	auto e = create_enemy(EnemySpawnConfig{ &tr, "sarno_rata", static_cast<Weapon*>(&weapon), 7, 1.125f, 1.5f }, scene);
+	auto e = create_enemy(EnemySpawnConfig{ &tr, "sarno_rata", static_cast<Weapon*>(&weapon), 14, 1.125f, 1.5f }, scene);
 	auto&& mc = *manager.addExistingComponent<MovementController>(e, new MovementController(0.05, 5.0f, 20.0 * deccel_spawned_creatures_multi));
 
 	auto playerEntities = manager.getEntities(ecs::grp::PLAYER);
@@ -708,7 +708,7 @@ void GameScene::spawn_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene)
 	auto &&weapon = *new WeaponMichiMafioso();
 	auto &&tr = *new Transform(posVec, { 0.0f,0.0f }, 0.0f, 2.0f);
 
-	auto e = create_enemy(EnemySpawnConfig{ &tr, "michi_mafioso", static_cast<Weapon*>(&weapon), 5, 1.0f, 1.125f }, scene);
+	auto e = create_enemy(EnemySpawnConfig{ &tr, "michi_mafioso", static_cast<Weapon*>(&weapon), 10, 1.0f, 1.125f }, scene);
 	auto&& mc = *manager.addExistingComponent<MovementController>(e, new MovementController(0.03, 1.0f, 10.0 * deccel_spawned_creatures_multi));
 
 	auto playerEntities = manager.getEntities(ecs::grp::PLAYER);
@@ -774,7 +774,7 @@ void GameScene::spawn_plim_plim(Vector2D posVec, ecs::sceneId_t scene)
 	auto &&weapon = *new WeaponPlimPlim();
 	auto&& tr = *new Transform(posVec, { 0.0f,0.0f }, 0.0f, 2.0f);
 
-	auto e = create_enemy(EnemySpawnConfig{ &tr, "plim_plim", static_cast<Weapon*>(&weapon), 4, 1.0f, 1.0f }, scene);
+	auto e = create_enemy(EnemySpawnConfig{ &tr, "plim_plim", static_cast<Weapon*>(&weapon), 8, 1.0f, 1.0f }, scene);
 	auto&& mc = *manager.addExistingComponent<MovementController>(e, new MovementController(0.02, 5.0f, 20.0 * deccel_spawned_creatures_multi));
 
 	auto playerEntities = manager.getEntities(ecs::grp::PLAYER);
@@ -815,7 +815,7 @@ void GameScene::spawn_boom(Vector2D posVec, ecs::sceneId_t scene)
 	auto &&weapon =* new WeaponBoom();
 	auto&& tr = *new Transform(posVec, { 0.0f,0.0f }, 0.0f, 2.0f);
 
-	auto e = create_enemy(EnemySpawnConfig{ &tr, "boom", static_cast<Weapon*>(&weapon), 14, 1.8f, 1.8f }, scene);
+	auto e = create_enemy(EnemySpawnConfig{ &tr, "boom", static_cast<Weapon*>(&weapon), 28, 1.8f, 1.8f }, scene);
 	auto&& mc = *manager.addExistingComponent<MovementController>(e, new MovementController(0.02,5.0f, 20.0 * deccel_spawned_creatures_multi));
 
 	auto playerEntities = manager.getEntities(ecs::grp::PLAYER);
@@ -872,7 +872,7 @@ void GameScene::spawn_ratatouille(Vector2D posVec, ecs::sceneId_t scene)
 			sdlutils().images().at("ratatouille"),
 			tr
 		),
-		new Health(2),
+		new Health(4),
 		new FlipXController(),
 		new enemy_collision_triggerer(),
 		new id_component(),
@@ -923,7 +923,7 @@ void GameScene::spawn_rata_basurera(Vector2D posVec, ecs::sceneId_t scene) {
 	auto&& weapon = *new WeaponRataBasurera();
 	auto&& tr = *new Transform(posVec, { 0.0f,0.0f }, 0.0f, 2.0f);
 
-	auto e = create_enemy(EnemySpawnConfig{ &tr, "rata_basurera", static_cast<Weapon*>(&weapon), 2, 1.8f, 1.8f }, scene);
+	auto e = create_enemy(EnemySpawnConfig{ &tr, "rata_basurera", static_cast<Weapon*>(&weapon), 4, 1.8f, 1.8f }, scene);
 	auto&& mc = *manager.addExistingComponent<MovementController>(e, new MovementController(0.01, 0.1f, 20.0 * deccel_spawned_creatures_multi));
 
 	//Le pasamos el componente "Health" al componente "WeaponRataBasurera"
@@ -970,7 +970,7 @@ void GameScene::spawn_rey_basurero(Vector2D posVec, ecs::sceneId_t scene) {
 	auto&& weapon = *new WeaponReyBasurero();
 	auto&& tr = *new Transform(posVec, { 0.0f,0.0f }, 0.0f, 1.0f);
 
-	auto e = create_enemy(EnemySpawnConfig{ &tr, "rey_basurero", static_cast<Weapon*>(&weapon), 2, 1.8f, 1.8f }, scene);
+	auto e = create_enemy(EnemySpawnConfig{ &tr, "rey_basurero", static_cast<Weapon*>(&weapon), 4, 1.8f, 1.8f }, scene);
 	auto&& mc = *manager.addExistingComponent<MovementController>(e, new MovementController(0.05, 2.5f, 20.0 * deccel_spawned_creatures_multi));
 
 

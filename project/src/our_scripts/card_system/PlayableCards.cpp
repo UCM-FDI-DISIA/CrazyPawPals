@@ -22,7 +22,7 @@ void Fireball::on_play(Deck& d, const Vector2D* player_position, const Vector2D*
 	bp.width = 2.3;
 	bp.life_time = 2;
 	bp.sprite_key = "p_fireball";
-	bp.damage = 7;
+	bp.damage = 14;
 	bp.collision_filter = GameStructs::collide_with::enemy;
 	
 	Game::Instance()->get_currentScene()->create_proyectile(bp, ecs::grp::BULLET);
@@ -47,7 +47,7 @@ Minigun::Minigun()
 	_bullets_properties.life_time = 0.5f;
 	_bullets_properties.sprite_key = "p_minigun";
 	_bullets_properties.collision_filter = GameStructs::collide_with::enemy;
-	_bullets_properties.damage = 1;
+	_bullets_properties.damage = 2;
 }
 void Minigun::on_play(Deck& d, const Vector2D* player_position, const Vector2D* target_position)
 {
@@ -95,7 +95,7 @@ void Lighting::on_play(Deck& d, const Vector2D* player_position, const Vector2D*
 	bp.life_time = 0.1;
 	bp.sprite_key = "p_lighting";
 	bp.collision_filter = GameStructs::collide_with::enemy;
-	bp.damage = 12;
+	bp.damage = 16;
 	Game::Instance()->get_currentScene()->create_proyectile(bp, ecs::grp::BULLET);
 }
 #pragma endregion
@@ -119,7 +119,7 @@ void Kunai::on_play(Deck& d, const Vector2D* player_position, const Vector2D* ta
 	bp.width = 2.3;
 	bp.life_time = 2;
 	bp.sprite_key = "p_kunai";
-	bp.damage = 2;
+	bp.damage = 6;
 	bp.pierce_number = INT_MAX;
 	bp.collision_filter = GameStructs::collide_with::enemy;
 	
@@ -178,7 +178,7 @@ void EldritchBlast::on_play(Deck& d, const Vector2D* player_position, const Vect
 	bp.width = 2.3;
 	bp.life_time = 0.13;
 	bp.sprite_key = "p_eldritch_blast";
-	bp.damage = 2;
+	bp.damage = 5;
 	bp.collision_filter = GameStructs::collide_with::enemy;
 
 	patrons::ShotgunPatron(bp, ecs::grp::BULLET, _amplitude * (_shot_count - 1), _shot_count);
@@ -206,7 +206,7 @@ void Primordia::on_play(Deck& d, const Vector2D* player_position, const Vector2D
 	bp.height = 2.3;
 	bp.width = 2.3;
 	bp.life_time = 0.3;
-	bp.damage = 3;//cambiar posiblemente
+	bp.damage = 6;//cambiar posiblemente
 	bp.collision_filter = GameStructs::collide_with::enemy;
 	// Primed effect
 	// TODO: Make distinct from standard effect
@@ -314,7 +314,7 @@ void Fulgur::on_play(Deck& d, const Vector2D* player_position, const Vector2D* t
 	bp.life_time = 0.5;
 	bp.collision_filter = GameStructs::collide_with::enemy;
 	bp.sprite_key = "p_lighting";
-	bp.damage = 5;
+	bp.damage = 9;
 	Game::Instance()->get_currentScene()->create_proyectile(bp, ecs::grp::BULLET);
 
 	// If Primed

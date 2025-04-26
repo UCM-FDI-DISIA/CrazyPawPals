@@ -43,9 +43,11 @@ Health::takeDamage(int damage) {
 				Game::Instance()->get_event_mngr()->fire_event(event_system::player_dead, msg);
 			else {
 				Game::Instance()->get_event_mngr()->fire_event(event_system::enemy_dead, msg);
+				/*
 #ifdef GENERATE_LOG
 				log_writer_to_csv::Instance()->add_new_log("ENEMY KILLED");
 #endif
+*/
 			}
 			if(!_is_player)Game::Instance()->get_mngr()->setAlive(_ent, false);
 		}
