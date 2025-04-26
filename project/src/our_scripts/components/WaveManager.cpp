@@ -194,8 +194,7 @@ void WaveManager::update(uint32_t delta_time) {
 
         if (is_wave_finished())
             endwave();
-
-        if (_currentWaveTime > 50 * 1000 && !is_wave_finished()) {
+        else if (_currentWaveTime > 50 * 1000 && !is_wave_finished()) {
             activateFog();
         }
     }
