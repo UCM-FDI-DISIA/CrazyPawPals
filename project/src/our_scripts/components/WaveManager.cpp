@@ -341,6 +341,7 @@ void WaveManager::choose_new_event()
     _current_event = events(rnd_gen(gen));
 
     _current_event = _currentWave == 1 ? STAR_SHOWER : NONE;
+    _current_event = _currentWave == 3 ? ICE_SKATE : NONE;
 
     switch (_current_event) {
     case NONE:
