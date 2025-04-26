@@ -340,8 +340,8 @@ void WaveManager::choose_new_event()
     std::uniform_int_distribution<int> rnd_gen(NONE, EVENTS_MAX - 1);
     _current_event = events(rnd_gen(gen));
 
-    _current_event = _currentWave == 1 ? STAR_SHOWER : NONE;
-    _current_event = _currentWave == 3 ? ICE_SKATE : NONE;
+    _current_event = _currentWave == 1 ? ICE_SKATE : NONE;
+    _current_event = _currentWave == 3 ? STAR_SHOWER : NONE;
 
     switch (_current_event) {
     case NONE:
