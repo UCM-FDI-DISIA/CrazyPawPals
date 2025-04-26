@@ -75,7 +75,7 @@ project(CrazyPawPals)
         ${PROJECT_NAME}
         ${CrazyPawPals_SRC_DIRECTORY}/main.cpp
         ${CrazyPawPals_SOURCES}
-     "project/src/our_scripts/components/ui/HUD.cpp" "project/src/our_scripts/components/ui/HUD.h")
+     "project/src/our_scripts/components/ui/HUD.cpp" "project/src/our_scripts/components/ui/HUD.h" "project/src/our_scripts/components/ui/DamagePopup.h" "project/src/our_scripts/components/ui/DamagePopup.cpp")
     target_compile_options(
         ${PROJECT_NAME}
         PRIVATE

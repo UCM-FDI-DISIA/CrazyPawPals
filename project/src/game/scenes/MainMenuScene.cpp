@@ -15,9 +15,19 @@
 
 MainMenuScene::MainMenuScene() : Scene(ecs::scene::MAINMENUSCENE)
 {
+}
+
+MainMenuScene::~MainMenuScene()
+{
+
+}
+
+void 
+MainMenuScene::initScene()
+{
     create_static_background(&sdlutils().images().at("background"));
 
-    GameStructs::ButtonProperties buttonPropTemplate = { 
+    GameStructs::ButtonProperties buttonPropTemplate = {
         { {0.35f, 0.32f},{0.30f, 0.25f} },
         0.0f, ""
     };
@@ -38,17 +48,6 @@ MainMenuScene::MainMenuScene() : Scene(ecs::scene::MAINMENUSCENE)
     GameStructs::ButtonProperties exitB = buttonPropTemplate;
     exitB.sprite_key = "exit_game";
     create_exit_button(exitB);
-}
-
-MainMenuScene::~MainMenuScene()
-{
-
-}
-
-void 
-MainMenuScene::initScene()
-{
-
 }
 
 void 

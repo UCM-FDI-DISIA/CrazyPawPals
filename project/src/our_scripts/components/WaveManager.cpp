@@ -44,6 +44,8 @@ void
 WaveManager::initComponent() {
 	fog = Game::Instance()->get_mngr()->getComponent<Fog>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::FOGGROUP));
     assert(fog != nullptr);
+
+	nPlayers = Game::Instance()->get_mngr()->getEntities(ecs::grp::PLAYER).size();
 }
 
 bool WaveManager::can_spawn_next_enemy()
@@ -80,7 +82,7 @@ void WaveManager::erase_all_bullets()
 //Chooses enemies in _enemy_types_for_current_wave
 void WaveManager::initialize_next_wave_params(bool normal_wave)
 {
-    tokens_for_this_wave = _currentWave * spawn_tokens_gained_per_wave + spawn_tokens_at_wave_0;
+	tokens_for_this_wave = (_currentWave * spawn_tokens_gained_per_wave) * (nPlayers == 1 ? 1 : nPlayers / 1.3f) + spawn_tokens_at_wave_0;
 
     uint8_t cheaper_enemy;
     for (uint8_t i = 0; i < 3; ++i) {
@@ -186,8 +188,7 @@ void WaveManager::update(uint32_t delta_time) {
 
         if (is_wave_finished())
             endwave();
-
-        if (_currentWaveTime > 50 * 1000 && !is_wave_finished()) {
+        else if (_currentWaveTime > 50 * 1000 && !is_wave_finished()) {
             activateFog();
         }
     }else{
@@ -249,10 +250,9 @@ void WaveManager::start_new_wave()
 
 void WaveManager::reset_wave_manager()
 {
-    _currentWave = -1;
+    _currentWave = 0;
     _event_pity = 0;
 }
-
 
 void WaveManager::endwave()
 {
@@ -293,12 +293,12 @@ void WaveManager::endwave()
         Game::Instance()->change_Scene(Game::State::VICTORY);
     }
     else {
+        fog->setFog(false);
         _wave_active = false;
         change_to_rewards_time = sdlutils().virtualTimer().currTime() + 3000;
         _current_wave_event->end_wave_callback();
         _currentWave++;
         _all_enemies_already_spawned = false;
-        fog->setFog(false);
         erase_all_bullets();
         erase_all_enemies();
         //enterRewardsMenu();
@@ -315,8 +315,6 @@ void WaveManager::event_callback0(const Msg& m)
 void WaveManager::event_callback1(const Msg& m)
 {
     _current_wave_event->end_wave_callback();
-    erase_all_enemies();
-    erase_all_bullets();
     _current_wave_event = std::make_unique<no_event>(this);
     fog->setFog(false);
 }
