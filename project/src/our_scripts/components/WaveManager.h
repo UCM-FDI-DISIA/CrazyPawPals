@@ -104,7 +104,7 @@ private:
     Fog* fog;
 public:
     __CMPID_DECL__(ecs::cmp::WAVEMANAGER)
-        WaveManager();
+    WaveManager();
     virtual ~WaveManager() override;
     void update(uint32_t delta_time) override;
     void initComponent() override;

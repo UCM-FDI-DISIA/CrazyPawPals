@@ -36,9 +36,11 @@ WaveManager::WaveManager() :
     event_system::event_manager::Instance()->suscribe_to_event(event_system::player_dead, this, &event_system::event_receiver::event_callback1);
 
     enemies_premade_waves = std::vector<std::vector<enemyType>>{
-    std::vector<enemyType>{sarno_rata, michi_mafioso},
-    std::vector<enemyType>{plim_plim, ratatouille, plim_plim, sarno_rata, plim_plim, plim_plim},
-    std::vector<enemyType>{boom, michi_mafioso, boom, michi_mafioso, boom, boom, michi_mafioso, michi_mafioso}
+    std::vector<enemyType>{sarno_rata, michi_mafioso}, //3
+    std::vector<enemyType>{plim_plim, ratatouille, plim_plim, sarno_rata, plim_plim, plim_plim},//7
+    std::vector<enemyType>{boom, michi_mafioso, boom, michi_mafioso, boom, boom, michi_mafioso, michi_mafioso},//11
+    std::vector<enemyType>{plim_plim, sarno_rata, sarno_rata, plim_plim, sarno_rata, michi_mafioso, plim_plim, sarno_rata, michi_mafioso, sarno_rata, plim_plim},//15
+    std::vector<enemyType>{sarno_rata, boom, ratatouille, boom, sarno_rata, boom, sarno_rata, ratatouille, sarno_rata},//19
     };
 }
 
@@ -299,7 +301,7 @@ void WaveManager::endwave()
     player_movement_controller->total_movement = 0;
 
 #endif
-    if (_currentWave == 2) {
+    if (_currentWave == 4) {
         Game::Instance()->get_mngr()->getComponent<WaveManager>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::WAVE))->reset_wave_manager();
         Game::Instance()->change_Scene(Game::State::VICTORY);
     }
