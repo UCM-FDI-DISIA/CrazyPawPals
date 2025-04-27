@@ -54,7 +54,7 @@ void VictoryScene::render() {
 }
 void VictoryScene::create_enter_button() {
     GameStructs::ButtonProperties bp = {
-         { {0.375f, 0.65f},{0.3f, 0.125f} },
+         { {0.375f, 0.65f},{0.3f, 0.2f} },
          0.0f, "back"
     };
     auto* mngr = Game::Instance()->get_mngr();
@@ -73,8 +73,8 @@ void VictoryScene::create_enter_button() {
 void VictoryScene::create_exit_button()
 {
     GameStructs::ButtonProperties bp = {
-       { {0.375f, 0.8f},{0.3f, 0.125f} },
-       0.0f, "exit"
+       { {0.375f, 0.5f},{0.3f, 0.2f} },
+       0.0f, "exit_game"
     };
     auto* mngr = Game::Instance()->get_mngr();
     auto e = create_button(bp);

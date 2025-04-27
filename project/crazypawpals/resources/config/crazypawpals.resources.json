@@ -461,10 +461,6 @@
       "file": "resources/images/ui/buttons/exit_selected.png"
     },
     {
-      "id": "exit",
-      "file": "resources/images/ui/buttons/exit_o.png"
-    },
-    {
       "id": "reward_health",
       "file": "resources/images/ui/rewards/reward_health.png"
     },

@@ -39,7 +39,7 @@ void HUD::render()
 	};
 	Texture numtex{
 		sdlutils().renderer(),
-		"0"+std::to_string(wavenum) + "/03",
+		"0"+std::to_string(wavenum) + "/05",
 		sdlutils().fonts().at("ARIAL16"),
 		SDL_Color(50,50,50,255) };
 	numtex.render(numtrue);

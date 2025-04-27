@@ -302,9 +302,9 @@ void GameScene::reset_player()
 		tr->setDir({ 0.0f, 0.0f });	
 
 	mngr.getComponent<AnimationComponent>(player)->play_animation("idle");
-	mngr.getComponent<Health>(player)->resetCurrentHeatlh();
 	mngr.addComponent<ManaComponent>(player);
 	mngr.addComponent<MovementController>(player, 0.1f, 5.0f, 20.0f * deccel_spawned_creatures_multi);
+	mngr.getComponent<Health>(player)->resetCurrentHeatlh();
 }
 
 #pragma endregion
@@ -1103,9 +1103,8 @@ void GameScene::event_callback0(const event_system::event_receiver::Msg& m) {
 }
 void GameScene::event_callback1(const event_system::event_receiver::Msg& m) {
 	auto&& mngr = *Game::Instance()->get_mngr();
-	reset_player();
 	deccel_spawned_creatures_multi = 1;
 	mngr.getComponent<WaveManager>(mngr.getHandler(ecs::hdlr::WAVE))->reset_wave_manager();
-
+	reset_player();
 	Game::Instance()->change_Scene(Game::GAMEOVER);
 }

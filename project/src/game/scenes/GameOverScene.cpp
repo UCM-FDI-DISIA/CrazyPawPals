@@ -33,7 +33,7 @@ GameOverScene::~GameOverScene()
 void GameOverScene::initScene() {
     create_static_background(&sdlutils().images().at("game_over"));
     create_enter_button();
-    create_exit_button();
+    //create_exit_button();
 }
 void GameOverScene::enterScene()
 {

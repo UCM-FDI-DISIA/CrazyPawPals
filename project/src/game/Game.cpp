@@ -139,7 +139,7 @@ bool Game::init() {
 	_scenes[VICTORY] = new VictoryScene(); //? por que no funciona VictoryScene()
 	_scenes[VICTORY]->initScene();
 
-	change_Scene(MAINMENU);
+	change_Scene(SELECTIONMENU);
 	set_volumes();
 	return true;
 }
