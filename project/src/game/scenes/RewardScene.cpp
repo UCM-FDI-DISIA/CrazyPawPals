@@ -21,7 +21,7 @@
 
 #include <iostream>
 bool RewardScene::_mythic = false;
-float buttonX = 0.38f;
+float buttonX = 0.38f; 
 RewardScene::RewardScene() : Scene(ecs::scene::REWARDSCENE),_selected_card(nullptr),
 _heal(false), _lr(nullptr),
 _selected(false), _activate_confirm_button(false), _special_case(false),_chosen_card(nullptr), _activate_exchange_button(false), _last_deck_card_img(nullptr), _activate_heal(false), _exchange(false)
