@@ -35,8 +35,8 @@ SelectionMenuScene::~SelectionMenuScene()
 void SelectionMenuScene::create_weapon_buttons() {
     float umbral = 0.0075f;
     float offsetX = 0.06f;  // Distance between buttons on the X axis
-    float startX = 0.7f;   // Starting position of the first button on X
-    float startY = 0.075f; // Starting position of the first button on Y
+    float startX = 0.8f;   // Starting position of the first button on X
+    float startY = 0.2f; // Starting position of the first button on Y
 
     GameStructs::ButtonProperties buttonPropTemplate = {
         { { startX, startY }, {0.12f, 0.18f} },
@@ -356,7 +356,7 @@ void SelectionMenuScene::create_deck_info(const rect_f32& rect) {
 }
 void SelectionMenuScene::create_deck_infos() {
     float umbral = 0.14f;
-    rect_f32 r = {{ 0.0285f, 0.3f  }, { 0.3f, 0.1425f }};
+    rect_f32 r = {{ 0.0375f, 0.385f  }, { 0.325f, 0.14f }};
     for (int i = 0; i < _num_cards_of_deck; ++i) {
         create_deck_info(r); 
         r.position.y += umbral;
@@ -364,7 +364,7 @@ void SelectionMenuScene::create_deck_infos() {
 }
 void SelectionMenuScene::create_weapon_info() {
    // rect_f32 rect = {{1.3f, 0.25f} ,{0.75f, 0.5f}};
-    rect_f32 rect = { {0.695f, 0.225f} ,{0.3f, 0.25f} };
+    rect_f32 rect = { {0.695f, 0.45f} ,{0.3f, 0.25f} };
     ecs::entity_t e = create_entity(
         ecs::grp::UI,
         ecs::scene::SELECTIONMENUSCENE,
