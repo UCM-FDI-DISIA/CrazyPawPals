@@ -21,7 +21,7 @@ void Follow::update(uint32_t delta_time)
 	last_time_act += delta_time;
 	if (last_time_act > 2000)
 	{
-		std::cout << "Follow::update" << std::endl;
+		//std::cout << "Follow::update" << std::endl;
 		act_follow();
 		last_time_act = 0;
 	}
@@ -63,7 +63,7 @@ void Follow::search_closest_player()
 		float distance = (_my_tr->getPos() - tr->getPos()).magnitude();
 		if (distance < min_distance && tr != _act_follow)
 		{
-			std::cout << "Encontre a un player mas cerca" << std::endl;
+			//std::cout << "Encontre a un player mas cerca" << std::endl;
 			min_distance = distance;
 			player = tr;
 		}
