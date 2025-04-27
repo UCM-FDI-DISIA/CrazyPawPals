@@ -293,20 +293,25 @@ ecs::entity_t TutorialScene::create_change_scene_button(const GameStructs::Butto
 
 	auto imgComp = mngr->addComponent<ImageForButton>(e,
 		&sdlutils().images().at(bp.sprite_key),
-		&sdlutils().images().at(bp.sprite_key),
+		&sdlutils().images().at(bp.sprite_key+"_selected"),
 		bp.rect,
 		0,
 		Game::Instance()->get_mngr()->getComponent<camera_component>(
 			Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA))->cam
 	);
-	buttonComp->connectClick([buttonComp, &mngr, nextScene]() {
+	buttonComp->connectClick([buttonComp, &mngr, nextScene, imgComp]() {
 		Game::Instance()->change_Scene(nextScene);
+		imgComp->_filter = false;
+		imgComp->swap_textures();
 		});
 
 	buttonComp->connectHover([buttonComp, imgComp, this]() {
-		imgComp->_filter = true; });
+		imgComp->swap_textures();
+		imgComp->_filter = true;
+		});
 	buttonComp->connectExit([buttonComp, imgComp, this]() {
-		imgComp->_filter = false; });
+		imgComp->_filter = false;
+		imgComp->swap_textures();});
 
 	return e;
 }

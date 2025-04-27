@@ -665,6 +665,10 @@
       "file": "resources/images/ui/tutorial/boton.png"
     },
     {
+      "id": "boton_mainmenu_tutorial_selected",
+      "file": "resources/images/ui/tutorial/boton.png"
+    },
+    {
       "id": "ready",
       "file": "resources/images/ui/buttons/ready.png"
     },
