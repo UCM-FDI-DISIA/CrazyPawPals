@@ -213,6 +213,7 @@ void GameScene::enterScene()
 	RewardScene::will_have_mythic(e != NONE);
 	manager.getComponent<HUD>(manager.getHandler(ecs::hdlr::HUD_ENTITY))->start_new_wave();
 	//spawn_catkuza(Vector2D{5.0f, 0.0f});
+	//spawn_rata_basurera(Vector2D{5.0f, 0.0f});
 	//spawn_super_michi_mafioso(Vector2D{5.0f, 0.0f});
 #ifdef GENERATE_LOG
 	log_writer_to_csv::Instance()->add_new_log();
@@ -977,7 +978,7 @@ void GameScene::spawn_rata_basurera(Vector2D posVec, ecs::sceneId_t scene)
 
 	auto e = create_enemy(
 		GameStructs::EnemyProperties{
-			"rata_basurera",	  // sprite_key
+			"basurero",	  // sprite_key
 			posVec,				  // start_pos
 			GameStructs::DEFAULT, // enemy_type
 			2,					  // health

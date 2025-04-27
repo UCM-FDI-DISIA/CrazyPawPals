@@ -188,6 +188,14 @@
       "file": "resources/images/enemies/boom.png"
     },
     {
+      "id": "rey_basurero",
+      "file": "resources/images/enemies/rey_basurero.png"
+    },
+    {
+      "id": "basurero",
+      "file": "resources/images/enemies/basurero.png"
+    },
+    {
       "id": "catkuza",
       "file": "resources/images/enemies/catkuza.png"
     },
@@ -462,7 +470,7 @@
     },
     {
       "id": "exit",
-      "file": "resources/images/ui/buttons/exit_o.png"
+      "file": "resources/images/ui/buttons/exit.png"
     },
     {
       "id": "reward_health",
