@@ -152,7 +152,7 @@ void MythicScene::create_reward_mythic_buttons() {
 
     //next round button
     buttonPropTemplate.ID = ecs::grp::UI;
-    buttonPropTemplate.sprite_key = "enter_game"; 
+    buttonPropTemplate.sprite_key = "next"; 
     buttonPropTemplate.rect.position.y = 10.0f;
     create_next_round_button(buttonPropTemplate); 
 }
