@@ -232,10 +232,10 @@ static void game_start_network_dbg(network_context &ctx) {
 					TCPsocket &connection = ctx.profile.host.sockets_to_clients.connections[i];
 					if (SDLNet_SocketReady(connection)) {
 						network_message_pack<network_message_payload_dbg_print<256>> message =
-							network_message_pack_receive_static<network_message_payload_dbg_print<256>>(
+							network_message_pack_receive<network_message_payload_dbg_print<256>>(
 							connection
 						);
-						if (message.payload.type == network_message_payload_type_print_args) {
+						if (message.header.type == network_message_type_dbg_print) {
 							message.payload.content.args[message.payload.content.args_size_n] = '\0';
 							std::cout << "Received message: " << message.payload.content.args.data() << std::endl;
 						}
@@ -250,8 +250,7 @@ static void game_start_network_dbg(network_context &ctx) {
 		network_message_pack_send(
 			ctx.profile.client.socket_to_master,
 			network_message_pack_create(
-				network_message_type_message,
-				network_message_payload_type_print_args,
+				network_message_type_dbg_print,
 				network_message_payload_dbg_print_create<256>(
 					"Hello from client!"
 				)
@@ -260,6 +259,7 @@ static void game_start_network_dbg(network_context &ctx) {
 		// while (true) {
 		// 	if (SDLNet_CheckSockets(ctx.profile.client.client_set,))
 		// }
+		break;
 	}
 	default: {
 		assert(false && "fatal error: invalid network context profile status");
@@ -275,6 +275,8 @@ void Game::start() {
 	auto& ihdlr = ih();
 	//delta time
 	constexpr static const uint32_t target_delta_time_milliseconds = 10;
+
+	game_start_network_dbg(network);
 
 	uint64_t last_frame_start_tick = SDL_GetTicks64();
 	SDL_Delay(target_delta_time_milliseconds);

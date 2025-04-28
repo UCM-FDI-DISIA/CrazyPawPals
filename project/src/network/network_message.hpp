@@ -42,29 +42,37 @@ union network_message_header_union {
     network_message_header header;
 };
 
-
-template <typename T>
-struct network_message_pack {
+struct network_message {
     network_message_header header;
+
+    struct deleter {
+        void operator()(network_message *message) const {
+            message->~network_message();
+            delete[] reinterpret_cast<uint8_t *>(message);
+        }
+    };
+};
+template <typename T>
+struct network_message_pack : public network_message {
+    uint16_t padding;
     network_message_payload<T> payload;
 };
 
 template <typename T>
 network_message_pack<T> network_message_pack_create(
-    const network_message_type_option header_type,
-    const network_message_payload_type_option content_type,
+    const network_message_type_option type,
     const T &content
 ) {
-    const network_message_pack<T> message{
-        .header = network_message_header_create(
-            header_type,
-            sizeof(network_message_payload<T>)
-        ),
-        .payload = network_message_payload<T>{
-            .type = content_type,
-            .content = content,
-        },
+    network_message_pack<T> message;
+    message.header = network_message_header_create(
+        type,
+        sizeof(network_message_payload<T>)
+    );
+    message.padding = 0;
+    message.payload = network_message_payload<T>{
+        .content = content,
     };
+    
     assert(
         network_message_header_valid(message.header)
         && "error: message header must be valid after creation"
@@ -77,7 +85,7 @@ network_message_pack<T> network_message_pack_create(
 }
 
 template <typename T>
-network_message_pack<T> network_message_pack_receive_static(
+network_message_pack<T> network_message_pack_receive(
     TCPsocket socket
 ) {
     const network_message_header header = network_message_header_receive(socket);
@@ -91,40 +99,21 @@ network_message_pack<T> network_message_pack_receive_static(
     network_message_pack<T> message;
     const int recv_result = SDLNet_TCP_Recv(
         socket,
-        &message,
-        int(sizeof(message))
+        &message.payload,
+        int(payload_size)
     );
     if (recv_result == network_utility_sdl_net_failure) {
         assert(false && "fatal error: SDLNet_TCP_Recv failed");
         std::exit(EXIT_FAILURE);
-    } else if (recv_result != sizeof(message)) {
+    } else if (recv_result != int(payload_size)) {
         assert(false && "fatal error: SDLNet_TCP_Recv invalid number of bytes received");
         std::exit(EXIT_FAILURE);
     }
     return message;
 }
 
-template <typename T>
-std::unique_ptr<network_message_pack<T>> network_message_pack_from_dynamic(
-    const network_message_pack<uint8_t *> &message
-) {
-    assert(
-        network_message_header_valid(message.header)
-        && "error: message header must be valid before conversion"
-    );
-    assert(
-        network_message_header_in_network_endian(message.header)
-        && "error: message header must be in network endian before conversion"
-    );
-    return std::make_unique<network_message_pack<T>>(
-        network_message_pack<T>{
-            .header = message.header,
-            .content = *reinterpret_cast<const network_message_payload<T> *>(&message.payload),
-        }
-    );
-}
-
-std::unique_ptr<network_message_pack<uint8_t *>> network_message_pack_receive_dynamic(
+using network_message_dynamic_pack = std::unique_ptr<network_message, network_message::deleter>;
+network_message_dynamic_pack network_message_dynamic_pack_receive(
     TCPsocket socket
 );
 
@@ -166,6 +155,38 @@ void network_message_pack_send(
         assert(false && "fatal error: SDLNet_TCP_Send invalid number of bytes sent");
         std::exit(EXIT_FAILURE);
     }
+}
+
+
+template <typename From, typename To>
+network_message_pack<To> &network_message_pack_into(network_message_pack<From> &from) {
+    static_assert(
+        sizeof(network_message_pack<To>) <= sizeof(network_message_pack<From>),
+        "static error: network_message_pack<To> must be less than or equal to network_message_pack<From>"
+    );
+    return reinterpret_cast<network_message_pack<To> &>(from);
+}
+
+template <typename T>
+using network_message_resolved_dynamic_pack = std::unique_ptr<network_message_pack<T>, typename network_message_pack<T>::deleter>;
+template <typename To>
+network_message_resolved_dynamic_pack<To> &network_message_dynamic_pack_into(network_message_dynamic_pack &&from) {
+    const size_t payload_size = size_t(SDLNet_Read16(&from->header.payload_size_n));
+    if (sizeof(network_message_pack<To>) < payload_size) {
+        assert(false && "fatal error: payload size must be less than or equal to the size of the payload");
+        std::exit(EXIT_FAILURE);
+    }
+
+    network_message *ptr = from.release();
+    if (ptr == nullptr) {
+        assert(false && "fatal error: pointer must not be null before resolving dynamic pack");
+        std::exit(EXIT_FAILURE);
+    }
+
+    return network_message_resolved_dynamic_pack<To>{
+        static_cast<network_message_pack<To> *>(ptr),
+        network_message_pack<To>::payload::deleter()
+    };
 }
 
 #endif

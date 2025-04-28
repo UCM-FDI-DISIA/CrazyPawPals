@@ -8,16 +8,15 @@
 
 enum network_message_type {
     network_message_type_none = 0,
-    network_message_type_message,
-    network_message_type_data_transfer
+    network_message_type_any,
+    network_message_type_dbg_print,
 };
-using network_message_type_option = uint8_t;
-
+using network_message_type_option = uint16_t;
 using network_message_header_size = uint16_t;
 struct network_message_header {
-    uint8_t unused : 1;
-    uint8_t illegal : 7;
-    network_message_type_option type;
+    network_message_type_option unused : 1;
+    network_message_type_option illegal : 1;
+    network_message_type_option type : 14;
     network_message_header_size payload_size_n;
 };
 static_assert(
@@ -25,10 +24,8 @@ static_assert(
     "static error: network_message_header size is not 4 bytes"
 );
 
-#define NETWORK_MESSAGE_HEADER_ILLEGAL_BITPATTERN 0x7F
-constexpr const uint8_t network_message_header_illegal_bitpattern = NETWORK_MESSAGE_HEADER_ILLEGAL_BITPATTERN;
 inline bool network_message_header_valid(const network_message_header header) {
-    return header.unused == 0 && header.illegal == network_message_header_illegal_bitpattern;
+    return header.unused == 0 && header.illegal == 1;
 }
 inline bool network_message_header_in_network_endian(const network_message_header header) {
     return SDLNet_Read16(&header.payload_size_n) == header.payload_size_n;
@@ -40,7 +37,7 @@ inline network_message_header network_message_header_create(
 ) {
     network_message_header header{
         .unused = 0,
-        .illegal = network_message_header_illegal_bitpattern,
+        .illegal = 1,
         .type = type,
         .payload_size_n = 0,
     };
@@ -57,19 +54,15 @@ network_message_header network_message_header_receive(TCPsocket socket);
 void network_message_header_send(TCPsocket socket, const network_message_header header);
 
 
-enum network_message_payload_type {
-    network_message_payload_type_none = 0,
-    network_message_payload_type_dbg = 1 << 0,
-    network_message_payload_dynamic = 1 << 1,
-    network_message_payload_type_print_args = 1 << 2,
-};
-using network_message_payload_type_option = uint8_t;
-
-
 template <typename T, typename = std::enable_if_t<std::is_trivially_copyable_v<T>>>
 struct network_message_payload {
-    network_message_payload_type_option type;
     T content;
+    struct deleter {
+        void operator()(T *ptr) const {
+            ptr->~T();
+            delete[] reinterpret_cast<uint8_t *>(ptr);
+        }
+    };
 };
 
 template <size_t ArgumentsSize>

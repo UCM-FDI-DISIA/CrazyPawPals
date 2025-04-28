@@ -7,23 +7,23 @@ extern inline bool network_message_connection_client_from_host_accepted(const ne
 extern inline network_message_connection_client_from_host network_message_connection_client_from_host_create_accepted();
 extern inline network_message_connection_client_from_host network_message_connection_client_from_host_create_rejected();
 
-std::unique_ptr<network_message_pack<uint8_t *>> network_message_pack_receive_dynamic(TCPsocket socket) {
+network_message_dynamic_pack network_message_dynamic_pack_receive(TCPsocket socket) {
     network_message_header header = network_message_header_receive(socket);
     const size_t payload_size = size_t(SDLNet_Read16(&header.payload_size_n));
+    constexpr static const size_t offset = offsetof(network_message_pack<uint8_t *>, payload);
     
-    auto buffer = std::unique_ptr<uint8_t[]>{
-        new uint8_t[offsetof(network_message_pack<uint8_t *>, payload) + payload_size],
-        std::default_delete<uint8_t[]>{}
+    auto buffer = std::make_unique<uint8_t []>(
+        offset + payload_size
+    );
+    network_message_dynamic_pack message{
+        reinterpret_cast<network_message *>(buffer.get()),
+        network_message::deleter{}
     };
-    std::unique_ptr<network_message_pack<uint8_t *>> message{
-        reinterpret_cast<network_message_pack<uint8_t *> *>(buffer.get())
-    };
-    // TODO
     message->header = header;
 
     const int recv_result = SDLNet_TCP_Recv(
         socket,
-        buffer.get(),
+        buffer.get() + offset,
         int(payload_size)
     );
     if (recv_result == network_utility_sdl_net_failure) {
