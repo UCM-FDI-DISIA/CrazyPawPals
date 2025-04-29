@@ -744,6 +744,10 @@
     {
       "id": "reward",
       "file": "resources/sound/end_wave.wav"
+    },
+    {
+      "id": "game_over",
+      "file": "resources/sound/game_over.mp3"
     }
   ]
 }

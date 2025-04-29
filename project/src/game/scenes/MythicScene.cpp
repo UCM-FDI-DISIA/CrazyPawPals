@@ -200,7 +200,7 @@ void MythicScene::create_reward_mythic_button(const GameStructs::ButtonPropertie
         imgComp->_filter = true;
         auto& sp = mngr->getComponent<MythicDataComponent>(e)->sprite();
         ri->set_texture(&sdlutils().images().at(sp + "_info"));
-
+        sdlutils().soundEffects().at("button_hover").play();
         });
     buttonComp->connectExit([buttonComp, imgComp, ri]() {
         //std::cout << "exit -> Reward button: " << std::endl;
@@ -289,7 +289,6 @@ void MythicScene::create_mythic_selected_button(const GameStructs::ButtonPropert
     mngr->setHandler(ecs::hdlr::CONFIRMMYTHIC, e);
     buttonComp->connectClick([buttonComp, this, imgComp, mngr] {
         if (_lm != nullptr && !_selected) {
-            imgComp->_filter = false;
             _lm->swap_textures();
             _selected = true;
             add_new_reward_mythic();
@@ -306,6 +305,7 @@ void MythicScene::create_mythic_selected_button(const GameStructs::ButtonPropert
         //filter
         imgComp->swap_textures();
         imgComp->_filter = true;
+        sdlutils().soundEffects().at("button_hover").play();
         });
     buttonComp->connectExit([buttonComp, imgComp, this]() {
         //std::cout << "exit -> Reward selected button: " << std::endl;
@@ -464,6 +464,7 @@ void MythicScene::create_next_round_button(const GameStructs::ButtonProperties& 
     buttonComp->connectHover([buttonComp, imgComp, this]() { 
         imgComp->swap_textures();
         imgComp->_filter = true;
+        sdlutils().soundEffects().at("button_hover").play();
         });
     buttonComp->connectExit([buttonComp, imgComp, this]() { 
         imgComp->_filter = false;

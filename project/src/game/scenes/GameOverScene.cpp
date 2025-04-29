@@ -40,6 +40,7 @@ void GameOverScene::enterScene()
     sdlutils().musics().at("game_bgm").haltMusic();
     sdlutils().soundEffects().at("round_start_event").haltChannel();
     sdlutils().soundEffects().at("round_start").haltChannel();
+    sdlutils().soundEffects().at("game_over").play();
     Game::Instance()->get_mngr()->change_ent_scene(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA), ecs::scene::GAMEOVERSCENE);
 #ifdef GENERATE_LOG
     log_writer_to_csv::Instance()->add_new_log();
@@ -49,6 +50,7 @@ void GameOverScene::enterScene()
 
 void GameOverScene::exitScene()
 {
+    sdlutils().soundEffects().at("game_over").haltChannel();
 #ifdef GENERATE_LOG
     log_writer_to_csv::Instance()->add_new_log("EXIT GAMEOVER SCENE");
     log_writer_to_csv::Instance()->add_new_log();
@@ -82,6 +84,7 @@ void GameOverScene::create_enter_button() {
     buttonComp->connectHover([buttonComp, imgComp, this]() { 
         imgComp->swap_textures();
         imgComp->_filter = true;
+        sdlutils().soundEffects().at("button_hover").play();
         });
     buttonComp->connectExit([buttonComp, imgComp, this]() { 
         imgComp->_filter = false;
@@ -116,6 +119,7 @@ void GameOverScene::create_exit_button()
     buttonComp->connectHover([buttonComp, imgComp]() {
         imgComp->swap_textures();
         imgComp->_filter = true;
+        sdlutils().soundEffects().at("button_hover").play();
         });
 
     buttonComp->connectExit([buttonComp, imgComp]() {

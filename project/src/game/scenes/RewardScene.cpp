@@ -301,6 +301,7 @@ void RewardScene::create_reward_health_button(const GameStructs::ButtonPropertie
         imgComp->_filter = true;
         auto& sp = mngr->getComponent<RewardDataComponent>(e)->sprite();
         ri->set_texture(&sdlutils().images().at(sp + "_info"));
+        sdlutils().soundEffects().at("button_hover").play();
     });
     buttonComp->connectExit([buttonComp, imgComp, ri]() {
         //std::cout << "exit -> Reward button: " << std::endl;
@@ -355,6 +356,7 @@ void RewardScene::create_reward_card_button(const GameStructs::ButtonProperties&
         imgComp->_filter = true;
         auto& sp = mngr->getComponent<RewardDataComponent>(e)->sprite();
         ri->set_texture(&sdlutils().images().at(sp + "_info"));
+        sdlutils().soundEffects().at("button_hover").play();
 
         });
     buttonComp->connectExit([buttonComp, imgComp, ri]() {
@@ -406,6 +408,7 @@ void RewardScene::create_a_deck_card(const GameStructs::CardButtonProperties& bp
         imgComp->_filter = true;
         auto& sp = buttonComp->Name();
         if (sp != "") ri->set_texture(&sdlutils().images().at(sp + "_info"));
+        sdlutils().soundEffects().at("button_hover").play();
         /*imgComp->destination_rect.position.y -= 0.125f;*/
        /* imgComp->destination_rect.size = { imgComp->destination_rect.size.x * 1.25f,  imgComp->destination_rect.size.y * 1.25f };*/
         });
@@ -518,12 +521,13 @@ void RewardScene::create_reward_selected_button(const GameStructs::ButtonPropert
         }
         //we only select a reward if previously we have chosen something
         else if (_lr != nullptr && !_selected) {
-            imgComp->_filter = false;
             _lr->swap_textures();
             add_new_reward_card();
         }
         _selected = true;
         auto imgNext = mngr->getComponent<ImageForButton>(mngr->getHandler(ecs::hdlr::NEXTROUNDREWARD));
+        imgComp->_filter = false;
+        imgComp->swap_textures();
         imgNext->destination_rect.position = { buttonX, 0.4f };
         imgComp->destination_rect.position.x += 100.0f;
     });
@@ -531,6 +535,7 @@ void RewardScene::create_reward_selected_button(const GameStructs::ButtonPropert
         if (_selected) return;
         //std::cout << "hover -> Reward selected button: " << std::endl;
         //filter
+        sdlutils().soundEffects().at("button_hover").play();
         imgComp->swap_textures();
         imgComp->_filter = true;
     });
@@ -671,6 +676,7 @@ void RewardScene::create_reward_exchange_button(const GameStructs::ButtonPropert
         });
     buttonComp->connectHover([buttonComp, imgComp, this]() {
         if (_selected) return;
+        sdlutils().soundEffects().at("button_hover").play();
         imgComp->swap_textures();
         imgComp->_filter = true;
         });
@@ -728,6 +734,7 @@ void RewardScene::create_next_round_button(const GameStructs::ButtonProperties& 
     }});
     buttonComp->connectHover([buttonComp, imgComp, this]() { 
         imgComp->swap_textures();
+        sdlutils().soundEffects().at("button_hover").play();
         imgComp->_filter = true;
         });
     buttonComp->connectExit([buttonComp, imgComp, this]() { 
