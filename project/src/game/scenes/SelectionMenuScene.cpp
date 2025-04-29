@@ -390,7 +390,7 @@ void SelectionMenuScene::set_concrete_deck_info(const std::list<Card*>& cl) {
 }
 void SelectionMenuScene::create_enter_button() {
     GameStructs::ButtonProperties bp = {
-         { {0.4f, 0.4f},{0.2f, 0.15f} },
+         { {10.0f, 0.4f},{0.2f, 0.15f} },
          0.0f, "ready", ecs::grp::UI
     };
     auto* mngr = Game::Instance()->get_mngr();
@@ -412,6 +412,7 @@ void SelectionMenuScene::create_enter_button() {
         if (_weapon_selected && _deck_selected) {
             imgComp->_filter = false;
             Game::Instance()->change_Scene(Game::GAMESCENE);
+            imgComp->destination_rect.position.x = 10.0f;
         }
     }); 
     buttonComp->connectHover([buttonComp, imgComp, this]() {     
@@ -433,5 +434,6 @@ void SelectionMenuScene::update(uint32_t delta_time) {
         auto imgComp = mngr->getComponent<ImageForButton>(mngr->getHandler(ecs::hdlr::TOGAMEBUTTON));
         imgComp->set_texture(&sdlutils().images().at("ready"));
         _activate_play_button = true;
+        imgComp->destination_rect.position.x = 0.4f;
     }
 }
