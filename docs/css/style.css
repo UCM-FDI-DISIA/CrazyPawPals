@@ -4,28 +4,63 @@
     font-style: normal;
 }
 .cherry-bomb-one-regular {
-    font-family: "Cherry Bomb One", serif;
+    font-family: "Cherry Bomb One", system-ui;
     font-weight: 400;
     font-style: normal;
-  }
+}
 
 .sour-gummy-200 {
-  font-family: "Sour Gummy", serif;
-  font-optical-sizing: auto;
-  font-weight: 200;
-  font-style: normal;
-  font-variation-settings:
-    "wdth" 100;
+    font-family: "Sour Gummy", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 200;
+    font-style: normal;
+    font-variation-settings: "wdth" 100;
 }
-body{
-    margin-left: 5%;
-    margin-right: 5%;
+.rubik-bubbles-regular {
+    font-family: "Rubik Bubbles", system-ui;
+    font-weight: 400;
+    font-style: normal;
+}
+.sue-ellen-francisco-regular {
+    font-family: "Sue Ellen Francisco", cursive;
+    font-weight: 400;
+    font-style: normal;
+}
+body {
+    background-color: #e7b273;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+.encabezado {
+    background-color: #a87a56; /* Fondo del h1, puedes usar cualquier color */
+    display: flex;
+    align-items: center; /* Alinea verticalmente la imagen y el texto */
+    gap: 75px; /* Espacio entre imagen y texto */
+    padding: 20px;
+}
+
+.logo {
+    width: 50px; /* Ajusta según el tamaño que necesites */
+    height: auto;
 }
 h1 {
-    font-family: "Modak";
-    font-size: 92px;
+    padding: 0;
+    margin: 0;
+}
+.titulo-principal {
+    font-family: "Cherry Bomb One", system-ui;
+    font-size: 120px;
+    color: black;
     text-align: center;
-    font-weight: normal;
+}
+
+.slogan {
+    font-family: "Sour Gummy", sans-serif;
+    font-size: 22px;
+    text-align: right;
+    color: black;
+    padding-right: 20px;
 }
 h2{
     font-family: "Modak";
@@ -74,7 +109,7 @@ p {
     text-align: center;
     font-family: "Sour Gummy";
     font-size: 10px;
-    color: grey;
+    color: black;
 }
 .image{
     align-content: center;
