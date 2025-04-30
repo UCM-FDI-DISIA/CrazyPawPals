@@ -35,5 +35,6 @@ public:
 	inline int damage() { return _damage; };
 	inline void set_damage(int damage) { _damage = damage; };
 	inline float cooldown() { return _cooldown; };
+	inline void set_cooldown(float cooldown) { _cooldown = cooldown; };
 	inline float distance() { return _distance; };
 };

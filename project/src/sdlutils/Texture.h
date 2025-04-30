@@ -95,8 +95,9 @@ public:
 		return *_texture;
 	}
 
-	inline void apply_filter(int r, int g, int b) {
-		SDL_SetTextureColorMod(_texture, uint8_t(r), uint8_t(g), uint8_t(b));
+	inline void apply_filter(int r, int g, int b, int a = 255) {
+		SDL_SetTextureColorMod(_texture, r, g, b);
+		SDL_SetTextureAlphaMod(_texture, a);
 	}
 
 private:

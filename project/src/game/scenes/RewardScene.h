@@ -38,6 +38,7 @@ private:
 	bool _selected;
 	bool _activate_confirm_button; //to add cards to deck
 	bool _activate_exchange_button; //to exchange cards from deck
+	bool _special_case; //when we only activate exchange
 	ecs::entity_t _chosen_card;
 	bool _exchange;
 

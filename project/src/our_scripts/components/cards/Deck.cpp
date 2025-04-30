@@ -287,3 +287,7 @@ std::ostream& operator<<(std::ostream& os, const Deck& deck)
 	
 	return os;
 }
+int
+Deck::get_total_cards_num() {
+	return (_draw_pile.card_list().size() + _discard_pile.card_list().size() + !empty_hand()); 
+}

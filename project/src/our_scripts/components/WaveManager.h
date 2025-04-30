@@ -102,6 +102,8 @@ private:
 
     //transformless_dyn_image* _tdi;
 
+    int nPlayers = 1;
+
     Fog* fog;
 public:
     __CMPID_DECL__(ecs::cmp::WAVEMANAGER)

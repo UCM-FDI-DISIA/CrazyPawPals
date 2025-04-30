@@ -12,6 +12,17 @@
 
 ControlsScene::ControlsScene() : Scene(ecs::scene::CONTROLSSCENE)
 {
+
+
+}
+
+ControlsScene::~ControlsScene()
+{
+
+}
+
+void ControlsScene::initScene()
+{
     auto* mngr = Game::Instance()->get_mngr();
 
     _background = &sdlutils().images().at("controls");
@@ -23,17 +34,6 @@ ControlsScene::ControlsScene() : Scene(ecs::scene::CONTROLSSCENE)
     };
     mainMenuB.sprite_key = "heart";
     create_mainmenu_button(mainMenuB);
-
-}
-
-ControlsScene::~ControlsScene()
-{
-
-}
-
-void ControlsScene::initScene()
-{
-
 }
 
 void ControlsScene::enterScene()

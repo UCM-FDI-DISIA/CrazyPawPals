@@ -22,6 +22,7 @@
 #endif
 
 #include <iostream>
+
 MythicScene::MythicScene() : Scene(ecs::scene::MYTHICSCENE), _selected_mythic(nullptr), _last_my_mythic_img(nullptr),
 _lm(nullptr), _selected(false), _activate_confirm_button(false), _chosen_mythic(nullptr) {}
 
@@ -50,16 +51,6 @@ void MythicScene::enterScene()
 
 void MythicScene::exitScene()
 {
-    auto* mngr = Game::Instance()->get_mngr();
-    auto cm = mngr->getHandler(ecs::hdlr::CONFIRMMYTHIC);
-
-    auto cImg = mngr->getComponent<ImageForButton>(cm);
-
-    cImg->destination_rect.position = { 0.438f, 0.55f };
-    cImg->_filter = false;
-    cImg->swap_textures();
-    cImg->_filter = false;
-
     _lm->resize(1.0f/1.1f);
 
     _lm = nullptr;
@@ -80,7 +71,7 @@ void MythicScene::exitScene()
 void MythicScene::create_mythic_info() {
     auto e = create_entity(ecs::grp::UI,
         _scene_ID,
-        new transformless_dyn_image({ { 0.315f,0.335f }, {0.4f,0.2f} },
+        new transformless_dyn_image({ { 0.315f,0.475f }, {0.4f,0.2f} },
             0,
             Game::Instance()->get_mngr()->getComponent<camera_component>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA))->cam,
             &sdlutils().images().at("initial_info")));
@@ -133,7 +124,7 @@ MythicScene::get_unique_mythic(std::unordered_set<std::string>& appeared_mythics
 void MythicScene::create_reward_mythic_buttons() {
     float umbral = 0.2f;
     GameStructs::ButtonProperties buttonPropTemplate = {
-        { {0.45f, 0.115f}, {0.125f, 0.2f} },
+        {{0.44f, 0.25f}, {0.125f, 0.2f}},
         0.0f, "", ecs::grp::MYTHICOBJS
     };
 
@@ -154,14 +145,15 @@ void MythicScene::create_reward_mythic_buttons() {
 
     buttonPropTemplate.ID = ecs::grp::UI;
     buttonPropTemplate.sprite_key = "confirm_reward";
-    buttonPropTemplate.rect.position = { 0.438f, 0.55f };
-    buttonPropTemplate.rect.size = { 0.15f, 0.075f };
+    buttonPropTemplate.rect.position = { 0.36f, 0.65f };
+    buttonPropTemplate.rect.position.y = 15.0f;
+    buttonPropTemplate.rect.size = { 0.3, 0.2f };
     create_mythic_selected_button(buttonPropTemplate);
 
     //next round button
     buttonPropTemplate.ID = ecs::grp::UI;
-    buttonPropTemplate.sprite_key = "enter_game"; 
-    buttonPropTemplate.rect.position = { 2.0f, 0.55f };
+    buttonPropTemplate.sprite_key = "next"; 
+    buttonPropTemplate.rect.position.y = 10.0f;
     create_next_round_button(buttonPropTemplate); 
 }
 
@@ -206,15 +198,15 @@ void MythicScene::create_reward_mythic_button(const GameStructs::ButtonPropertie
         //std::cout << "hover -> Reward button: " << std::endl;
         //filter
         imgComp->_filter = true;
-        /*auto& sp = mngr->getComponent<MythicDataComponent>(e)->sprite();
-        ri->set_texture(&sdlutils().images().at(sp + "_info"));*/
-
+        auto& sp = mngr->getComponent<MythicDataComponent>(e)->sprite();
+        ri->set_texture(&sdlutils().images().at(sp + "_info"));
+        sdlutils().soundEffects().at("button_hover").play();
         });
     buttonComp->connectExit([buttonComp, imgComp, ri]() {
         //std::cout << "exit -> Reward button: " << std::endl;
         //filter
         imgComp->_filter = false;
-        /*ri->set_texture(&sdlutils().images().at("initial_info"));*/
+        ri->set_texture(&sdlutils().images().at("initial_info"));
         });
 
 }
@@ -288,38 +280,38 @@ void MythicScene::create_mythic_selected_button(const GameStructs::ButtonPropert
     auto buttonComp = mngr->getComponent<Button>(e);
     auto imgComp = mngr->addComponent<ImageForButton>(e,
         &sdlutils().images().at(bp.sprite_key),
-        &sdlutils().images().at("initial_info"),
+        &sdlutils().images().at(bp.sprite_key + "_selected"),
         bp.rect,
         0,
         Game::Instance()->get_mngr()->getComponent<camera_component>(
             Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA))->cam
     );
-    imgComp->swap_textures();
     mngr->setHandler(ecs::hdlr::CONFIRMMYTHIC, e);
     buttonComp->connectClick([buttonComp, this, imgComp, mngr] {
         if (_lm != nullptr && !_selected) {
-            imgComp->_filter = false;
             _lm->swap_textures();
             _selected = true;
             add_new_reward_mythic();
-
-            imgComp->destination_rect.position.x = 100.0f;
-
+            imgComp->_filter = false;
+            imgComp->swap_textures();
             auto imgGameScene = mngr->getComponent<ImageForButton>(mngr->getHandler(ecs::hdlr::NEXTROUNDMYTHIC));
-            imgGameScene->destination_rect.position = { 0.3f, 0.28f };
-            imgGameScene->destination_rect.size = { 0.4f, 0.25f };
+            imgGameScene->destination_rect.position.y = imgComp->destination_rect.position.y-0.15f;
+            imgComp->destination_rect.position.y = 100.0f;
         }
         });
     buttonComp->connectHover([buttonComp, imgComp, this]() {
         if (_selected) return;
         //std::cout << "hover -> Reward selected button: " << std::endl;
         //filter
+        imgComp->swap_textures();
         imgComp->_filter = true;
+        sdlutils().soundEffects().at("button_hover").play();
         });
     buttonComp->connectExit([buttonComp, imgComp, this]() {
         //std::cout << "exit -> Reward selected button: " << std::endl;
         //filter
         imgComp->_filter = false;
+        imgComp->swap_textures();
         });
 }
 
@@ -443,7 +435,7 @@ void MythicScene::update(uint32_t delta_time) {
     if (_activate_confirm_button && _lm != nullptr) {
         auto mngr = Game::Instance()->get_mngr();
         auto imgCompConfirm = mngr->getComponent<ImageForButton>(mngr->getHandler(ecs::hdlr::CONFIRMMYTHIC));
-        imgCompConfirm->swap_textures();
+        imgCompConfirm->destination_rect.position.y = 0.65f;
         _activate_confirm_button = false;
     }
 }
@@ -452,15 +444,29 @@ void MythicScene::create_next_round_button(const GameStructs::ButtonProperties& 
     auto* mngr = Game::Instance()->get_mngr();
     auto e = create_button(bp);
     mngr->setHandler(ecs::hdlr::NEXTROUNDMYTHIC, e);
-    auto imgComp = mngr->getComponent<transformless_dyn_image>(e);
+    auto imgComp = mngr->addComponent<ImageForButton>(e,
+        &sdlutils().images().at(bp.sprite_key),
+        &sdlutils().images().at(bp.sprite_key+"_selected"),
+        bp.rect,
+        0,
+        Game::Instance()->get_mngr()->getComponent<camera_component>(
+            Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA))->cam
+    );
     auto buttonComp = mngr->getComponent<Button>(e);
 
     buttonComp->connectClick([buttonComp, mngr, imgComp, this]() { if (_selected) {
         _lm->swap_textures();
         Game::Instance()->change_Scene(Game::GAMESCENE);
         imgComp->_filter = false;
-        imgComp->destination_rect.position.x = 2.0f;
+        imgComp->swap_textures();
+        imgComp->destination_rect.position.y = 2.0f;
     }});
-    buttonComp->connectHover([buttonComp, imgComp, this]() { imgComp->_filter = true;});
-    buttonComp->connectExit([buttonComp, imgComp, this]() { imgComp->_filter = false;});
+    buttonComp->connectHover([buttonComp, imgComp, this]() { 
+        imgComp->swap_textures();
+        imgComp->_filter = true;
+        sdlutils().soundEffects().at("button_hover").play();
+        });
+    buttonComp->connectExit([buttonComp, imgComp, this]() { 
+        imgComp->_filter = false;
+        imgComp->swap_textures();});
 }

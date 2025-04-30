@@ -40,6 +40,7 @@ Texture::Texture(SDL_Renderer *renderer, const std::string &fileName) {
 	_texture = SDL_CreateTextureFromSurface(renderer, surface);
 	SDL_FreeSurface(surface);
 	assert(_texture != nullptr);
+	SDL_SetTextureBlendMode(_texture, SDL_BLENDMODE_BLEND);
 }
 
 Texture::Texture(SDL_Renderer *renderer, const std::string &text,

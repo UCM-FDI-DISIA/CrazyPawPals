@@ -11,6 +11,7 @@ class ManaComponent;
 class MovementController;
 class MythicComponent;
 class AnimationComponent;
+class GhostStateComponent;
 
 class KeyboardPlayerCtrl :public ecs::Component
 {
@@ -45,8 +46,10 @@ private:
 	MovementController* _mc;
 	Weapon* _w;
 	Deck* _dc;
-	MythicComponent* _my;
 	Health* _h;
 	ManaComponent* _m;
 	Transform* _tr;
+
+	GhostStateComponent* _g;
+	MythicComponent* _my;
 };

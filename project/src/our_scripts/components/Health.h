@@ -1,6 +1,7 @@
 #pragma once
 #include "../../ecs/Component.h"
 struct 	offset_dyn_image;
+class Transform;
 class Health :public ecs::Component
 {
 public:
@@ -19,6 +20,7 @@ public:
 	void update(uint32_t delta_time) override;
 	void initComponent() override;
 protected:
+	Transform* _tr;
 	int _currentHealth;
 	int _maxHealth;
 	int _shield;

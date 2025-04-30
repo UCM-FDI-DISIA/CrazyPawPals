@@ -188,6 +188,14 @@
       "file": "resources/images/enemies/boom.png"
     },
     {
+      "id": "rey_basurero",
+      "file": "resources/images/enemies/rey_basurero.png"
+    },
+    {
+      "id": "basurero",
+      "file": "resources/images/enemies/basurero.png"
+    },
+    {
       "id": "catkuza",
       "file": "resources/images/enemies/catkuza.png"
     },
@@ -462,7 +470,7 @@
     },
     {
       "id": "exit",
-      "file": "resources/images/ui/buttons/exit_o.png"
+      "file": "resources/images/ui/buttons/exit.png"
     },
     {
       "id": "reward_health",
@@ -481,8 +489,16 @@
       "file": "resources/images/ui/buttons/confirm_reward.png"
     },
     {
+      "id": "confirm_reward_selected",
+      "file": "resources/images/ui/buttons/confirm_reward_selected.png"
+    },
+    {
       "id": "exchange_reward",
       "file": "resources/images/ui/buttons/exchange_reward.png"
+    },
+    {
+      "id": "exchange_reward_selected",
+      "file": "resources/images/ui/buttons/exchange_reward_selected.png"
     },
     {
       "id": "game_over",
@@ -497,12 +513,24 @@
       "file": "resources/images/ui/buttons/back.png"
     },
     {
+      "id": "back_selected",
+      "file": "resources/images/ui/buttons/back_selected.png"
+    },
+    {
       "id": "new_round",
       "file": "resources/images/ui/buttons/start.png"
     },
     {
+      "id": "new_round_selected",
+      "file": "resources/images/ui/buttons/start_selected.png"
+    },
+    {
       "id": "next",
-      "file": "resources/images/ui/buttons/start.png"
+      "file": "resources/images/ui/buttons/next.png"
+    },
+    {
+      "id": "next_selected",
+      "file": "resources/images/ui/buttons/next_selected.png"
     },
     {
       "id": "mythic",
@@ -551,6 +579,46 @@
     {
       "id": "mythic_demonic_scratcher",
       "file": "resources/images/ui/mythics/m_demonic_scratcher.png"
+    },
+    {
+      "id": "mythic_blood_claw_info",
+      "file": "resources/images/ui/infos/mythic_blood_claw_info.png"
+    },
+    {
+      "id": "mythic_claw_file_info",
+      "file": "resources/images/ui/infos/mythic_claw_file_info.png"
+    },
+    {
+      "id": "mythic_curtain_reaper_info",
+      "file": "resources/images/ui/infos/mythic_curtain_reaper_info.png"
+    },
+    {
+      "id": "mythic_blood_pact_info",
+      "file": "resources/images/ui/infos/mythic_blood_pact_info.png"
+    },
+    {
+      "id": "mythic_incense_info",
+      "file": "resources/images/ui/infos/mythic_incense_info.png"
+    },
+    {
+      "id": "mythic_quick_draw_deck_info",
+      "file": "resources/images/ui/infos/mythic_quick_draw_deck_info.png"
+    },
+    {
+      "id": "mythic_dream_recicler_info",
+      "file": "resources/images/ui/infos/mythic_dream_recicler_info.png"
+    },
+    {
+      "id": "mythic_uranium_socks_info",
+      "file": "resources/images/ui/infos/mythic_uranium_socks_info.png"
+    },
+    {
+      "id": "mythic_zoomies_inducer_info",
+      "file": "resources/images/ui/infos/mythic_zoomies_inducer_info.png"
+    },
+    {
+      "id": "mythic_demonic_scratcher_info",
+      "file": "resources/images/ui/infos/mythic_demonic_scratcher_info.png"
     },
     {
       "id": "meteroid",
@@ -603,6 +671,14 @@
     {
       "id": "boton_mainmenu_tutorial",
       "file": "resources/images/ui/tutorial/boton.png"
+    },
+    {
+      "id": "ready",
+      "file": "resources/images/ui/buttons/ready.png"
+    },
+    {
+      "id": "ready_selected",
+      "file": "resources/images/ui/buttons/ready_selected.png"
     }
 
   ],
@@ -668,6 +744,10 @@
     {
       "id": "reward",
       "file": "resources/sound/end_wave.wav"
+    },
+    {
+      "id": "game_over",
+      "file": "resources/sound/game_over.mp3"
     }
   ]
 }

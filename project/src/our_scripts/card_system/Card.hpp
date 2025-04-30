@@ -38,7 +38,7 @@ protected:
 	Destination _play_destination;
 	Destination _discard_destination;
 	Destination _mill_destination;
-
+	bool _can_be_replaced;
 	// OPTIONAL ATTRIBUTES
 	// These can be declared, modified and utilized within specific subclasses if necessary.
 	// Optional attributes are custom-made and can be implemented in a multitude of ways.
@@ -70,4 +70,5 @@ public:
 	virtual std::string& get_name() {
 		return _name;
 	}
+	inline bool can_be_replaced() const { return _can_be_replaced; };
 };

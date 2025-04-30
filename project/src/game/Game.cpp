@@ -1,4 +1,3 @@
-// This file is part of the course TPV2@UCM - Samir Genaim
 #include "Game.h"
 
 #include "../ecs/Manager.h"
@@ -7,18 +6,9 @@
 #include "../utils/Vector2D.h"
 #include "../utils/Collisions.h"
 
-#include "../our_scripts/components/rendering/Image.h"
-#include "../our_scripts/components/movement/Transform.h"
-#include "../our_scripts/components/KeyboardPlayerCtrl.h"
-#include "../our_scripts/components/movement/MovementController.h"
-#include "../our_scripts/components/cards/Mana.h"
-
-#include "../our_scripts/components/cards/Deck.hpp"
-#include "../our_scripts/components/rendering/dyn_image.hpp"
 #include "../our_scripts/components/rendering/camera_component.hpp"
-#include "../our_scripts/components/rendering/rect_component.hpp"
-#include "../our_scripts/components/weapons/player/Revolver.h"
-#include "../our_scripts/components/weapons/player/Rampage.h"
+
+
 
 //Scenes for SceneManager
 #include "scenes/Scene.h"
@@ -168,43 +158,41 @@ bool Game::init() {
 	// HACK: uncomment this to fullscreen
 	SDL_SetWindowFullscreen(sdlutils().window(), 0);//SDL_WINDOW_FULLSCREEN_DESKTOP);
 	
+	initGame();
+
+	return true;
+}
+
+void Game::initGame()
+{
 	_mngr = new ecs::Manager();
 
 	// Inicializar el vector de escenas
-	_scenes.resize(NUM_SCENE);
+	_scenes.resize(NUM_SCENE, nullptr);
+	_scene_inits.resize(NUM_SCENE, false);
 
 	_scenes[GAMESCENE] = new GameScene();
-	_scenes[GAMESCENE]->initScene();
-
 	_scenes[TUTORIAL] = new TutorialScene();
-	_scenes[TUTORIAL]->initScene();
-
 	_scenes[MAINMENU] = new MainMenuScene();
-	_scenes[MAINMENU]->initScene();
-
-	_scenes[CONTROLSSCENE] = new ControlsScene();
-	_scenes[CONTROLSSCENE]->initScene();
-
 	_scenes[SELECTIONMENU] = new SelectionMenuScene();
-	_scenes[SELECTIONMENU]->initScene();
-
 	_scenes[REWARDSCENE] = new RewardScene();
-	_scenes[REWARDSCENE]->initScene();
-
 	_scenes[MYTHICSCENE] = new MythicScene();
-	_scenes[MYTHICSCENE]->initScene();
-
-	//_scenes[UPGRADESCENE] = new UpgradeScene();
-	//_scenes[UPGRADESCENE]->initScene();
 	_scenes[GAMEOVER] = new GameOverScene();
-	_scenes[GAMEOVER]->initScene();
-	
-	_scenes[VICTORY] = new VictoryScene(); //? por que no funciona VictoryScene()
-	_scenes[VICTORY]->initScene();
+	_scenes[VICTORY] = new VictoryScene();
 
+	//crear la camara
+	const Scene::rendering::camera_creation_descriptor_flags flags =
+		Scene::rendering::camera_creation_descriptor_options::camera_creation_descriptor_options_set_handler
+		| Scene::rendering::camera_creation_descriptor_options::camera_creation_descriptor_options_clamp;
+	Scene::rendering::create_camera(ecs::scene::MAINMENUSCENE, flags, nullptr);
+
+	//crear player
+	ecs::entity_t player = GameScene::create_player();
+	_mngr->setHandler(ecs::hdlr::PLAYER, player);
+
+	//iniciar el juego en el mainmenu
 	change_Scene(MAINMENU);
 	set_volumes();
-	return true;
 }
 
 static void game_start_network_dbg(network_context &ctx) {
@@ -322,11 +310,7 @@ void Game::start() {
 		}
 		_scenes[_current_scene_index]->update(delta_time_milliseconds);
 
-		//Transform* tr = Game::Instance()->get_mngr()->getComponent<Transform>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::PLAYER));
-		//std::cout << "PLAYER: " << tr->getPos().getX() << "," << tr->getPos().getY() << std::endl;
-
 		_mngr->refresh();
-
 
 		sdlutils().clearRenderer();
 		_scenes[_current_scene_index]->render();
@@ -365,7 +349,14 @@ void Game::change_Scene(State nextScene){
 		return;
 	}
 
-	if (_current_scene_index != -1) {
+	//Inicializa cuando entra por primera vez a una escena
+	if (!_scene_inits[nextScene] && _scenes[nextScene] != nullptr) {
+		_scenes[nextScene]->initScene();
+		_scene_inits[nextScene] = true;
+		_mngr->refresh();
+	}
+
+	if (_current_scene_index != -1 && _scenes[_current_scene_index] != nullptr) {
 		_scenes[_current_scene_index]->exitScene();
 	}
 
@@ -382,4 +373,6 @@ void Game::set_volumes() {
 	sdlutils().soundEffects().at("round_start").setVolume(45);
 	sdlutils().soundEffects().at("round_start_event").setVolume(45);
 	sdlutils().musics().at("main_menu_bgm").setMusicVolume(30);
+	sdlutils().soundEffects().at("reward").setVolume(40);
+	sdlutils().soundEffects().at("game_over").setVolume(40);
 }

@@ -135,4 +135,12 @@ namespace GameStructs
 		ZOOMIESINDUCER,
 		LAST_MYTHIC,
 	};
+
+	struct PlayerData {
+		int weapon_damage;
+		float max_speed;
+		float cooldown;
+		int reload;
+		int mana_regen;
+	};
 }

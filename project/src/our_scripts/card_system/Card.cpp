@@ -2,7 +2,7 @@
 #include "../components/cards/Deck.hpp"
 
 Card::Card(std::string card_name, Resources r,Destination pd, Destination dd, Destination md)
-	:_name(card_name), _my_costs(r),_play_destination(pd), _discard_destination(dd), _mill_destination(md)
+	:_name(card_name), _my_costs(r),_play_destination(pd), _discard_destination(dd), _mill_destination(md), _can_be_replaced(true)
 {
 }
 
