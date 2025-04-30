@@ -17,6 +17,24 @@
             }
         },
         {
+            "name": "x64-Debug-Host",
+            "inherits": "x64-Debug",
+            "environment": {
+                "DBG_NETWORK": "true",
+                "DBG_NETWORK_HOST": "true",
+                "DBG_NETWORK_CLIENT": "false"
+            }
+        },
+        {
+            "name": "x64-Debug-Client",
+            "inherits": "x64-Debug",
+            "environment": {
+                "DBG_NETWORK": "true",
+                "DBG_NETWORK_HOST": "false",
+                "DBG_NETWORK_CLIENT": "true"
+            }
+        },
+        {
             "name": "x64-Release",
             "binaryDir": "${sourceDir}/build/${presetName}",
             "cacheVariables": {
@@ -59,6 +77,14 @@
         {
             "name": "x64-Debug",
             "configurePreset": "x64-Debug"
+        },
+        {
+            "name": "x64-Debug-Host",
+            "configurePreset": "x64-Debug-Host"
+        },
+        {
+            "name": "x64-Debug-Client",
+            "configurePreset": "x64-Debug-Client"
         },
         {
             "name": "x64-Release",
