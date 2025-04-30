@@ -6,12 +6,17 @@
 #include <cassert>
 #include <type_traits>
 #include <string_view>
+#include "../../utils/Vector2D.h"
+#include "../../game/GameStructs.h"
 
+int const fact_float_int = 1024;
 enum network_message_type {
     network_message_type_none = 0,
     network_message_type_any,
     network_message_type_dbg_print,
     network_message_type_dbg_print_two_byte_test = 0x0102,
+    network_message_type_summon_true_bullet,
+    network_message_type_summon_dummy_bullet,
 };
 using network_message_type_option = uint16_t;
 using network_message_header_size = uint16_t;
@@ -98,5 +103,60 @@ network_message_payload_dbg_print<ArgumentsSize> network_message_payload_dbg_pri
     return msg;
 }
 
+//Struct de BulletProperties que se envia por la red
+struct NetworkBulletProperties
+{
+    int init_pos[2];
+    int dir[2];
+    int speed = 0.0f;
+    int damage = 0;
+    int pierce_number = 0;
+    float life_time = 1.0f;
+    float width = 40;
+    float height = 40;
+    GameStructs::WeaponType weapon_type = GameStructs::DEFAULT;
+    GameStructs::collide_with collision_filter;
+    uint8_t sprite_key_length;
+    char sprite_key[32];
+};
+
+//Constructor del struct de NetworkBulletProperties
+NetworkBulletProperties network_message_bulletProperties_create(GameStructs::BulletProperties bp)
+{
+    NetworkBulletProperties n_bp;
+    
+    //Vector2D init_pos
+    SDLNet_Write32(bp.init_pos.getX() * fact_float_int, &n_bp.init_pos[0]);
+    SDLNet_Write32(bp.init_pos.getY() * fact_float_int, &n_bp.init_pos[1]);
+
+    //Vector2D dir
+    SDLNet_Write32(bp.dir.getX() * fact_float_int, &n_bp.dir[0]);
+    SDLNet_Write32(bp.dir.getY() * fact_float_int, &n_bp.dir[1]);
+
+    //ints
+    SDLNet_Write32(bp.speed * fact_float_int, &n_bp.speed);
+    SDLNet_Write32(bp.damage, &n_bp.damage);
+    SDLNet_Write32(bp.pierce_number, &n_bp.pierce_number);
+
+    //floats
+    SDLNet_Write32(bp.life_time * fact_float_int, &n_bp.life_time);
+    SDLNet_Write32(bp.width * fact_float_int, &n_bp.width);
+    SDLNet_Write32(bp.height * fact_float_int, &n_bp.height);
+
+    //ints
+    SDLNet_Write32(bp.weapon_type, &n_bp.weapon_type);
+    SDLNet_Write32(bp.collision_filter, &n_bp.collision_filter);
+
+    //strings
+    const size_t size = bp.sprite_key.size();
+    assert(
+        size < 32 && "error: string size exceeds 32"
+    );
+    SDLNet_Write32(32, &n_bp.sprite_key_length);
+    
+    std::copy(bp.sprite_key.begin(), bp.sprite_key.end(), n_bp.sprite_key);
+
+    return n_bp;
+}
 
 #endif
