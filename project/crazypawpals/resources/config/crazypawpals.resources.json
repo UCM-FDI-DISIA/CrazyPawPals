@@ -15,6 +15,21 @@
       "id": "PROTEST_GUERRILLA100",
       "file": "resources/fonts/ProtestGuerrilla-Regular.ttf",
       "size": 100
+    },
+    {
+      "id": "ALFA_SLAB",
+      "file": "resources/fonts/AlfaSlabOne-Regular.ttf",
+      "size": 200
+    },
+    {
+      "id": "RUBIK_MONO",
+      "file": "resources/fonts/RubikMonoOne-Regular.ttf",
+      "size": 200
+    },
+    {
+      "id": "CAL_SANS",
+      "file": "resources/fonts/CalSans-Regular.ttf",
+      "size": 200
     }
   ],
 
