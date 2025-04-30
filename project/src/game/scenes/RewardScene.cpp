@@ -388,8 +388,9 @@ void RewardScene::create_a_deck_card(const GameStructs::CardButtonProperties& bp
 
     buttonComp->connectClick([buttonComp, imgComp, this, bp] {
         if (_selected || _heal) return;
-        imgComp->destination_rect.size = { imgComp->_original_w,  imgComp->_original_h };
         auto it = buttonComp->It();
+        if (it == nullptr || !it->can_be_replaced()) return;
+        imgComp->destination_rect.size = { imgComp->_original_w,  imgComp->_original_h };
         //only assign a valid iterator
         if (it != _selected_card) {
 
@@ -401,7 +402,7 @@ void RewardScene::create_a_deck_card(const GameStructs::CardButtonProperties& bp
         }
         });
 
-    buttonComp->connectHover([buttonComp, imgComp, mngr, ri, e,this]() {
+    buttonComp->connectHover([buttonComp, imgComp, mngr, ri, e, this]() {
         //std::cout << "hover -> Reward button: " << std::endl;
         //filter
         if (_selected) return;

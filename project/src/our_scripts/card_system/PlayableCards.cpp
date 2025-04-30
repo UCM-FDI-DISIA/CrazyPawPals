@@ -377,6 +377,7 @@ void QuickFeet::update(uint32_t dt)
 #pragma region CatKuzaCard
 CatKuzaCard::CatKuzaCard() : Card("card_catkuza", Resources(2)), _times_since_played(0)
 {
+	_can_be_replaced = false;
 }
 
 void 
@@ -397,7 +398,9 @@ CatKuzaCard::on_play(Deck& d, const Vector2D* player_position, const Vector2D* t
 #pragma endregion
 
 #pragma region SuperMichiCard
-SuperMichiCard::SuperMichiCard() : Card("card_super_michi", Resources(1)),_times_since_played(0){}
+SuperMichiCard::SuperMichiCard() : Card("card_super_michi", Resources(1)),_times_since_played(0){
+	_can_be_replaced = false;
+}
 
 void
 SuperMichiCard::on_play(Deck& d, const Vector2D* player_position, const Vector2D* target_position)
