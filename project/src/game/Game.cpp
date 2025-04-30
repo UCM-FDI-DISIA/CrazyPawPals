@@ -55,11 +55,19 @@ static void game_destroy_network_context(network_context &ctx) {
 	case network_context_profile_status_none:
 		break;
 	case network_context_profile_status_host: {
-		network_context_host_destroy(ctx.profile.host);
+		if (network_context_host_connected(ctx.profile.host)) {
+			network_context_host_destroy(ctx.profile.host);
+		} else {
+			ctx.profile.host.ip_self.host = INADDR_NONE;
+		}
 		break;
 	}
 	case network_context_profile_status_client: {
-		network_context_client_destroy(ctx.profile.client);
+		if (network_context_client_connected(ctx.profile.client)) {
+			network_context_client_destroy(ctx.profile.client);
+		} else {
+			ctx.profile.client.ip_host.host = INADDR_NONE;
+		}
 		break;
 	}
 	default: {
@@ -246,7 +254,14 @@ static void game_start_network_dbg(network_context &ctx) {
 		break;
 	}
 	case network_context_profile_status_client: {
-		network_context_client_connect_alloc(ctx.profile.client);
+		const network_context_client_connect_status_flags connected =
+			network_context_client_connect_alloc(ctx.profile.client);
+		
+		if (connected & network_context_client_connect_status_error) {
+			std::cerr << "Error connecting to host" << std::endl;
+			break;
+		}
+
 		network_message_pack_send(
 			ctx.profile.client.socket_to_master,
 			network_message_pack_create(

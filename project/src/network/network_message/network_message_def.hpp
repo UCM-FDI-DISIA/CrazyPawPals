@@ -28,9 +28,18 @@ inline bool network_message_header_valid(const network_message_header header) {
     return header.unused == 0 && header.illegal == 1;
 }
 inline bool network_message_header_in_network_endian(const network_message_header header) {
-    return SDLNet_Read16(&header.payload_size_n) == header.payload_size_n;
+    network_message_header_size payload_check_h = SDLNet_Read16(&header.payload_size_n);
+    const uint8_t payload_check_h0 = payload_check_h & 0xFF;
+    const uint8_t payload_check_h1 = (payload_check_h >> 8) & 0xFF;
+
+    const bool h0_match =
+        payload_check_h0 == *(reinterpret_cast<const uint8_t *>(&header.payload_size_n) + sizeof(network_message_header_size) - 1);
+    const bool h1_match = 
+        payload_check_h1 == *(reinterpret_cast<const uint8_t *>(&header.payload_size_n) + sizeof(network_message_header_size) - 2);
+    return h0_match & h1_match;
 }
 
+#include <iostream>
 inline network_message_header network_message_header_create(
     const network_message_type_option type,
     const network_message_header_size payload_size_h
@@ -45,6 +54,9 @@ inline network_message_header network_message_header_create(
     assert(
         network_message_header_valid(header) && "error: header must be valid after creation"
     );
+    // std::cout << "original: " << payload_size_h << std::endl;
+    // std::cout << "network: " << header.payload_size_n << std::endl;
+    // std::cout << "Re read: " << SDLNet_Read16(&header.payload_size_n) << std::endl;
     assert(
         network_message_header_in_network_endian(header) && "error: header must be in network endian after creation"
     );

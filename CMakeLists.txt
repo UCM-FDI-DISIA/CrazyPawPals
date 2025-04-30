@@ -82,15 +82,23 @@ project(CrazyPawPals C CXX)
         ${CrazyPawPals_SRC_DIRECTORY}/main.cpp
         ${CrazyPawPals_SOURCES}
      "project/src/our_scripts/components/ui/HUD.cpp" "project/src/our_scripts/components/ui/HUD.h")
+    
+    if (!$ENV{DBG_NETWORK})
+        set(DBG_NETWORK_HOST false)
+        set(DBG_NETWORK_CLIENT false)
+    else()
+        set(DBG_NETWORK_HOST $ENV{DBG_NETWORK_HOST})
+        set(DBG_NETWORK_CLIENT $ENV{DBG_NETWORK_CLIENT})
+    endif()
     target_compile_options(
         ${PROJECT_NAME}
         PRIVATE
         -D RIGIDBODY_COMPONENT_DEGEN_RESTITUTION_OFF
         -DDBG_COLLISIONS=false
         #-DGENERATE_LOG
-        -DDBG_NETWORK=true
-        -DDBG_NETWORK_HOST=false
-        -DDBG_NETWORK_CLIENT=true
+        -DDBG_NETWORK=${DBG_NETWORK}
+        -DDBG_NETWORK_HOST=${DBG_NETWORK_HOST}
+        -DDBG_NETWORK_CLIENT=${DBG_NETWORK_CLIENT}
         
         -DDBG_NETWORK_HOST_IP="localhost"
         -DDBG_NETWORK_HOST_PORT=1234

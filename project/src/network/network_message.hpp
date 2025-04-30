@@ -97,6 +97,7 @@ network_message_pack<T> network_message_pack_receive(
     }
     
     network_message_pack<T> message;
+    message.header = header;
     const int recv_result = SDLNet_TCP_Recv(
         socket,
         &message.payload,

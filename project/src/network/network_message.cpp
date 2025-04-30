@@ -15,12 +15,12 @@ network_message_dynamic_pack network_message_dynamic_pack_receive(TCPsocket sock
     auto buffer = std::make_unique<uint8_t []>(
         offset + payload_size
     );
+    
     network_message_dynamic_pack message{
         reinterpret_cast<network_message *>(buffer.get()),
         network_message::deleter{}
     };
     message->header = header;
-
     const int recv_result = SDLNet_TCP_Recv(
         socket,
         buffer.get() + offset,
