@@ -2,6 +2,7 @@
 #define NETWORK_MESSAGE_DEF_HPP
 
 #include "SDL_net.h"
+#include "../network_utility.hpp"
 #include <cassert>
 #include <type_traits>
 #include <string_view>
@@ -10,13 +11,14 @@ enum network_message_type {
     network_message_type_none = 0,
     network_message_type_any,
     network_message_type_dbg_print,
+    network_message_type_dbg_print_two_byte_test = 0x0102,
 };
 using network_message_type_option = uint16_t;
 using network_message_header_size = uint16_t;
 struct network_message_header {
     network_message_type_option unused : 1;
     network_message_type_option illegal : 1;
-    network_message_type_option type : 14;
+    network_message_type_option type_n : 14;
     network_message_header_size payload_size_n;
 };
 static_assert(
@@ -28,15 +30,8 @@ inline bool network_message_header_valid(const network_message_header header) {
     return header.unused == 0 && header.illegal == 1;
 }
 inline bool network_message_header_in_network_endian(const network_message_header header) {
-    network_message_header_size payload_check_h = SDLNet_Read16(&header.payload_size_n);
-    const uint8_t payload_check_h0 = payload_check_h & 0xFF;
-    const uint8_t payload_check_h1 = (payload_check_h >> 8) & 0xFF;
-
-    const bool h0_match =
-        payload_check_h0 == *(reinterpret_cast<const uint8_t *>(&header.payload_size_n) + sizeof(network_message_header_size) - 1);
-    const bool h1_match = 
-        payload_check_h1 == *(reinterpret_cast<const uint8_t *>(&header.payload_size_n) + sizeof(network_message_header_size) - 2);
-    return h0_match & h1_match;
+    return network_utility_in_network_endian_u16(header.payload_size_n)
+        && network_utility_in_network_endian_u16(header.type_n);
 }
 
 #include <iostream>
@@ -44,19 +39,18 @@ inline network_message_header network_message_header_create(
     const network_message_type_option type,
     const network_message_header_size payload_size_h
 ) {
-    network_message_header header{
-        .unused = 0,
-        .illegal = 1,
-        .type = type,
-        .payload_size_n = 0,
-    };
+    network_message_header header;
+    network_message_type_option type_n;
+    
+    SDLNet_Write16(type, &type_n);
     SDLNet_Write16(payload_size_h, &header.payload_size_n);
+    header.unused = 0;
+    header.illegal = 1;
+    header.type_n = type_n;
+
     assert(
         network_message_header_valid(header) && "error: header must be valid after creation"
     );
-    // std::cout << "original: " << payload_size_h << std::endl;
-    // std::cout << "network: " << header.payload_size_n << std::endl;
-    // std::cout << "Re read: " << SDLNet_Read16(&header.payload_size_n) << std::endl;
     assert(
         network_message_header_in_network_endian(header) && "error: header must be in network endian after creation"
     );
@@ -77,21 +71,29 @@ struct network_message_payload {
     };
 };
 
-template <size_t ArgumentsSize>
+template <uint32_t ArgumentsSize>
 struct network_message_payload_dbg_print {
-    size_t args_size_n;
+    uint32_t args_size_n;
     std::array<uint8_t, ArgumentsSize> args;
 };
 
-template <size_t ArgumentsSize>
+template <uint32_t ArgumentsSize>
 network_message_payload_dbg_print<ArgumentsSize> network_message_payload_dbg_print_create(
     std::string_view str
 ) {
     network_message_payload_dbg_print<ArgumentsSize> msg;
-    msg.args_size_n = str.size();
+
+    const size_t size = str.size();
     assert(
-        str.size() <= ArgumentsSize && "error: string size exceeds buffer size"
+        size < std::numeric_limits<uint32_t>::max() && "error: string size exceeds uint32_t max"
     );
+
+    const uint32_t args_size_h = size;
+    assert(
+        args_size_h < ArgumentsSize && "error: string size exceeds buffer size"
+    );
+    SDLNet_Write32(args_size_h, &msg.args_size_n);
+    
     std::copy(str.begin(), str.end(), msg.args.begin());
     return msg;
 }

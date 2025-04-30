@@ -46,4 +46,23 @@ void network_utility_sdlnet_drain_and_close(TCPsocket socket) {
     SDLNet_TCP_Close(socket);
 }
 
+inline bool network_utility_in_network_endian_u16(const uint16_t value_n) {
+    const uint16_t value_h = SDLNet_Read16(&value_n);
+    const uint8_t value_h0 = value_h & 0xFF;
+    const uint8_t value_h1 = (value_h >> 8) & 0xFF;
+    return (value_h0 == *(reinterpret_cast<const uint8_t *>(&value_n) + sizeof(uint16_t) - 1))
+           & (value_h1 == *(reinterpret_cast<const uint8_t *>(&value_n) + sizeof(uint16_t) - 2));
+}
+inline bool network_utility_in_network_endian_u32(const uint32_t value_n) {
+    const uint32_t value_h = SDLNet_Read32(&value_n);
+    const uint8_t value_h0 = value_h & 0xFF;
+    const uint8_t value_h1 = (value_h >> 8) & 0xFF;
+    const uint8_t value_h2 = (value_h >> 16) & 0xFF;
+    const uint8_t value_h3 = (value_h >> 24) & 0xFF;
+    return (value_h0 == *(reinterpret_cast<const uint8_t *>(&value_n) + sizeof(uint32_t) - 1))
+           & (value_h1 == *(reinterpret_cast<const uint8_t *>(&value_n) + sizeof(uint32_t) - 2))
+           & (value_h2 == *(reinterpret_cast<const uint8_t *>(&value_n) + sizeof(uint32_t) - 3))
+           & (value_h3 == *(reinterpret_cast<const uint8_t *>(&value_n) + sizeof(uint32_t) - 4));
+}
+
 #endif

@@ -89,6 +89,15 @@ network_message_pack<T> network_message_pack_receive(
     TCPsocket socket
 ) {
     const network_message_header header = network_message_header_receive(socket);
+    assert(
+        network_message_header_valid(header)
+        && "fatal error: message header must be valid before receiving"
+    );
+    assert(
+        network_message_header_in_network_endian(header)
+        && "fatal error: message header must be in network endian before receiving"
+    );
+    
     const size_t payload_size = size_t(SDLNet_Read16(&header.payload_size_n));
 
     if (sizeof(network_message_pack<T>::payload) < payload_size) {

@@ -243,9 +243,18 @@ static void game_start_network_dbg(network_context &ctx) {
 							network_message_pack_receive<network_message_payload_dbg_print<256>>(
 							connection
 						);
-						if (message.header.type == network_message_type_dbg_print) {
-							message.payload.content.args[message.payload.content.args_size_n] = '\0';
-							std::cout << "Received message: " << message.payload.content.args.data() << std::endl;
+
+						const network_message_type_option type_n = message.header.type_n;
+						const network_message_type_option type_h = SDLNet_Read16(&type_n);
+						if (
+							type_h == network_message_type_dbg_print
+							|| type_h == network_message_type_dbg_print_two_byte_test
+						) {
+							const size_t length = SDLNet_Read32(&message.payload.content.args_size_n);
+							assert(length < message.payload.content.args.size() && "fatal error: message length is too long");
+
+							message.payload.content.args[length] = '\0';
+							std::cout << "Received message: " << message.payload.content.args.data() << "\t with length: " << length << std::endl;
 						}
 					}
 				}
@@ -265,7 +274,7 @@ static void game_start_network_dbg(network_context &ctx) {
 		network_message_pack_send(
 			ctx.profile.client.socket_to_master,
 			network_message_pack_create(
-				network_message_type_dbg_print,
+				network_message_type_dbg_print_two_byte_test,
 				network_message_payload_dbg_print_create<256>(
 					"Hello from client!"
 				)
