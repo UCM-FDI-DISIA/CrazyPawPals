@@ -14,6 +14,7 @@ public:
 private:
 	//Methods of entities to spawn
     void create_start_button(const GameStructs::ButtonProperties& bp);
+	void create_multiplayer_button(const GameStructs::ButtonProperties& bp);
 	void create_controls_button(const GameStructs::ButtonProperties& bp);
 	void create_exit_button(const GameStructs::ButtonProperties& bp);
 };

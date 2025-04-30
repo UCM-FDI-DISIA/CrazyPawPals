@@ -76,6 +76,7 @@
 // Scene list
 //
 #define _SCENE_LIST_ \
+
 	CONTROLSSCENE, \
 	GAMEOVERSCENE, \
 	GAMESCENE, \
@@ -84,7 +85,8 @@
 	REWARDSCENE, \
 	SELECTIONMENUSCENE, \
 	TUTORIALSCENE, \
-	VICTORYSCENE
+	VICTORYSCENE, \
+	MULTIPLAYERMENUSCENE
 
 // Handlers list - must have at least one element
 //
