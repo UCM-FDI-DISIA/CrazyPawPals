@@ -52,7 +52,7 @@ Health::takeDamage(int damage)
 		*new Texture(
 			sdlutils().renderer(),
 			std::to_string(damage),
-			sdlutils().fonts().at("ARIAL16"),
+			sdlutils().fonts().at("PROTEST_GUERRILLA100"),
 			SDL_Color(255, 50, 20, 255)
 		),
 		*tr);
