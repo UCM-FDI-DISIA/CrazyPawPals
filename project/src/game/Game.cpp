@@ -101,7 +101,7 @@ Game::~Game() {
 }
 
 static void game_init_network_context(network_context &ctx) {
-#ifdef DBG_NETWORK
+#if DBG_NETWORK
 #if !defined(DBG_NETWORK_HOST) || !defined(DBG_NETWORK_CLIENT) || !defined(DBG_NETWORK_HOST_IP) && !defined(DBG_NETWORK_HOST_PORT)
 	static_assert(
 		false,

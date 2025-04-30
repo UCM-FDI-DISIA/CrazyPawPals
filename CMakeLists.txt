@@ -4,7 +4,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
  add_definitions(-D_CRTDBG_MAP_ALLOC)
  endif()
 
-if (MSVC)
+if (MSVC OR MSVC_IDE)
     add_compile_options(
         /W4
         /Zi
@@ -84,9 +84,11 @@ project(CrazyPawPals C CXX)
      "project/src/our_scripts/components/ui/HUD.cpp" "project/src/our_scripts/components/ui/HUD.h")
     
     if (NOT $ENV{DBG_NETWORK})
+        set(DBG_NETWORK false)
         set(DBG_NETWORK_HOST false)
         set(DBG_NETWORK_CLIENT false)
     else()
+        set(DBG_NETWORK $ENV{DBG_NETWORK})
         set(DBG_NETWORK_HOST $ENV{DBG_NETWORK_HOST})
         set(DBG_NETWORK_CLIENT $ENV{DBG_NETWORK_CLIENT})
     endif()
