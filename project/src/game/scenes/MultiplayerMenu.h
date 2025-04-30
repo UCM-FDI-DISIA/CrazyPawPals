@@ -23,4 +23,6 @@ private:
 	void create_skin_button(const GameStructs::ButtonProperties& bp);
 
 	std::string _ipHost;
+	bool _isClient;
+
 };
