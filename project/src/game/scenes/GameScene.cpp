@@ -212,9 +212,9 @@ void GameScene::enterScene()
 	auto e = wm->get_current_event();
 	RewardScene::will_have_mythic(e != NONE);
 	manager.getComponent<HUD>(manager.getHandler(ecs::hdlr::HUD_ENTITY))->start_new_wave();
-	spawn_catkuza(Vector2D{10.0f, 0.0f});
-	spawn_rata_basurera(Vector2D{5.0f, 0.0f});
-	spawn_rey_basurero(Vector2D{-5.0f, 0.0f});
+	//spawn_catkuza(Vector2D{10.0f, 0.0f});
+	//spawn_rata_basurera(Vector2D{5.0f, 0.0f});
+	//spawn_rey_basurero(Vector2D{-5.0f, 0.0f});
 	//spawn_super_michi_mafioso(Vector2D{5.0f, 0.0f});
 #ifdef GENERATE_LOG
 	log_writer_to_csv::Instance()->add_new_log();
@@ -380,31 +380,36 @@ void GameScene::spawn_super_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene)
 
 	auto areaAttackState = std::make_shared<AttackingState>(
 		tr, fll, &weapon, false,
-		[&weapon, fll]()
+		[&weapon, fll]() -> bool
 		{
 			weapon.set_player_pos(fll->get_act_follow()->getPos());
 			weapon.attack1();
+			return false;
 		});
 
 	auto shotAttackState = std::make_shared<AttackingState>(
 		tr, fll, &weapon, false,
-		[&weapon, tr]()
+		[&weapon, tr]() -> bool
 		{
 			Vector2D shootPos = tr->getPos(); // Posición del enemigo
 			weapon.attack2(shootPos);
+			return false;
 		});
 
 	auto largeAreaAttackState = std::make_shared<AttackingState>(
 		tr, fll, &weapon, false,
-		[&weapon, tr]()
+		[&weapon, tr]() -> bool
 		{
 			Vector2D shootPos = tr->getPos(); // Posición del enemigo
 			weapon.attack2(shootPos);
+			return false;
 		});
 
 	auto spawnMichiState = std::make_shared<AttackingState>(
 		tr, fll, &weapon, false,
-		[&weapon]() { weapon.generate_michi_mafioso(); });
+		[&weapon]() -> bool { weapon.generate_michi_mafioso(); 
+			return false;
+		});
 
 	// poner los estado a la state
 	state->add_state("Walking", walkingState);
@@ -533,26 +538,30 @@ void GameScene::spawn_catkuza(Vector2D posVec, ecs::sceneId_t scene)
 
 	auto windAttackState = std::make_shared<AttackingState>(
 		tr, fll, &weapon, false,
-		[&weapon, tr]()
+		[&weapon, tr]() -> bool
 		{
 			weapon.wind_attack(tr->getPos());
+			return false;
 		});
 
 	auto areaAttackState = std::make_shared<AttackingState>(
 		tr, fll, &weapon, false,
-		[&weapon, tr]()
+		[&weapon, tr]() -> bool
 		{
 			weapon.area_attack(tr->getPos());
+			return false;
 		});
 
 	auto dashAttackState = std::make_shared<AttackingState>(
 		tr, fll, &weapon, false,
-		[&weapon, tr, fll, mc]()
+		[&weapon, tr, fll, mc]()-> bool
 		{
 			Vector2D shootPos = tr->getPos();
 			Vector2D shootDir = (fll->get_act_follow()->getPos() - shootPos).normalize();
 			Vector2D dash_target = fll->get_act_follow()->getPos() + shootDir * 1.8f;
 			weapon.dash_attack(shootPos, dash_target);
+
+			return false;
 		});
 
 	auto waitingState = std::make_shared<WaitingState>();
@@ -879,8 +888,9 @@ void GameScene::spawn_boom(Vector2D posVec, ecs::sceneId_t scene)
 
 	auto walkingState = std::make_shared<WalkingState>(tr, mc, fll);
 	auto attackingState = std::make_shared<AttackingState>(tr, fll, &weapon, false,
-														   [health]()
-														   { health->takeDamage(health->getMaxHealth()); });
+														   [health]()-> bool
+														   { health->takeDamage(health->getMaxHealth());
+														     return true; });
 
 	state->add_state("Walking", walkingState);
 	state->add_state("Attacking", attackingState);
@@ -996,6 +1006,7 @@ void GameScene::spawn_rata_basurera(Vector2D posVec, ecs::sceneId_t scene)
 	Transform *tr = manager.getComponent<Transform>(e);
 	MovementController *mc = manager.getComponent<MovementController>(e);
 	StateMachine *state = manager.getComponent<StateMachine>(e);
+	Health *ht = manager.getComponent<Health>(e);
 	
 	Follow *fll = manager.getComponent<Follow>(e);
 	fll->act_follow();
@@ -1006,7 +1017,14 @@ void GameScene::spawn_rata_basurera(Vector2D posVec, ecs::sceneId_t scene)
 	weapon.sendHealthComponent(manager.getComponent<Health>(e));
 
 	auto walkingState = std::make_shared<WalkingState>(tr, mc, fll);
-	auto attackingState = std::make_shared<AttackingState>(tr, fll, &weapon);
+	auto attackingState = std::make_shared<AttackingState>(tr, fll, &weapon, true, [ht, tr]() -> bool {
+		if(ht->getHealth() <= ht->getMaxHealth()/2){
+			spawn_rey_basurero(tr->getPos() + Vector2D{0.5f, 0.5f});
+			std::cout << "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" << std::endl;
+			return true;
+		}
+		return false;
+	});
 
 	state->add_state("Walking", walkingState);
 	state->add_state("Attacking", attackingState);

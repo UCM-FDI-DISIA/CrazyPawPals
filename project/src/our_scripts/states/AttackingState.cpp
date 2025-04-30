@@ -34,7 +34,10 @@ void AttackingState::update(uint32_t delta_time) {
 		Vector2D _target = _fll->get_act_follow()->getPos();
 		_weapon->shoot(_target);
 
-		if (_on_attack_callback) _on_attack_callback();
+		if (_on_attack_callback) {
+			if(_on_attack_callback())
+			 	_can_attack = false;;
+		}
 	}
 }
 
