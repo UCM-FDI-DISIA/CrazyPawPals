@@ -341,6 +341,9 @@ ecs::entity_t GameScene::create_enemy(GameStructs::EnemyProperties &&ec, ecs::sc
 #pragma region Super Michi Mafioso
 void GameScene::spawn_super_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene)
 {
+	// if(){
+
+	// }
 	auto &&manager = *Game::Instance()->get_mngr();
 	auto &&weapon = *new WeaponSuperMichiMafioso();
 

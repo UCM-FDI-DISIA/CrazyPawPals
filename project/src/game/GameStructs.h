@@ -58,6 +58,9 @@ namespace GameStructs
 		LOWREST_LIFE,
 		HIGHEST_LIFE,
 	};
+
+	
+
 	struct EnemyProperties
 	{
 		// Sprite
