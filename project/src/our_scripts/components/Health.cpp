@@ -53,7 +53,7 @@ Health::takeDamage(int damage)
 			sdlutils().renderer(),
 			std::to_string(damage),
 			sdlutils().fonts().at("ARIAL16"),
-			SDL_Color(255, 50, 20, 255)
+			SDL_Color({ 255, 50, 20, 255 })
 		),
 		*tr);
 	auto popup = new DamagePopup();
