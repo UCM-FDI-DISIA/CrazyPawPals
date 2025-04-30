@@ -8,6 +8,7 @@
 #include <string_view>
 #include "../../utils/Vector2D.h"
 #include "../../game/GameStructs.h"
+#include "../src/our_scripts/components/WaveManager.h"
 
 int const fact_float_int = 1024;
 enum network_message_type {
@@ -101,6 +102,21 @@ network_message_payload_dbg_print<ArgumentsSize> network_message_payload_dbg_pri
     
     std::copy(str.begin(), str.end(), msg.args.begin());
     return msg;
+}
+
+//Struct de eventos de oleada
+struct NetworkWaveEvent
+{
+	events event_type;
+};
+
+NetworkWaveEvent network_message_wave_event_create(events event_type)
+{
+	NetworkWaveEvent n_we;
+
+	//n_we.event_type = event_type;
+	SDLNet_Write32(event_type, &n_we.event_type);
+    return n_we;
 }
 
 //Struct de BulletProperties que se envia por la red
