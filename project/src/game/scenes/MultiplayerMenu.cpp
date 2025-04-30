@@ -14,7 +14,7 @@
 #include "MultiplayerMenu.h"
 #endif
 
-MultiplayerMenu::MultiplayerMenu() : Scene(ecs::scene::MULTIPLAYERMENUSCENE), _ipHost("Introduce IP")
+MultiplayerMenu::MultiplayerMenu() : Scene(ecs::scene::MULTIPLAYERMENUSCENE), _ipHost("Introduce IP"), _isClient(false)
 {
     create_static_background(&sdlutils().images().at("selection"));
 
@@ -108,7 +108,10 @@ void MultiplayerMenu::update(uint32_t delta_time)
 {
     Scene::update(delta_time);
 
-
+    //If is Client, changes textInput
+    if (_isClient) {
+        _ipHost = "Hi";
+    }
 
 
 }
