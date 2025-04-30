@@ -83,7 +83,7 @@ project(CrazyPawPals C CXX)
         ${CrazyPawPals_SOURCES}
      "project/src/our_scripts/components/ui/HUD.cpp" "project/src/our_scripts/components/ui/HUD.h")
     
-    if (!$ENV{DBG_NETWORK})
+    if (NOT $ENV{DBG_NETWORK})
         set(DBG_NETWORK_HOST false)
         set(DBG_NETWORK_CLIENT false)
     else()
