@@ -253,7 +253,7 @@ ecs::entity_t GameScene::create_player(ecs::sceneId_t scene)
 			rect_f32{{0, 0}, {0.2, 1}},
 			player_rect,
 			camera,
-			sdlutils().images().at("piu"),
+			sdlutils().images().at("mimi"),
 			player_transform),
 		new render_ordering{1},
 		new Health(100, true),

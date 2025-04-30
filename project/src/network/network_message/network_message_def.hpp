@@ -121,7 +121,7 @@ struct NetworkBulletProperties
 };
 
 //Constructor del struct de NetworkBulletProperties
-NetworkBulletProperties network_message_bulletProperties_create(GameStructs::BulletProperties bp)
+inline NetworkBulletProperties network_message_bulletProperties_create(GameStructs::BulletProperties bp)
 {
     NetworkBulletProperties n_bp;
     

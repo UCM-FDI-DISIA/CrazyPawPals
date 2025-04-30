@@ -7,7 +7,9 @@ class EnemySynchronize :public ecs::Component
 public:
 	__CMPID_DECL__(ecs::cmp::ENEMY_SYNCHRONIZE);
 	EnemySynchronize();
-	
+	~EnemySynchronize();
+	void initComponent() override;
+	void update(uint32_t delta_time) override;
 protected:
 	Transform* _tr;
 };
