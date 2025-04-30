@@ -43,24 +43,8 @@
       "file": "resources/images/characters/mimi.png"
     },
     {
-      "id": "mimibutton",
-      "file": "resources/images/characters/mimibutton.png"
-    },
-    {
-      "id": "mimibutton_selected",
-      "file": "resources/images/characters/mimibutton_selected.png"
-    },
-    {
       "id": "piu",
       "file": "resources/images/characters/piu.png"
-    },
-    {
-      "id": "piubutton",
-      "file": "resources/images/characters/piubutton.png"
-    },
-    {
-      "id": "piubutton_selected",
-      "file": "resources/images/characters/piubutton_selected.png"
     },
     {
       "id": "p_revolver",
@@ -486,6 +470,7 @@
       "id": "controls_button",
       "file": "resources/images/ui/buttons/controls.png"
     },
+
     {
       "id": "controls_button_selected",
       "file": "resources/images/ui/buttons/controls_selected.png"
@@ -501,46 +486,6 @@
     {
       "id": "exit",
       "file": "resources/images/ui/buttons/exit.png"
-    },
-    {
-      "id": "multiplayer",
-      "file": "resources/images/ui/buttons/multiplayer.png"
-    },
-    {
-      "id": "multiplayer_selected",
-      "file": "resources/images/ui/buttons/multiplayer_selected.png"
-    },
-    {
-      "id": "client",
-      "file": "resources/images/ui/buttons/client.png"
-    },
-    {
-      "id": "client_selected",
-      "file": "resources/images/ui/buttons/client_selected.png"
-    },
-    {
-      "id": "host",
-      "file": "resources/images/ui/buttons/host.png"
-    },
-    {
-      "id": "host_selected",
-      "file": "resources/images/ui/buttons/host_selected.png"
-    },
-    {
-      "id": "back2",
-      "file": "resources/images/ui/buttons/back2.png"
-    },
-    {
-      "id": "back2_selected",
-      "file": "resources/images/ui/buttons/back2_selected.png"
-    },
-    {
-      "id": "copyip",
-      "file": "resources/images/ui/buttons/copyip.png"
-    },
-    {
-      "id": "copyip_selected",
-      "file": "resources/images/ui/buttons/copyip_selected.png"
     },
     {
       "id": "reward_health",

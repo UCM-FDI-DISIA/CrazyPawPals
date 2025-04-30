@@ -19,7 +19,6 @@
 #include "scenes/GameOverScene.h"
 #include "scenes/RewardScene.h"
 #include "scenes/TutorialScene.h"
-#include "scenes/MultiplayerMenu.h"
 #include "scenes/VictoryScene.h"
 #include "scenes/MythicScene.h"
 
@@ -116,10 +115,7 @@ void Game::initGame()
 	_scenes[REWARDSCENE] = new RewardScene();
 	_scenes[MYTHICSCENE] = new MythicScene();
 	_scenes[GAMEOVER] = new GameOverScene();
-	_scenes[MULTIPLAYERMENU] = new MultiplayerMenu();
-	_scenes[VICTORY] = new VictoryScene(); 
-
-
+	_scenes[VICTORY] = new VictoryScene();
 
 	//crear la camara
 	const Scene::rendering::camera_creation_descriptor_flags flags =
