@@ -92,10 +92,13 @@ namespace event_system {
 		event_manager()
 			:event_calling_map(nullptr){}
 		bool init() {
-			event_calling_map = new std::unordered_map<event_name, event_triggerer>;
+			event_calling_map = new std::unordered_map<event_name, event_triggerer>();
 			return true;
 		}
-		inline ~event_manager() override {
+		~event_manager(){
+			for (auto ecm : *event_calling_map) {
+				ecm.second.unsuscribe_all();
+			}
 			event_calling_map->clear();
 			delete event_calling_map;
 		}
