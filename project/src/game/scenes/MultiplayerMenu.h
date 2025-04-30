@@ -11,6 +11,8 @@ public:
 	void initScene() override;
 	void enterScene() override;
 	void exitScene() override;
+	void update(uint32_t delta_time);
+	void render() override;
 private:
 	//Methods of entities to spawn
 	void create_play_button(const GameStructs::ButtonProperties& bp);
@@ -20,4 +22,5 @@ private:
 	void create_back_button(const GameStructs::ButtonProperties& bp);
 	void create_skin_button(const GameStructs::ButtonProperties& bp);
 
+	std::string _ipHost;
 };

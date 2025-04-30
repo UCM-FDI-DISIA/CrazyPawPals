@@ -14,7 +14,7 @@
 #include "MultiplayerMenu.h"
 #endif
 
-MultiplayerMenu::MultiplayerMenu() : Scene(ecs::scene::MULTIPLAYERMENUSCENE)
+MultiplayerMenu::MultiplayerMenu() : Scene(ecs::scene::MULTIPLAYERMENUSCENE), _ipHost("Introduce IP")
 {
     create_static_background(&sdlutils().images().at("selection"));
 
@@ -102,6 +102,45 @@ void MultiplayerMenu::exitScene()
     log_writer_to_csv::Instance()->add_new_log("EXIT MULTIPLAYER MENU SCENE");
     log_writer_to_csv::Instance()->add_new_log();
 #endif
+}
+
+void MultiplayerMenu::update(uint32_t delta_time)
+{
+    Scene::update(delta_time);
+
+
+
+
+}
+
+void MultiplayerMenu::render()
+{
+    Scene::render();
+
+    auto _cam = Game::Instance()->get_mngr()->getComponent<camera_component>(
+        Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA));
+
+    //Updates text input 
+    //Adapted to screep
+    rect_f32 textInput = rect_f32_screen_rect_from_viewport(rect_f32({ 0.725f, 0.39f }, { 0.15f, 0.075f }), _cam->cam.screen);
+    //The real field
+    SDL_Rect textField{
+        int(textInput.position.x),
+        int(textInput.position.y),
+        int(textInput.size.x),
+        int(textInput.size.y)
+    };
+    //The text
+    Texture textFieldText{
+        sdlutils().renderer(),
+        _ipHost,
+        sdlutils().fonts().at("ARIAL16"),
+        SDL_Color(0, 0, 0, 255),
+        SDL_Color(255, 255, 255, 255),
+    };
+    //Renders text
+    textFieldText.render(textField);
+
 }
 
 void MultiplayerMenu::create_play_button(const GameStructs::ButtonProperties& bp)
@@ -228,7 +267,6 @@ void MultiplayerMenu::create_client_button(const GameStructs::ButtonProperties& 
         imgComp->_filter = false;
         imgComp->swap_textures();
 
-
         //TODO
         std::cout << "Your are a client.";
         //Activates the button regarding enter ip
@@ -315,3 +353,5 @@ void MultiplayerMenu::create_skin_button(const GameStructs::ButtonProperties& bp
         imgComp->swap_textures();
         });
 }
+
+
