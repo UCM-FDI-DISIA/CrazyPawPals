@@ -7,7 +7,7 @@ class Weapon;
 class AttackingState : public State
 {
 public:
-	using OnAttackCallback = std::function<void()>;
+	using OnAttackCallback = std::function<bool()>;
 
 	AttackingState(Transform* tr, Follow* follow, Weapon* weapon, bool can_attack = true, OnAttackCallback onAttackCallback = nullptr, int attact_times = 1);
 	void enter() override;

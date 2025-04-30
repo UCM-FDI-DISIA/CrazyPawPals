@@ -136,7 +136,7 @@ void PlayerHUD::render()
 
 #pragma region cards
 	card_rendering_descriptor crd = card_rendering_descriptor();
-	crd.mana_cost_font_key = "ARIAL16";
+	crd.mana_cost_font_key = "RUBIK_MONO";
 	crd.mana_cost_color = { 81, 100, 222, 255 };
 	crd.health_cost_color = { 200, 80, 100, 255 };
 	AnimationVars av = _deck->animation_vars();
@@ -198,11 +198,11 @@ void PlayerHUD::render()
 		crd.mana_cost_subrect = { {0,0.2},{0,0} };
 	}
 	else {
-		crd.mana_cost_subrect = { {0.1,0.2},{0.3,0.3} };
+		crd.mana_cost_subrect = { {0.18,0.25},{0.2,0.4} };
 		crd.card_image_key = percentual_time_to_card_in_position < 0.5f ? "card_back" : _deck->hand()->get_name().data();
 		crd.mana_cost = _deck->hand()->get_costs().get_mana();
 		crd.health_cost = _deck->hand()->get_costs().get_health();
-		crd.health_cost_subrect = { {0.55,0.2},{0.3,0.3} };
+		crd.health_cost_subrect = { {0.6,0.25},{0.2,0.4} };
 	}
 
 	//Function for rendering a card
@@ -235,7 +235,7 @@ void PlayerHUD::render()
 
 		float scale = std::lerp(1.0f, 0.0f, std::max(0.0f, std::min((percentual_time_to_card_in_position - 0.75f) / 0.25f, 1.0f)));
 
-		crd.mana_cost_font_key = "ARIAL16";
+		crd.mana_cost_font_key = "RUBIK_MONO";
 		crd.mana_cost_subrect = { {0.0f,0.4f - 0.2f * scale},{0.4f,0.4f * scale} };
 		crd.health_cost_subrect = { {0.0f,0.7f - 0.2f * scale},{0.4f,0.4f * scale} };
 		crd.mana_cost_color = { 81, 100, 222, 255 };

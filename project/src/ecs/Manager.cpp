@@ -50,7 +50,7 @@ Manager::~Manager() {
 	//
 	for (auto &ents : _entsByGroup) {
 		for (auto e : ents)
-			delete e;
+			if (e != nullptr && e->get_currCmps_size()) delete e;
 	}
 }
 
