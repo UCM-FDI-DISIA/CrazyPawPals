@@ -48,3 +48,11 @@ void network_message_header_send(TCPsocket socket, const network_message_header 
         std::exit(EXIT_FAILURE);
     }
 }
+
+NetworkWaveEvent network_message_wave_event_create(events event_type) {
+	NetworkWaveEvent n_we;
+
+	//n_we.event_type = event_type;
+	SDLNet_Write32(event_type, &n_we.event_type);
+    return n_we;
+}
