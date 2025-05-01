@@ -10,6 +10,8 @@
 #include "../../sdlutils/InputHandler.h"
 #include "../../ecs/Entity.h"
 #include "../../sdlutils/Texture.h"
+#include "../../network/network_utility.hpp"
+
 #ifdef GENERATE_LOG
 #include "../../our_scripts/log_writer_to_csv.hpp"
 #include "MultiplayerMenu.h"
@@ -179,6 +181,23 @@ void MultiplayerMenu::create_play_button(const GameStructs::ButtonProperties& bp
         });
 }
 
+static std::string multiplayer_menu_get_ip(const uint16_t port) {
+    const IPaddress ip{
+        .host = INADDR_ANY,
+        .port = port,
+    };
+    std::string ip_host{network_utility_write_canonical_ip_buffer_size, '\0'};
+    network_utility_write_canonical_ip(
+        network_utility_get_host_ip(
+            network_utility_get_host_name(ip),
+            port
+        ),
+        ip_host.data()
+    );
+    return ip_host;
+}
+
+
 void MultiplayerMenu::create_host_button(const GameStructs::ButtonProperties& bp)
 {
     auto* mngr = Game::Instance()->get_mngr();
@@ -204,7 +223,7 @@ void MultiplayerMenu::create_host_button(const GameStructs::ButtonProperties& bp
         std::cout << "You are the host.";
         //Activates the button regarding copy ip
         network_context &network = Game::Instance()->get_network();
-        network = network_context_create_host(Game::default_port);
+        network = network_context_create_host(nullptr, Game::default_port);
         network_context_host_connect_alloc(network.profile.host);
 
         // TODO: allow start client acceptance loop
@@ -220,6 +239,7 @@ void MultiplayerMenu::create_host_button(const GameStructs::ButtonProperties& bp
         imgComp->swap_textures();
         });
 }
+
 
 void MultiplayerMenu::create_copy_ip_button(const GameStructs::ButtonProperties& bp)
 {
@@ -241,16 +261,15 @@ void MultiplayerMenu::create_copy_ip_button(const GameStructs::ButtonProperties&
         imgComp->swap_textures();
 
         if (!_isClient) {
-            network_context ip_network = network_context_create_host(Game::default_port);
-            _ipHost =
-                std::to_string(ip_network.profile.host.ip_self.host >> 24) + "."
-                + std::to_string((ip_network.profile.host.ip_self.host >> 16) & 0xFF) + "."
-                + std::to_string((ip_network.profile.host.ip_self.host >> 8) & 0xFF) + "."
-                + std::to_string(ip_network.profile.host.ip_self.host & 0xFF);
+            const IPaddress ip{
+                .host = INADDR_ANY,
+                .port = Game::default_port,
+            };
 
+            _ipHost = multiplayer_menu_get_ip(Game::default_port);
             SDL_SetClipboardText(_ipHost.c_str());
-            std::cout << "Your ip is copied.";
-        };
+            std::cout << "Your ip is copied." << std::endl;
+        }
         //Sends it to players
 
     });

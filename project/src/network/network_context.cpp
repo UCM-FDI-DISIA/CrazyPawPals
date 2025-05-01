@@ -7,9 +7,9 @@
 
 extern inline bool network_context_host_resolved(const network_context_host &host);
 extern inline bool network_context_host_connected(const network_context_host &host);
-network_context_host network_context_host_create(const uint16_t port) {
+network_context_host network_context_host_create(const char *const host_name, const uint16_t port) {
     IPaddress host_ip;
-    const int resolved = SDLNet_ResolveHost(&host_ip, nullptr, port);
+    const int resolved = SDLNet_ResolveHost(&host_ip, host_name, port);
     if (resolved == network_utility_sdl_net_failure) {
         assert(false && "fatal error: SDLNet_ResolveHost failed");
         std::exit(EXIT_FAILURE);
@@ -249,6 +249,6 @@ network_context_client_connect_status_flags network_context_client_connect_alloc
 }
 
 
-extern inline network_context network_context_create_host(const uint16_t port);
+extern inline network_context network_context_create_host(const char *const host_name, const uint16_t port);
 extern inline network_context network_context_create_client(const char *host, const uint16_t port);
 

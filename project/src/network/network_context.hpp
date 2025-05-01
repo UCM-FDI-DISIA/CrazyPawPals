@@ -18,7 +18,7 @@ inline bool network_context_host_resolved(const network_context_host &host) {
 inline bool network_context_host_connected(const network_context_host &host) {
     return host.host_socket != nullptr;
 }
-network_context_host network_context_host_create(const uint16_t port);
+network_context_host network_context_host_create(const char *const host_name, const uint16_t port);
 void network_context_host_connect_alloc(network_context_host &host);
 void network_context_host_destroy(network_context_host &host);
 
@@ -78,9 +78,9 @@ struct network_context {
     network_context_profile profile;
     network_context_profile_status_option profile_status;
 };
-inline network_context network_context_create_host(const uint16_t port) {
+inline network_context network_context_create_host(const char *const host_name, const uint16_t port) {
     return network_context{
-        .profile = {.host = network_context_host_create(port)},
+        .profile = {.host = network_context_host_create(host_name, port)},
         .profile_status = network_context_profile_status_host,
     };
 }

@@ -108,7 +108,7 @@ static void game_init_network_context(network_context &ctx) {
 		"static error: DBG_NETWORK_HOST and DBG_NETWORK_CLIENT cannot be defined at the same time"
 	);
 #elif DBG_NETWORK_HOST
-	ctx = network_context_create_host(DBG_NETWORK_HOST_PORT);
+	ctx = network_context_create_host(nullptr, DBG_NETWORK_HOST_PORT);
 #elif DBG_NETWORK_CLIENT
 	ctx = network_context_create_client(DBG_NETWORK_HOST_IP, DBG_NETWORK_HOST_PORT);
 #else
@@ -291,7 +291,7 @@ void Game::start() {
 	//delta time
 	constexpr static const uint32_t target_delta_time_milliseconds = 10;
 
-	game_start_network_dbg(network);
+	// game_start_network_dbg(network);
 
 	uint64_t last_frame_start_tick = SDL_GetTicks64();
 	SDL_Delay(target_delta_time_milliseconds);
