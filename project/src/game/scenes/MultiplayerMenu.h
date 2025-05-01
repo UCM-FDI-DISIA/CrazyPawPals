@@ -3,6 +3,7 @@
 #include "Scene.h"
 
 class Texture;
+class ImageForButton;
 class MultiplayerMenu : public Scene
 {
 public:
@@ -15,6 +16,7 @@ public:
 	void render() override;
 private:
 	//Methods of entities to spawn
+	ecs::entity_t create_ip_input_field(const GameStructs::ButtonProperties& bp);
 	void create_play_button(const GameStructs::ButtonProperties& bp);
 	void create_host_button(const GameStructs::ButtonProperties& bp);
 	void create_copy_ip_button(const GameStructs::ButtonProperties& bp);
@@ -27,5 +29,6 @@ private:
 	std::string _ipHost;
 	bool _isClient;
 	bool _ipInputActive;
-
+	bool input_field_has_focus;
+	ImageForButton *ip_input_field;
 };

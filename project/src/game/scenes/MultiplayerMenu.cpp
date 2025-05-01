@@ -17,8 +17,12 @@
 #include "MultiplayerMenu.h"
 #endif
 
-MultiplayerMenu::MultiplayerMenu() : Scene(ecs::scene::MULTIPLAYERMENUSCENE), _ipHost("Introduce IP"), _isClient(false)
-{
+MultiplayerMenu::MultiplayerMenu() : Scene(ecs::scene::MULTIPLAYERMENUSCENE),
+    _ipHost(""),
+    _isClient(false),
+    _ipInputActive(false),
+    input_field_has_focus{false},
+    ip_input_field{nullptr} {
   
 }
 
@@ -73,6 +77,14 @@ void MultiplayerMenu::initScene()
     hostB.sprite_key = "host";
     create_host_button(hostB);
 
+    GameStructs::ButtonProperties ipB = {
+        { {0.725f, 0.39f}, { 0.15f, 0.075f } },
+            0.0f, ""
+    };
+    ipB.sprite_key = "floor";
+    ip_input_field = Game::Instance()->get_mngr()->getComponent<ImageForButton>(create_ip_input_field(ipB));
+    assert(ip_input_field != nullptr && "error: ip_input_field is null");
+
     //Button copy ip
     GameStructs::ButtonProperties copyB = {
         { {0.7f, 0.15f}, { 0.20f, 0.15f } },
@@ -116,37 +128,124 @@ void MultiplayerMenu::update(uint32_t delta_time)
         _ipHost = "Hi";
     }
 
+    if (input_field_has_focus) {
+        bool regenerate_text_surface = false;
+        auto &input = ih();
 
+        for(const auto &event : input.get_last_events()) {
+            if (event.type == SDL_TEXTINPUT && event.text.text[0] == '\n') {
+                // Handle the Enter key press
+                _ipInputActive = false;
+                input_field_has_focus = false;
+                SDL_StopTextInput();
+            } else if (event.type == SDL_TEXTINPUT) {
+                // Append text from the event to the input string
+                _ipHost += event.text.text;
+                regenerate_text_surface = true;
+            } else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_BACKSPACE) {
+                // Remove the last character from the input string
+                if (!_ipHost.empty()) {
+                    _ipHost.pop_back();
+                    regenerate_text_surface = true;
+                } else {
+                    _ipHost = ""; // Reset to default if empty
+                    regenerate_text_surface = true;
+                }
+            }
+        }
+
+        if (regenerate_text_surface) {
+            // Update the text surface with the new input string
+            Texture &selected = ip_input_field->get_selected_texture();
+            selected = Texture{
+                sdlutils().renderer(),
+                _ipHost.empty() ? std::string{(char [network_utility_write_canonical_ip_buffer_size]){
+                    "Ip..."
+                }} : _ipHost,
+                sdlutils().fonts().at("ARIAL16"),
+                SDL_Color{0, 0, 0, 255},
+                SDL_Color{255, 255, 255, 255},
+            };
+        }
+    }
 }
 
 void MultiplayerMenu::render()
 {
     Scene::render();
 
-    auto _cam = Game::Instance()->get_mngr()->getComponent<camera_component>(
-        Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA));
+    // auto _cam = Game::Instance()->get_mngr()->getComponent<camera_component>(
+    //     Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA));
 
-    //Updates text input 
-    //Adapted to screep
-    rect_f32 textInput = rect_f32_screen_rect_from_viewport(rect_f32{position2_f32{ 0.725f, 0.39f }, size2_f32{ 0.15f, 0.075f }}, _cam->cam.screen);
-    //The real field
-    SDL_Rect textField{
-        int(textInput.position.x),
-        int(textInput.position.y),
-        int(textInput.size.x),
-        int(textInput.size.y)
-    };
-    //The text
-    Texture textFieldText{
-        sdlutils().renderer(),
-        _ipHost,
-        sdlutils().fonts().at("ARIAL16"),
-        SDL_Color{0, 0, 0, 255},
-        SDL_Color{255, 255, 255, 255},
-    };
-    //Renders text
-    textFieldText.render(textField);
+    // //Updates text input 
+    // //Adapted to screep
+    // rect_f32 textInput = rect_f32_screen_rect_from_viewport(rect_f32{position2_f32{ 0.725f, 0.39f }, size2_f32{ 0.15f, 0.075f }}, _cam->cam.screen);
+    // //The real field
+    // SDL_Rect textField{
+    //     int(textInput.position.x),
+    //     int(textInput.position.y),
+    //     int(textInput.size.x),
+    //     int(textInput.size.y)
+    // };
+    // //The text
+    // Texture textFieldText{
+    //     sdlutils().renderer(),
+    //     _ipHost,
+    //     sdlutils().fonts().at("ARIAL16"),
+    //     SDL_Color{0, 0, 0, 255},
+    //     SDL_Color{255, 255, 255, 255},
+    // };
+    // //Renders text
+    // textFieldText.render(textField);
 
+}
+
+ecs::entity_t MultiplayerMenu::create_ip_input_field(const GameStructs::ButtonProperties& bp) {
+    auto* mngr = Game::Instance()->get_mngr();
+    auto e = create_button(bp);
+
+    auto imgComp = mngr->addComponent<ImageForButton>(e,
+        new Texture{
+            sdlutils().renderer(),
+            std::string{(char [network_utility_write_canonical_ip_buffer_size]){
+                "Ip..."
+            }},
+            sdlutils().fonts().at("ARIAL16"),
+            SDL_Color{0, 0, 0, 255},
+            SDL_Color{255, 255, 255, 255},
+        },
+        new Texture{
+            sdlutils().renderer(),
+            std::string{network_utility_write_canonical_ip_buffer_size, ' '},
+            sdlutils().fonts().at("ARIAL16"),
+            SDL_Color{0, 0, 0, 255},
+            SDL_Color{255, 255, 255, 255},
+        },
+        bp.rect,
+        0,
+        Game::Instance()->get_mngr()->getComponent<camera_component>(
+            Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA))->cam
+    );
+
+    auto buttonComp = mngr->getComponent<Button>(e);
+    buttonComp->connectClick([buttonComp, imgComp, this]() {
+        imgComp->_filter = false;
+        imgComp->swap_textures();
+        _ipInputActive = true;
+        input_field_has_focus = true;
+        SDL_StartTextInput();
+    });
+
+    // buttonComp->connectHover([buttonComp, imgComp]() {
+    //     imgComp->_filter = true;
+    //     imgComp->swap_textures();
+    // });
+
+    // buttonComp->connectExit([buttonComp, imgComp]() {
+    //     imgComp->_filter = false;
+    //     imgComp->swap_textures();
+    // });
+    return e;
 }
 
 void MultiplayerMenu::create_play_button(const GameStructs::ButtonProperties& bp)
