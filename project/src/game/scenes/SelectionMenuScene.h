@@ -16,6 +16,7 @@ public:
 	void enterScene() override;
 	void exitScene() override;
 	void update(uint32_t delta_time) override;
+
 private:
 	void create_weapon_button(GameStructs::WeaponType wt, const GameStructs::ButtonProperties& bp);
 	void create_deck_button(GameStructs::DeckType dt,const GameStructs::ButtonProperties& bp);

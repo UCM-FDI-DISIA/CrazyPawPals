@@ -17,6 +17,8 @@ enum network_message_type {
     network_message_type_dbg_print_two_byte_test = 0x0102,
     network_message_type_summon_true_bullet,
     network_message_type_summon_dummy_bullet,
+    network_message_type_player_connect,
+    network_message_type_player_update,
 };
 using network_message_type_option = uint16_t;
 using network_message_header_size = uint16_t;
@@ -158,5 +160,22 @@ inline NetworkBulletProperties network_message_bulletProperties_create(GameStruc
 
     return n_bp;
 }
+
+//Struct de player que se conecta
+struct network_message_player_connect {
+    uint8_t player_id;
+    uint8_t sprite_key_length;
+    char sprite_key[32];
+    GameStructs::WeaponType weapon_type = GameStructs::DEFAULT;
+};
+
+//Struct sincronizar player
+struct network_message_player_update {
+    uint8_t player_id;
+    int8_t pos_x;
+    int8_t pos_y;
+
+};
+
 
 #endif

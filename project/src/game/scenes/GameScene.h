@@ -22,7 +22,8 @@ public:
 
 	//Methods of entities to spawn
 	//Statics
-	static ecs::entity_t create_player(ecs::sceneId_t scene= ecs::scene::GAMESCENE);
+	static ecs::entity_t create_player(ecs::sceneId_t scene = ecs::scene::GAMESCENE);
+	static bool change_player_tex(const std::string& key_name);
 	void reset_player();
 
 	static void spawn_sarno_rata(Vector2D posVec, ecs::sceneId_t scene = ecs::scene::GAMESCENE);

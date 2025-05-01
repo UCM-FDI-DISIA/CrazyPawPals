@@ -4,6 +4,7 @@
 #include "../../our_scripts/components/rendering/ImageForButton.h"
 
 #include "../GameStructs.h"
+#include "GameScene.h"
 #include "../../utils/Vector2D.h"
 #include "../../sdlutils/SDLUtils.h"
 #include "../../sdlutils/InputHandler.h"
@@ -16,7 +17,16 @@
 
 MultiplayerMenu::MultiplayerMenu() : Scene(ecs::scene::MULTIPLAYERMENUSCENE), _ipHost("Introduce IP"), _isClient(false)
 {
-    create_static_background(&sdlutils().images().at("selection"));
+  
+}
+
+MultiplayerMenu::~MultiplayerMenu()
+{
+}
+
+void MultiplayerMenu::initScene()
+{
+    create_static_background(&sdlutils().images().at("multiplayer_background"));
 
     //Button back
     GameStructs::ButtonProperties backB = {
@@ -41,7 +51,7 @@ MultiplayerMenu::MultiplayerMenu() : Scene(ecs::scene::MULTIPLAYERMENUSCENE), _i
             0.0f, ""
     };
     skinMimiB.sprite_key = "mimibutton";
-    create_skin_button(skinMimiB);
+    create_skin_button(skinMimiB, "mimi");
 
     //Button piu
     GameStructs::ButtonProperties skinPiuB = {
@@ -49,7 +59,7 @@ MultiplayerMenu::MultiplayerMenu() : Scene(ecs::scene::MULTIPLAYERMENUSCENE), _i
             0.0f, ""
     };
     skinPiuB.sprite_key = "piubutton";
-    create_skin_button(skinPiuB);
+    create_skin_button(skinPiuB, "piu");
 
 
     // --- BUTTONS ABOUT MULTIPLAYER ---
@@ -76,15 +86,6 @@ MultiplayerMenu::MultiplayerMenu() : Scene(ecs::scene::MULTIPLAYERMENUSCENE), _i
     };
     clientB.sprite_key = "client";
     create_client_button(clientB);
-
-}
-
-MultiplayerMenu::~MultiplayerMenu()
-{
-}
-
-void MultiplayerMenu::initScene()
-{
 }
 
 void MultiplayerMenu::enterScene()
@@ -193,13 +194,18 @@ void MultiplayerMenu::create_host_button(const GameStructs::ButtonProperties& bp
     );
 
     auto buttonComp = mngr->getComponent<Button>(e);
-    buttonComp->connectClick([buttonComp, imgComp, mngr]() {
+    buttonComp->connectClick([buttonComp, imgComp, this]() {
         imgComp->_filter = false;
         imgComp->swap_textures();
         
-        //TODO
+        _isClient = false;
+        _ipInputActive = false;
+
         std::cout << "You are the host.";
         //Activates the button regarding copy ip
+
+        Game::Instance()->startAsHost();
+        _ipHost = Game::Instance()->getLocalIP();
 
         });
 
@@ -229,14 +235,13 @@ void MultiplayerMenu::create_copy_ip_button(const GameStructs::ButtonProperties&
     );
 
     auto buttonComp = mngr->getComponent<Button>(e);
-    buttonComp->connectClick([buttonComp, imgComp, mngr]() {
+    buttonComp->connectClick([buttonComp, imgComp, this]() {
         imgComp->_filter = false;
         imgComp->swap_textures();
 
-        //TODO
+        if (!_isClient) { SDL_SetClipboardText(_ipHost.c_str()); };
         std::cout << "Your ip is copied.";
         //Sends it to players
-
 
         });
 
@@ -266,9 +271,12 @@ void MultiplayerMenu::create_client_button(const GameStructs::ButtonProperties& 
     );
 
     auto buttonComp = mngr->getComponent<Button>(e);
-    buttonComp->connectClick([buttonComp, imgComp, mngr]() {
+    buttonComp->connectClick([buttonComp, imgComp, this]() {
         imgComp->_filter = false;
         imgComp->swap_textures();
+
+        _isClient = true;
+        _ipInputActive = true;
 
         //TODO
         std::cout << "Your are a client.";
@@ -321,8 +329,8 @@ void MultiplayerMenu::create_back_button(const GameStructs::ButtonProperties& bp
         });
 }
 
-void MultiplayerMenu::create_skin_button(const GameStructs::ButtonProperties& bp)
-{
+void MultiplayerMenu::create_skin_button(const GameStructs::ButtonProperties& bp, const std::string& tex_name)
+{   
     auto* mngr = Game::Instance()->get_mngr();
     auto e = create_button(bp);
 
@@ -336,10 +344,11 @@ void MultiplayerMenu::create_skin_button(const GameStructs::ButtonProperties& bp
     );
 
     auto buttonComp = mngr->getComponent<Button>(e);
-    buttonComp->connectClick([buttonComp, imgComp, mngr]() {
+    buttonComp->connectClick([buttonComp, imgComp, mngr, tex_name]() {
         imgComp->_filter = false;
         imgComp->swap_textures();
 
+        GameScene::change_player_tex(tex_name);
         //TODO
         std::cout << "You choosed your skin.";
         //Sends it to players
@@ -355,6 +364,12 @@ void MultiplayerMenu::create_skin_button(const GameStructs::ButtonProperties& bp
         imgComp->_filter = false;
         imgComp->swap_textures();
         });
+}
+
+void MultiplayerMenu::handleIPInput()
+{
+    auto& ihdlr = ih();
+
 }
 
 

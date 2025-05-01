@@ -19,7 +19,7 @@ struct offset_dyn_image : public ecs::Component {
 	position2_f32 offset;
 	const rect_component &output_rect;
 	const camera_screen &camera;
-	Texture &texture;
+	Texture* texture;
 	const Transform &transform;
 	bool isDamaged;
 	uint32_t damageTimer;
@@ -40,7 +40,7 @@ struct offset_dyn_image : public ecs::Component {
 		Texture& texture,
 		const Transform& transform
 	) : subrect(subrect), offset(offset), output_rect(output_rect), camera(camera),
-		texture(texture), transform(transform), isDamaged(false), damageTimer(0), damage_color_duration(250), flip(SDL_FLIP_NONE)
+		texture(&texture), transform(transform), isDamaged(false), damageTimer(0), damage_color_duration(250), flip(SDL_FLIP_NONE)
 	{
 		_current_filter = { 255, 255, 255, 255 };
 	}; 

@@ -110,6 +110,7 @@ void SelectionMenuScene::create_deck_buttons() {
 }
 void SelectionMenuScene::initScene() {
     create_static_background(&sdlutils().images().at("selection"));
+    
     create_weapon_info();
     create_weapon_buttons();
     create_deck_buttons();

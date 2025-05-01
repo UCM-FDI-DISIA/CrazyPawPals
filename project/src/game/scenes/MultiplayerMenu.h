@@ -20,9 +20,12 @@ private:
 	void create_copy_ip_button(const GameStructs::ButtonProperties& bp);
 	void create_client_button(const GameStructs::ButtonProperties& bp);
 	void create_back_button(const GameStructs::ButtonProperties& bp);
-	void create_skin_button(const GameStructs::ButtonProperties& bp);
+	void create_skin_button(const GameStructs::ButtonProperties& bp, const std::string& tex_name);
+
+	void handleIPInput();
 
 	std::string _ipHost;
 	bool _isClient;
+	bool _ipInputActive;
 
 };

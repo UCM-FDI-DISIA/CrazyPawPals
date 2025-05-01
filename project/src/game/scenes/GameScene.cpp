@@ -253,7 +253,7 @@ ecs::entity_t GameScene::create_player(ecs::sceneId_t scene)
 			rect_f32{{0, 0}, {0.2, 1}},
 			player_rect,
 			camera,
-			sdlutils().images().at("mimi"),
+			sdlutils().images().at("piu"),
 			player_transform),
 		new render_ordering{1},
 		new Health(100, true),
@@ -270,6 +270,17 @@ ecs::entity_t GameScene::create_player(ecs::sceneId_t scene)
 	anim->add_animation("idle", 0, 0, 100);
 
 	return player;
+}
+
+bool GameScene::change_player_tex(const std::string& text_name)
+{
+	auto&& manager = *Game::Instance()->get_mngr();
+	auto player = manager.getHandler(ecs::hdlr::PLAYER);
+	if (auto&& dy = manager.getComponent<dyn_image_with_frames>(player)) {
+		dy->texture = &sdlutils().images().at(text_name);
+		return true;
+	}
+	return false;
 }
 
 void GameScene::reset_player()

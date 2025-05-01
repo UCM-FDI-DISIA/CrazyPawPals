@@ -31,6 +31,10 @@ public:
 	void initGame();
 	void start();
 
+	void startAsHost();
+	void startAsClient(const std::string& ip);
+	std::string getLocalIP() const;
+
 	ecs::Manager* get_mngr();
 	event_system::event_manager* get_event_mngr();
 	

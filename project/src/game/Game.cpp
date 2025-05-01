@@ -13,7 +13,6 @@
 //Scenes for SceneManager
 #include "scenes/Scene.h"
 #include "scenes/MainMenuScene.h"
-#include "scenes/ControlsScene.h"
 #include "scenes/SelectionMenuScene.h"
 #include "scenes/GameScene.h"
 #include "scenes/GameOverScene.h"
@@ -192,7 +191,7 @@ void Game::initGame()
 
 	//crear player
 	ecs::entity_t player = GameScene::create_player();
-	_mngr->setHandler(ecs::hdlr::PLAYER, player);
+	Game::Instance()->get_mngr()->setHandler(ecs::hdlr::PLAYER, player);
 
 	//iniciar el juego en el mainmenu
 	change_Scene(MAINMENU);
@@ -327,6 +326,21 @@ void Game::start() {
 		}
 	}
 
+}
+
+void Game::startAsHost()
+{
+
+}
+
+void Game::startAsClient(const std::string& ip)
+{
+
+}
+
+std::string Game::getLocalIP() const
+{
+	return std::string();
 }
 
 ecs::Manager* Game::get_mngr() {
