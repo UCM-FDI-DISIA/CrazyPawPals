@@ -506,7 +506,9 @@ void MultiplayerMenu::create_client_button(const GameStructs::ButtonProperties& 
         imgComp->swap_textures();
 
         char ip_buffer[network_utility_write_canonical_ip_buffer_size] = {0};
-        if (
+        if (_ipHost == "localhost") {
+            std::copy(_ipHost.begin(), _ipHost.end(), ip_buffer);
+        } else if (
             !network_utility_canonicalize_ip(_ipHost.c_str(), ip_buffer)
             || !network_context_client_can_resolve(ip_buffer, Game::default_port)
         ) {
