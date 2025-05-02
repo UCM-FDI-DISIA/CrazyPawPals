@@ -51,6 +51,7 @@ namespace GameStructs
 		WeaponType weapon_type = DEFAULT;
 		collide_with collision_filter;
 	};
+
 	enum EnemyFollow
 	{
 		CLOSEST,
@@ -59,14 +60,17 @@ namespace GameStructs
 		HIGHEST_LIFE,
 	};
 
-	
+	struct DumbEnemyProperties
+	{
+		Vector2D _pos;
+	};
 
 	struct EnemyProperties
 	{
 		// Sprite
 		std::string sprite_key;
 		Vector2D start_pos;
-		
+
 		// Weapon
 		WeaponType weapon_type = DEFAULT;
 
@@ -88,6 +92,7 @@ namespace GameStructs
 		float acceleration = 5.0f;
 		float decceleration = 20.0f;
 	};
+
 	struct ButtonProperties
 	{
 		rect_f32 rect;
@@ -139,7 +144,8 @@ namespace GameStructs
 		LAST_MYTHIC,
 	};
 
-	struct PlayerData {
+	struct PlayerData
+	{
 		int weapon_damage;
 		float max_speed;
 		float cooldown;

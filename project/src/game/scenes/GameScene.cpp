@@ -363,14 +363,14 @@ ecs::entity_t GameScene::dumb_enemy(GameStructs::EnemyProperties &ec, ecs::scene
 		scene,
 		&tr,
 		&rect,
-		syn,
+		&syn,
 		new dyn_image(
 			rect_f32{{0, 0}, {1, 1}},
 			rect,
 			manager.getComponent<camera_component>(manager.getHandler(ecs::hdlr::CAMERA))->cam,
 			sdlutils().images().at(ec.sprite_key),
 			tr));
-	
+
 	online_enemy(e);
 	return e;
 }
@@ -379,8 +379,7 @@ void GameScene::online_enemy(ecs::entity_t ec)
 	if (Game::Instance()->is_host() || Game::Instance()->is_client())
 	{
 		auto &&manager = *Game::Instance()->get_mngr();
-		auto &&syn = *new EnemySynchronize();
-		manager.addComponent<EnemySynchronize>(ec, syn);
+		// manager.addComponent<EnemySynchronize>(ec);
 	}
 }
 #pragma endregion
@@ -1111,7 +1110,7 @@ void GameScene::spawn_rata_basurera(Vector2D posVec, ecs::sceneId_t scene)
 	if (Game::Instance()->is_host() || Game::Instance()->is_network_none())
 	{
 		auto &&weapon = *new WeaponRataBasurera();
-		
+
 		auto e = create_enemy(
 			ec,
 			scene,
@@ -1183,7 +1182,7 @@ void GameScene::spawn_rey_basurero(Vector2D posVec, ecs::sceneId_t scene)
 			ec,
 			scene,
 			static_cast<Weapon *>(&weapon));
-			
+
 		Transform *tr = manager.getComponent<Transform>(e);
 		MovementController *mc = manager.getComponent<MovementController>(e);
 		StateMachine *state = manager.getComponent<StateMachine>(e);
