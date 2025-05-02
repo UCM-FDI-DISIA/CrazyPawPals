@@ -159,9 +159,7 @@ void MultiplayerMenu::update(uint32_t delta_time)
             Texture &selected = ip_input_field->get_selected_texture();
             selected = Texture{
                 sdlutils().renderer(),
-                _ipHost.empty() ? std::string{(char [network_utility_write_canonical_ip_buffer_size]){
-                    "Ip..."
-                }} : _ipHost,
+                _ipHost.empty() ? std::string{"Ip..."} : _ipHost,
                 sdlutils().fonts().at("ARIAL16"),
                 SDL_Color{0, 0, 0, 255},
                 SDL_Color{255, 255, 255, 255},
@@ -207,9 +205,7 @@ ecs::entity_t MultiplayerMenu::create_ip_input_field(const GameStructs::ButtonPr
     auto imgComp = mngr->addComponent<ImageForButton>(e,
         new Texture{
             sdlutils().renderer(),
-            std::string{(char [network_utility_write_canonical_ip_buffer_size]){
-                "Ip..."
-            }},
+            std::string{"Ip..."},
             sdlutils().fonts().at("ARIAL16"),
             SDL_Color{0, 0, 0, 255},
             SDL_Color{255, 255, 255, 255},
@@ -236,15 +232,15 @@ ecs::entity_t MultiplayerMenu::create_ip_input_field(const GameStructs::ButtonPr
         SDL_StartTextInput();
     });
 
-    // buttonComp->connectHover([buttonComp, imgComp]() {
-    //     imgComp->_filter = true;
-    //     imgComp->swap_textures();
-    // });
+    buttonComp->connectHover([buttonComp, imgComp]() {
+        imgComp->_filter = true;
+        imgComp->swap_textures();
+    });
 
-    // buttonComp->connectExit([buttonComp, imgComp]() {
-    //     imgComp->_filter = false;
-    //     imgComp->swap_textures();
-    // });
+    buttonComp->connectExit([buttonComp, imgComp]() {
+        imgComp->_filter = false;
+        imgComp->swap_textures();
+    });
     return e;
 }
 
