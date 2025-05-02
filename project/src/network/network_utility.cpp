@@ -108,9 +108,14 @@ static std::string network_utility_get_host_canonical_public_ip_by_curl() {
 [[maybe_unused]]
 static std::string network_utility_get_host_canonical_public_ip_by_http(const uint8_t port) {
     (void)port; // unused
+    constexpr static const uint16_t http{80};
+    constexpr static const uint16_t https{443};
+    constexpr static const uint16_t alternative_http{8080};
+    (void)https; // unused
+    (void)alternative_http; // unused
 
     IPaddress ipify_ip;
-    const int resolved = SDLNet_ResolveHost(&ipify_ip, "api.ipify.org", 80);
+    const int resolved = SDLNet_ResolveHost(&ipify_ip, "api.ipify.org", http);
     if (resolved == network_utility_sdl_net_failure) {
         assert(false && "fatal error: SDLNet_ResolveHost failed");
         std::exit(EXIT_FAILURE);
@@ -180,5 +185,6 @@ static std::string network_utility_get_host_canonical_public_ip_by_http(const ui
 }
 
 std::string network_utility_get_host_canonical_public_ip(const uint8_t port) {
-    return network_utility_get_host_canonical_public_ip_by_http(port);
+    (void)port; // unused
+    return network_utility_get_host_canonical_public_ip_by_curl();
 }
