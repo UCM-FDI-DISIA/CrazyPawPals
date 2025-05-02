@@ -136,17 +136,15 @@ static void multiplayer_menu_host_loop(network_context &ctx) {
                 connection_index
             );
             if (status & network_context_host_accept_connection_status_accepted) {
-                std::cout << "Accepted connection. Connection index: " << connection_index << std::endl;
-            }
-            else if (status & network_context_host_accept_connection_status_rejected) {
-                std::cout << "Rejected connection" << std::endl;
+                std::cout << "message: accepted connection. Connection index: " << connection_index << std::endl;
+            } else if (status & network_context_host_accept_connection_status_rejected) {
+                std::cout << "warning: rejected connection" << std::endl;
             }
             
             if (status & network_context_host_accept_connection_status_full) {
-                std::cout << "Connection full" << std::endl;
-            }
-            else if (status & network_context_host_accept_connection_status_error) {
-                std::cerr << "Error accepting connection" << std::endl;
+                std::cout << "warning: connection full" << std::endl;
+            } else if (status & network_context_host_accept_connection_status_error) {
+                std::cerr << "error: error accepting connection" << std::endl;
             }
         }
         for (network_connection_size i = 0; i < ctx.profile.host.sockets_to_clients.connection_count; ++i) {
@@ -189,6 +187,8 @@ static mulitplayer_menu_handle_text_input_result mulitplayer_menu_handle_text_in
                         }
                         result.regenerate_text |= true;
                     }
+                } else if (event.key.keysym.sym == SDLK_c) {
+                    SDL_SetClipboardText(ip_text.c_str());
                 }
             } else if (event.key.keysym.sym == SDLK_BACKSPACE) {
                 if (!ip_text.empty()) {

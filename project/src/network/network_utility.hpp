@@ -27,19 +27,21 @@ constexpr const size_t network_utility_sdlnet_drain_and_close_buffer_chunk_size 
 template <size_t BufferChunkSize = network_utility_sdlnet_drain_and_close_buffer_chunk_size>
 void network_utility_sdlnet_drain_and_close(TCPsocket socket) {
     assert(socket != nullptr && "error: socket must not be null before draining and closing");
-    static_assert(
-        BufferChunkSize > 0,
-        "error: BufferChunkSize must be greater than 0"
-    );
-    int bytes_received;
-    do {
-        char buffer[BufferChunkSize];
-        bytes_received = SDLNet_TCP_Recv(socket, buffer, sizeof(buffer));
-    } while (bytes_received > 0);
-
-    if ((bytes_received != network_utility_sdl_net_failure) && (bytes_received < 0)) {
-        assert(false && "error: SDLNet_TCP_Recv invalid number of bytes received");
-        std::exit(EXIT_FAILURE);
+    if (SDLNet_SocketReady(socket)) {
+        static_assert(
+            BufferChunkSize > 0,
+            "error: BufferChunkSize must be greater than 0"
+        );
+        int bytes_received;
+        do {
+            char buffer[BufferChunkSize];
+            bytes_received = SDLNet_TCP_Recv(socket, buffer, sizeof(buffer));
+        } while (bytes_received > 0);
+    
+        if ((bytes_received != network_utility_sdl_net_failure) && (bytes_received < 0)) {
+            assert(false && "error: SDLNet_TCP_Recv invalid number of bytes received");
+            std::exit(EXIT_FAILURE);
+        }
     }
     SDLNet_TCP_Close(socket);
 }
