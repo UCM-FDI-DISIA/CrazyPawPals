@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <cassert>
 #include <cstdlib>
+#include <array>
 
 #define NETWORK_UTILITY_SDL_NET_FAILURE (-1)
 constexpr const int network_utility_sdl_net_failure = NETWORK_UTILITY_SDL_NET_FAILURE;
@@ -64,5 +65,10 @@ inline bool network_utility_in_network_endian_u32(const uint32_t value_n) {
            & (value_h2 == *(reinterpret_cast<const uint8_t *>(&value_n) + sizeof(uint32_t) - 3))
            & (value_h3 == *(reinterpret_cast<const uint8_t *>(&value_n) + sizeof(uint32_t) - 4));
 }
+
+constexpr static const size_t network_utility_write_canonical_ip_buffer_size = 3 * 4 + 3 + 1;
+const char *network_utility_get_host_name(const IPaddress &ip);
+uint32_t network_utility_get_host_ip(const char *const host_name, const uint16_t port);
+uint8_t network_utility_write_canonical_ip(const uint32_t ip, char ip_string[network_utility_write_canonical_ip_buffer_size]);
 
 #endif

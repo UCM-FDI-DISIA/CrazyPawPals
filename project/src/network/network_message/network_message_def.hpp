@@ -112,14 +112,7 @@ struct NetworkWaveEvent
 	events event_type;
 };
 
-NetworkWaveEvent network_message_wave_event_create(events event_type)
-{
-	NetworkWaveEvent n_we;
-
-	//n_we.event_type = event_type;
-	SDLNet_Write32(event_type, &n_we.event_type);
-    return n_we;
-}
+NetworkWaveEvent network_message_wave_event_create(events event_type);
 
 //Struct de BulletProperties que se envia por la red
 struct NetworkBulletProperties

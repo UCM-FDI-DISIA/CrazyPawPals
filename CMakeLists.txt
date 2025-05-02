@@ -4,7 +4,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
  add_definitions(-D_CRTDBG_MAP_ALLOC)
  endif()
 
-if (true)
+if (MSVC)
     add_compile_options(
         /W4
         /Zi

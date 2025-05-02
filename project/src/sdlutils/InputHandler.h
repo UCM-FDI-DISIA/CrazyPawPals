@@ -10,6 +10,7 @@
 #include "../utils/Singleton.h"
 #include <bitset>
 #include <string>
+#include <vector>
 
 // Instead of a Singleton class, we could make it part of
 // SDLUtils as well.
@@ -55,6 +56,7 @@ public:
 		_isMouseButtonDownEvent = false;
 
 		_isMouseMotionEvent = false;
+		last_events.clear();
 	}
 
 	// update the state with a new event
@@ -65,8 +67,10 @@ public:
 		SDL_Event event;
 
 		clearState();
-		while (SDL_PollEvent(&event))
+		while (SDL_PollEvent(&event)) {
 			update(event);
+			last_events.push_back(event);
+		}
 		
 		/*
 		for (uint8_t i = 0; i < _controller_buttons_pressed.size(); ++i) {
@@ -260,6 +264,12 @@ private:
 	int16_t _time_till_next_click_ms = 500;
 	uint16_t _next_RT_click = 0;
 	uint16_t _next_LT_click = 0;
+	std::vector<SDL_Event> last_events;
+
+public:
+	inline const std::vector<SDL_Event>& get_last_events() const {
+		return last_events;
+	}
 }
 ;
 

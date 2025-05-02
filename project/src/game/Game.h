@@ -58,4 +58,24 @@ private:
 	network_context network;
 	void set_volumes();
 	void create_camera();
+
+public:
+	constexpr static const uint16_t default_port = 1234;
+	//Network
+	inline network_context& get_network() {
+		return network;
+	}
+	inline const network_context& get_network() const {
+		return network;
+	}
+
+	inline network_context_profile_status_option network_profile_status() const {
+		return network.profile_status;
+	}
+	inline bool is_host() const {
+		return network_profile_status() == network_context_profile_status_host;
+	}
+	inline bool is_client() const {
+		return network_profile_status() == network_context_profile_status_client;
+	}
 };
