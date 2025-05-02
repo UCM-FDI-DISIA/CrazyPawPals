@@ -267,9 +267,9 @@ void TutorialScene::create_pop_up() {
 	if (current.on_enter)current.on_enter();
 }
 
-void TutorialScene::create_proyectile(const GameStructs::BulletProperties& bp, ecs::grpId_t gid)
+ecs::entity_t TutorialScene::create_proyectile(const GameStructs::BulletProperties& bp, ecs::grpId_t gid)
 {
-	GameScene::generate_proyectile(bp, gid, ecs::scene::TUTORIALSCENE);
+	return GameScene::generate_proyectile(bp, gid, ecs::scene::TUTORIALSCENE);
 }
 
 void TutorialScene::event_callback0(const event_system::event_receiver::Msg& m)

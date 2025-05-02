@@ -10,10 +10,9 @@
 
 namespace patrons {
 
-	inline void ShotgunPatron(GameStructs::BulletProperties& bp, ecs::grpId_t gId, int angle, int proyectile_number) {
-
+	inline std::vector<ecs::entity_t> ShotgunPatron(GameStructs::BulletProperties& bp, ecs::grpId_t gId, int angle, int proyectile_number) {
+		std::vector<ecs::entity_t> entities;
 		Vector2D initialRot = bp.dir;
-
 		// Dispara 5 balas con �ngulos de -60, -30, 0, 30 y 60 grados
 		for (int i = 0; i < proyectile_number; ++i) {
 			
@@ -24,8 +23,10 @@ namespace patrons {
 			);
 			bp.dir = rotatedDir;
 
-			Game::Instance()->get_currentScene()->create_proyectile(bp, gId);
+			ecs::entity_t e = Game::Instance()->get_currentScene()->create_proyectile(bp, gId);
+			entities.push_back(e);
 		}
+		return entities;
 	}
 }
 #endif // !SHOOTPATRONS

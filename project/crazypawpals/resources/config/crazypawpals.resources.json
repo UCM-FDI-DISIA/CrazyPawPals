@@ -1,5 +1,4 @@
 {
-
   "fonts": [
     {
       "id": "ARIAL16",
@@ -32,7 +31,6 @@
       "size": 200
     }
   ],
-
   "images": [
     {
       "id": "reticle",
@@ -132,7 +130,11 @@
     },
     {
       "id": "p_wind_catkuza",
-      "file": "resources/images/projectiles/catkuza_wind.png"
+      "file": "resources/images/projectiles/p_catkuza_wind.png"
+    },
+    {
+      "id": "p_area_catkuza",
+      "file": "resources/images/projectiles/p_catkuza_area.png"
     },
     {
       "id": "attack_warning",
@@ -794,7 +796,6 @@
       "id": "copyip_selected",
       "file": "resources/images/ui/buttons/copyip_selected.png"
     }
-
   ],
   "messages": [
     {
