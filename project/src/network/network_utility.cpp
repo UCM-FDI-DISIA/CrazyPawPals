@@ -31,5 +31,41 @@ uint8_t network_utility_write_canonical_ip(const uint32_t ip, char ip_string[net
     const uint8_t ip1 = (ip >> 16) & 0xFF;
     const uint8_t ip2 = (ip >> 8) & 0xFF;
     const uint8_t ip3 = ip & 0xFF;
-    return std::snprintf(ip_string, network_utility_write_canonical_ip_buffer_size, "%u.%u.%u.%u", ip3, ip2, ip1, ip0);
+    return uint8_t(std::snprintf(
+        ip_string,
+        network_utility_write_canonical_ip_buffer_size,
+        "%u.%u.%u.%u",
+        ip3, ip2, ip1, ip0
+    ));
+}
+
+// Rosetta Code contributors. Canonicalize CIDR [Internet]. Rosetta Code; 2024 Dec 19, 18:12 UTC [cited 2025 May 2].
+// Available from: https://rosettacode.org/wiki/Canonicalize_CIDR?oldid=374560.
+bool network_utility_canonicalize_ip(const char *const ip, char out_canonical_ip[network_utility_write_canonical_ip_buffer_size]) {
+    out_canonical_ip[0] = '\0';
+
+    int ip0;
+    int ip1;
+    int ip2;
+    int ip3;
+    if (std::sscanf(ip, "%d.%d.%d.%d", &ip0, &ip1, &ip2, &ip3) != 4) {
+        return false;
+    }
+
+    if (
+        ip0 < 0 || ip0 > UINT8_MAX
+        || ip1 < 0 || ip1 > UINT8_MAX
+        || ip2 < 0 || ip2 > UINT8_MAX
+        || ip3 < 0 || ip3 > UINT8_MAX
+    ) {
+        return false;
+    }
+    const uint32_t address = (
+        (static_cast<uint32_t>(ip3) << 24)
+        | (static_cast<uint32_t>(ip2) << 16)
+        | (static_cast<uint32_t>(ip1) << 8)
+        | static_cast<uint32_t>(ip0)
+    );
+    network_utility_write_canonical_ip(address, out_canonical_ip);
+    return true;
 }

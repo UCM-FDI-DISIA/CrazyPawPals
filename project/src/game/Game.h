@@ -72,6 +72,9 @@ public:
 	inline network_context_profile_status_option network_profile_status() const {
 		return network.profile_status;
 	}
+	inline bool is_network_none() const {
+		return network_profile_status() == network_context_profile_status_none;
+	}
 	inline bool is_host() const {
 		return network_profile_status() == network_context_profile_status_host;
 	}
