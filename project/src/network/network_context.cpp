@@ -156,11 +156,30 @@ network_context_host_accept_connection_status_flags network_context_host_accept_
 
 extern inline bool network_context_client_resolved(const network_context_client &client);
 extern inline bool network_context_client_connected(const network_context_client &client);
-network_context_client network_context_client_create(const char *host, const uint16_t port) {
+
+bool network_context_client_can_resolve(const char *const host, const uint16_t port) {
+    IPaddress host_ip;
+    const int resolved = SDLNet_ResolveHost(&host_ip, host, port);
+    (void)host_ip;
+
+    if (resolved == network_utility_sdl_net_failure) {
+        return false;
+    } else if (resolved != network_utility_sdl_net_success) {
+        assert(false && "fatal error: SDLNet_ResolveHost returned invalid value");
+        std::exit(EXIT_FAILURE);
+    }
+    return true;
+}
+network_context_client network_context_client_create(const char *host, const uint16_t port)
+{
     IPaddress host_ip;
     const int resolved = SDLNet_ResolveHost(&host_ip, host, port);
     if (resolved == network_utility_sdl_net_failure) {
-        assert(false && "fatal error: SDLNet_ResolveHost failed");
+        assert(
+            false
+            && "fatal error: SDLNet_ResolveHost failed"
+            "call network_context_client_can_resolve to check if the host is valid"
+        );
         std::exit(EXIT_FAILURE);
     } else if (resolved != network_utility_sdl_net_success) {
         assert(false && "fatal error: SDLNet_ResolveHost invalid");

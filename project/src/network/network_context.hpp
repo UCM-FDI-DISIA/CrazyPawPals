@@ -48,6 +48,8 @@ inline bool network_context_client_resolved(const network_context_client &client
 inline bool network_context_client_connected(const network_context_client &client) {
     return client.socket_to_master != nullptr;
 }
+
+bool network_context_client_can_resolve(const char *const host, const uint16_t port);
 network_context_client network_context_client_create(const char *host, const uint16_t port);
 void network_context_client_destroy(network_context_client &client);
 

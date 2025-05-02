@@ -18,11 +18,15 @@
 #endif
 
 MultiplayerMenu::MultiplayerMenu() : Scene(ecs::scene::MULTIPLAYERMENUSCENE),
-    _ipHost(""),
-    _isClient(false),
-    _ipInputActive(false),
-    input_field_has_focus{false},
-    ip_input_field{nullptr} {
+    ip_input{
+        sdlutils().renderer(),
+        std::string{"Ip..."},
+        sdlutils().fonts().at("ARIAL16"),
+        SDL_Color{ 0, 0, 0, 255 },
+        SDL_Color{ 255, 255, 255, 255 }
+    }, 
+    _ipHost{""},
+    input_field_has_focus{false} {
   
 }
 
@@ -77,14 +81,17 @@ void MultiplayerMenu::initScene()
     hostB.sprite_key = "host";
     create_host_button(hostB);
 
-    GameStructs::ButtonProperties ipB = {
-        { {0.725f, 0.39f}, { 0.15f, 0.075f } },
-            0.0f, ""
+    GameStructs::ButtonProperties edit_ip_button_descriptor{
+        rect_f32{
+            position2_f32{0.725f + 0.15f, 0.39f},
+            size2_f32{ 0.15f, 0.075f }
+        },
+        0.0f,
+        std::string{"confirm_reward"},
+        ecs::grp::DEFAULT
     };
-    ipB.sprite_key = "floor";
-    ip_input_field = Game::Instance()->get_mngr()->getComponent<ImageForButton>(create_ip_input_field(ipB));
-    assert(ip_input_field != nullptr && "error: ip_input_field is null");
-
+    create_edit_ip_button(edit_ip_button_descriptor);
+    
     //Button copy ip
     GameStructs::ButtonProperties copyB = {
         { {0.7f, 0.15f}, { 0.20f, 0.15f } },
@@ -119,45 +126,79 @@ void MultiplayerMenu::exitScene()
 #endif
 }
 
-void MultiplayerMenu::update(uint32_t delta_time)
-{
-    Scene::update(delta_time);
-
-    //If is Client, changes textInput
-    if (_isClient) {
-        _ipHost = "Hi";
-    }
-
-    if (input_field_has_focus) {
-        bool regenerate_text_surface = false;
-        auto &input = ih();
-
-        for(const auto &event : input.get_last_events()) {
-            if (event.type == SDL_TEXTINPUT && event.text.text[0] == '\n') {
-                // Handle the Enter key press
-                _ipInputActive = false;
-                input_field_has_focus = false;
-                SDL_StopTextInput();
-            } else if (event.type == SDL_TEXTINPUT) {
-                // Append text from the event to the input string
-                _ipHost += event.text.text;
-                regenerate_text_surface = true;
-            } else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_BACKSPACE) {
-                // Remove the last character from the input string
-                if (!_ipHost.empty()) {
-                    _ipHost.pop_back();
-                    regenerate_text_surface = true;
-                } else {
-                    _ipHost = ""; // Reset to default if empty
-                    regenerate_text_surface = true;
-                }
+static void multiplayer_menu_host_loop(network_context &ctx) {
+    if (SDLNet_CheckSockets(ctx.profile.host.clients_host_set, 0) > 0) {
+        if (SDLNet_SocketReady(ctx.profile.host.host_socket)) {
+            network_connection_size connection_index;
+            network_context_host_accept_connection_status_flags status = network_context_host_accept_connection(
+                ctx.profile.host,
+                connection_index
+            );
+            if (status & network_context_host_accept_connection_status_accepted) {
+                std::cout << "Accepted connection. Connection index: " << connection_index << std::endl;
+            }
+            else if (status & network_context_host_accept_connection_status_rejected) {
+                std::cout << "Rejected connection" << std::endl;
+            }
+            
+            if (status & network_context_host_accept_connection_status_full) {
+                std::cout << "Connection full" << std::endl;
+            }
+            else if (status & network_context_host_accept_connection_status_error) {
+                std::cerr << "Error accepting connection" << std::endl;
             }
         }
+        for (network_connection_size i = 0; i < ctx.profile.host.sockets_to_clients.connection_count; ++i) {
+            TCPsocket &connection = ctx.profile.host.sockets_to_clients.connections[i];
+            if (SDLNet_SocketReady(connection)) {
+                // TODO: listen to custom messages
+            }
+        }
+    }
+}
 
-        if (regenerate_text_surface) {
-            // Update the text surface with the new input string
-            Texture &selected = ip_input_field->get_selected_texture();
-            selected = Texture{
+struct mulitplayer_menu_handle_text_input_result {
+    bool lost_focus : 1;
+    bool regenerate_text : 1;
+    uint8_t unused : 6;
+};
+static mulitplayer_menu_handle_text_input_result mulitplayer_menu_handle_text_input(const InputHandler &input, std::string &ip_text) {
+    mulitplayer_menu_handle_text_input_result result{
+        .lost_focus = false,
+        .regenerate_text = false,
+        .unused = 0
+    };
+    for (const auto &event : input.get_last_events()) {
+        if (event.type == SDL_TEXTINPUT) {
+            ip_text += event.text.text;
+            if (ip_text.size() > network_utility_write_canonical_ip_buffer_size - 1) {
+                ip_text.resize(network_utility_write_canonical_ip_buffer_size - 1);
+            }
+            result.regenerate_text |= true;
+        } else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_BACKSPACE) {
+            if (!ip_text.empty()) {
+                ip_text.pop_back();
+            }
+            result.regenerate_text |= true;
+        } else if (
+            event.type == SDL_KEYDOWN
+            && (event.key.keysym.sym == SDLK_RETURN || event.key.keysym.sym == SDLK_ESCAPE)
+        ) {
+            result.lost_focus |= true;
+        }
+    }
+    return result;
+}
+
+void MultiplayerMenu::update(uint32_t delta_time) {
+    Scene::update(delta_time);
+
+    if (input_field_has_focus) {
+        const auto &input = ih();
+        const auto result = mulitplayer_menu_handle_text_input(input, _ipHost);
+
+        if (result.regenerate_text) {
+            ip_input = Texture{
                 sdlutils().renderer(),
                 _ipHost.empty() ? std::string{"Ip..."} : _ipHost,
                 sdlutils().fonts().at("ARIAL16"),
@@ -165,58 +206,64 @@ void MultiplayerMenu::update(uint32_t delta_time)
                 SDL_Color{255, 255, 255, 255},
             };
         }
+
+        if (result.lost_focus) {
+            input_field_has_focus = false;
+            SDL_StopTextInput();
+        }
+    }
+
+    network_context &network = Game::Instance()->get_network();
+    switch (network.profile_status) {
+    case network_context_profile_status_none:
+        break;
+    case network_context_profile_status_host: {
+        multiplayer_menu_host_loop(network);
+        break;
+    }
+    case network_context_profile_status_client: {
+        break;
+    }
+    default: {
+        assert(false && "unreachable: invalid network profile status");
+        std::exit(EXIT_FAILURE);
+    }
     }
 }
 
-void MultiplayerMenu::render()
-{
+void MultiplayerMenu::render() {
     Scene::render();
 
-    // auto _cam = Game::Instance()->get_mngr()->getComponent<camera_component>(
-    //     Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA));
+    const auto &_cam = *Game::Instance()->get_mngr()->getComponent<camera_component>(
+        Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA)
+    );
 
-    // //Updates text input 
-    // //Adapted to screep
-    // rect_f32 textInput = rect_f32_screen_rect_from_viewport(rect_f32{position2_f32{ 0.725f, 0.39f }, size2_f32{ 0.15f, 0.075f }}, _cam->cam.screen);
-    // //The real field
-    // SDL_Rect textField{
-    //     int(textInput.position.x),
-    //     int(textInput.position.y),
-    //     int(textInput.size.x),
-    //     int(textInput.size.y)
-    // };
-    // //The text
-    // Texture textFieldText{
-    //     sdlutils().renderer(),
-    //     _ipHost,
-    //     sdlutils().fonts().at("ARIAL16"),
-    //     SDL_Color{0, 0, 0, 255},
-    //     SDL_Color{255, 255, 255, 255},
-    // };
-    // //Renders text
-    // textFieldText.render(textField);
-
+    //Updates text input 
+    //Adapted to screep
+    const rect_f32 textInput = rect_f32_screen_rect_from_viewport(
+        rect_f32{
+            position2_f32{ 0.725f, 0.39f },
+            size2_f32{ 0.15f, 0.075f }
+        },
+        _cam.cam.screen
+    );
+    //The real field
+    const SDL_Rect textField{
+        int(textInput.position.x),
+        int(textInput.position.y),
+        int(textInput.size.x),
+        int(textInput.size.y)
+    };
+    ip_input.render(textField);
 }
 
-ecs::entity_t MultiplayerMenu::create_ip_input_field(const GameStructs::ButtonProperties& bp) {
+ecs::entity_t MultiplayerMenu::create_edit_ip_button(const GameStructs::ButtonProperties& bp) {
     auto* mngr = Game::Instance()->get_mngr();
     auto e = create_button(bp);
 
     auto imgComp = mngr->addComponent<ImageForButton>(e,
-        new Texture{
-            sdlutils().renderer(),
-            std::string{"Ip..."},
-            sdlutils().fonts().at("ARIAL16"),
-            SDL_Color{0, 0, 0, 255},
-            SDL_Color{255, 255, 255, 255},
-        },
-        new Texture{
-            sdlutils().renderer(),
-            std::string{network_utility_write_canonical_ip_buffer_size, ' '},
-            sdlutils().fonts().at("ARIAL16"),
-            SDL_Color{0, 0, 0, 255},
-            SDL_Color{255, 255, 255, 255},
-        },
+        &sdlutils().images().at(bp.sprite_key),
+        &sdlutils().images().at(bp.sprite_key + "_selected"),
         bp.rect,
         0,
         Game::Instance()->get_mngr()->getComponent<camera_component>(
@@ -227,7 +274,7 @@ ecs::entity_t MultiplayerMenu::create_ip_input_field(const GameStructs::ButtonPr
     buttonComp->connectClick([buttonComp, imgComp, this]() {
         imgComp->_filter = false;
         imgComp->swap_textures();
-        _ipInputActive = true;
+        
         input_field_has_focus = true;
         SDL_StartTextInput();
     });
@@ -312,16 +359,10 @@ void MultiplayerMenu::create_host_button(const GameStructs::ButtonProperties& bp
         imgComp->_filter = false;
         imgComp->swap_textures();
         
-        _isClient = false;
-        _ipInputActive = false;
-
-        std::cout << "You are the host.";
-        //Activates the button regarding copy ip
         network_context &network = Game::Instance()->get_network();
         network = network_context_create_host(nullptr, Game::default_port);
         network_context_host_connect_alloc(network.profile.host);
-
-        // TODO: allow start client acceptance loop
+        std::cout << "Host at port: " << Game::default_port << std::endl;
     });
 
     buttonComp->connectHover([buttonComp, imgComp]() {
@@ -355,18 +396,13 @@ void MultiplayerMenu::create_copy_ip_button(const GameStructs::ButtonProperties&
         imgComp->_filter = false;
         imgComp->swap_textures();
 
-        if (!_isClient) {
-            const IPaddress ip{
-                .host = INADDR_ANY,
-                .port = Game::default_port,
-            };
-
-            _ipHost = multiplayer_menu_get_ip(Game::default_port);
-            SDL_SetClipboardText(_ipHost.c_str());
-            std::cout << "Your ip is copied." << std::endl;
-        }
-        //Sends it to players
-
+        const IPaddress ip{
+            .host = INADDR_ANY,
+            .port = Game::default_port,
+        };
+        const std::string canonical_ip = multiplayer_menu_get_ip(Game::default_port);
+        SDL_SetClipboardText(canonical_ip.c_str());
+        std::cout << "Congratulations! Your IP: " << canonical_ip << " has been copied to the clipboard." << std::endl;
     });
 
     buttonComp->connectHover([buttonComp, imgComp]() {
@@ -399,14 +435,14 @@ void MultiplayerMenu::create_client_button(const GameStructs::ButtonProperties& 
         imgComp->_filter = false;
         imgComp->swap_textures();
 
-        _isClient = true;
-        _ipInputActive = true;
-
-        std::cout << "Your are a client." << std::endl;
-        //Activates the button regarding enter ip
+        if (!network_context_client_can_resolve(_ipHost.c_str(), Game::default_port)) {
+            std::cerr << "warning: could not resolve host with ip: " << _ipHost << " at port: " << Game::default_port << std::endl;
+            return;
+        }
         
         network_context &network = Game::Instance()->get_network();
         network = network_context_create_client(_ipHost.c_str(), Game::default_port);
+
         auto connection = network_context_client_connect_alloc(network.profile.client);
         if (connection & network_context_client_connect_status_connected) {
             std::cout << "Connected to host." << std::endl;
