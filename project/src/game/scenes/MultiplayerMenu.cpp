@@ -175,16 +175,28 @@ static mulitplayer_menu_handle_text_input_result mulitplayer_menu_handle_text_in
                 ip_text.resize(network_utility_write_canonical_ip_buffer_size - 1);
             }
             result.regenerate_text |= true;
-        } else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_BACKSPACE) {
-            if (!ip_text.empty()) {
-                ip_text.pop_back();
+        } else if (event.type == SDL_KEYDOWN) {
+            if (event.key.keysym.mod & KMOD_CTRL) {
+                if (event.key.keysym.sym == SDLK_v) {
+                    char *clipboard_text = SDL_GetClipboardText();
+                    if (clipboard_text != nullptr) {
+                        ip_text += clipboard_text;
+                        SDL_free(clipboard_text);
+
+                        if (ip_text.size() > network_utility_write_canonical_ip_buffer_size - 1) {
+                            ip_text.resize(network_utility_write_canonical_ip_buffer_size - 1);
+                        }
+                        result.regenerate_text |= true;
+                    }
+                }
+            } else if (event.key.keysym.sym == SDLK_BACKSPACE) {
+                if (!ip_text.empty()) {
+                    ip_text.pop_back();
+                }
+                result.regenerate_text |= true;
+            } else if (event.key.keysym.sym == SDLK_RETURN || event.key.keysym.sym == SDLK_ESCAPE) {
+                result.lost_focus |= true;
             }
-            result.regenerate_text |= true;
-        } else if (
-            event.type == SDL_KEYDOWN
-            && (event.key.keysym.sym == SDLK_RETURN || event.key.keysym.sym == SDLK_ESCAPE)
-        ) {
-            result.lost_focus |= true;
         }
     }
     return result;
@@ -328,15 +340,15 @@ static std::string multiplayer_menu_get_ip(const uint16_t port) {
         .host = INADDR_ANY,
         .port = port,
     };
-    std::string ip_host{network_utility_write_canonical_ip_buffer_size, '\0'};
+    char ip_host[network_utility_write_canonical_ip_buffer_size] = {0};
     network_utility_write_canonical_ip(
         network_utility_get_host_ip(
             network_utility_get_host_name(ip),
             port
         ),
-        ip_host.data()
+        ip_host
     );
-    return ip_host;
+    return std::string{ip_host};
 }
 
 
