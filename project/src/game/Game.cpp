@@ -120,15 +120,15 @@ static void game_init_network_context(network_context &ctx) {
 #endif
 }
 bool Game::init() {
-	SDLNet_Init();
 	// initialize the SDL singleton
 	if (!SDLUtils::Init("crazy paw pals", _screen_size.first, _screen_size.second,
 		"resources/config/crazypawpals.resources.json")) {
-		
-		std::cerr << "Something went wrong while initializing SDLUtils"
-		<< std::endl;
-		return false;
-	}
+			
+			std::cerr << "Something went wrong while initializing SDLUtils"
+			<< std::endl;
+			return false;
+		}
+	SDLNet_Init();
 
 	// initialize the InputHandler singleton
 	if (!InputHandler::Init()) {

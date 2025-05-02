@@ -60,7 +60,7 @@ private:
 	void create_camera();
 
 public:
-	constexpr static const uint16_t default_port = 1234;
+	constexpr static const uint16_t default_port = 52224; //49152-65535
 	//Network
 	inline network_context& get_network() {
 		return network;

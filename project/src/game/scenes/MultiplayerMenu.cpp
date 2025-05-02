@@ -372,6 +372,7 @@ void MultiplayerMenu::create_host_button(const GameStructs::ButtonProperties& bp
         imgComp->swap_textures();
         
         network_context &network = Game::Instance()->get_network();
+        // std::string canonical_ip = multiplayer_menu_get_ip(Game::default_port);
         network = network_context_create_host(nullptr, Game::default_port);
         network_context_host_connect_alloc(network.profile.host);
         std::cout << "Host at port: " << Game::default_port << std::endl;
@@ -466,6 +467,7 @@ void MultiplayerMenu::create_client_button(const GameStructs::ButtonProperties& 
             } else {
                 std::cout << "Error connecting to host." << std::endl;
             }
+            std::cout << "SDLNet error: " << SDLNet_GetError() << std::endl;
         } else {
             std::cout << "Unknown error." << std::endl;
         }
