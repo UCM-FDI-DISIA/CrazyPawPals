@@ -11,7 +11,9 @@ class GameScene : public event_system::event_receiver, public Scene
 {
 	[[maybe_unused]]
 
-	static ecs::entity_t create_enemy(GameStructs::EnemyProperties&& ec, ecs::sceneId_t scene, Weapon* weapon = nullptr);
+	static ecs::entity_t create_enemy(GameStructs::EnemyProperties& ec, ecs::sceneId_t scene, Weapon* weapon = nullptr);
+	static ecs::entity_t dumb_enemy(GameStructs::EnemyProperties& ec, ecs::sceneId_t scene);
+	static void online_enemy(ecs::entity_t ec);
 
 public:
 	GameScene();

@@ -15,8 +15,8 @@ protected:
 	float _distance; //the distance to reach
 	float _speed; //attack speed
 	std::string _tex; //sprite
-	int _attack_width; //sizes
-	int _attack_height;
+	float _attack_width; //sizes
+	float _attack_height;
 	float _lastShoot;
 	Transform* _tr; //transform component
 

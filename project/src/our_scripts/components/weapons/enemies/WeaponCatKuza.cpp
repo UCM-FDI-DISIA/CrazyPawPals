@@ -3,33 +3,14 @@
 #include "../../../../game/scenes/GameScene.h"
 #include "../../../card_system/ShootPatrons.hpp"
 
-WeaponCatKuza::WeaponCatKuza() : Weapon(4, 5000, 20.0f, 0.1f, "p_plimplim", 1.0f, 1.0f), _player_pos(), _wind_p(3), _dash_p(6), _area_p(5){ }
+WeaponCatKuza::WeaponCatKuza() : Weapon(4, 5000, 20.0f, 0.1f, "p_wind_catkuza", 0.70f, 1.25f), _player_pos(), _wind_p(3), _dash_p(6), _area_p(5){ }
 
 WeaponCatKuza::~WeaponCatKuza() {}
 
 void 
 WeaponCatKuza::callback(Vector2D shootPos, Vector2D shootDir) {
-	// GameStructs::BulletProperties bp = GameStructs::BulletProperties();
-	// bp.dir = shootDir;
-	// bp.init_pos = shootPos;
-
-	// callback_3_wind(bp);
-
-	// // switch (expression)
-	// // {
-	// // case constant expression:
-	
-	// // 	break;
-	
-	// // default:
-	// // 	break;
-	// // }
-
-
-	// float totalAngle = 60.0f;
-
-	 //patrons::ShotgunPatron(bp, ecs::grp::BULLET, totalAngle, _state);
-
+	(void) shootDir;
+	(void) shootPos;
 }
 
 void WeaponCatKuza::set_player_pos(Vector2D _pl) {
@@ -45,8 +26,8 @@ void WeaponCatKuza::wind_attack(Vector2D shootPos) {
 	bp.speed = _speed;
 	bp.damage = _damage;
 	bp.life_time = 2;
-	bp.width = _attack_width * 0.5f;
-	bp.height = _attack_height * 0.5f;
+	bp.width = _attack_width * 0.75f;
+	bp.height = _attack_height * 0.75f;
 
 	bp.sprite_key = "p_wind_catkuza";
 	bp.collision_filter = GameStructs::collide_with::player;
@@ -88,7 +69,7 @@ WeaponCatKuza::area_attack(Vector2D shootPos) {
 	bp.damage = _damage;
 	bp.life_time = 1;
 	bp.width = _attack_width;
-	bp.height = _attack_height;
+	bp.height = _attack_height * 2.0f; 
 	bp.sprite_key = "p_sarno_rata";
 	bp.collision_filter = GameStructs::collide_with::player;
 
