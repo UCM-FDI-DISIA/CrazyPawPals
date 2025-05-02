@@ -59,12 +59,14 @@ void network_context_host_connect_alloc(network_context_host &host) {
 void network_context_host_destroy(network_context_host &host) {
     assert(network_context_host_connected(host) && "error: host context must be connected before destroying");
     
+    SDLNet_CheckSockets(host.clients_host_set, 0);
     for (network_connection_size i = 0; i < host.sockets_to_clients.connection_count; ++i) {
         TCPsocket &connection = host.sockets_to_clients.connections[i];
         assert(connection != nullptr && "fatal error: connection must not be null before destroying");
         network_utility_sdlnet_drain_and_close(connection);
         connection = nullptr;
     }
+    
     for (network_connection_size i = host.sockets_to_clients.connection_count; i < host.sockets_to_clients.connections.size(); ++i) {
         assert(
             host.sockets_to_clients.connections[i] == nullptr
@@ -73,8 +75,8 @@ void network_context_host_destroy(network_context_host &host) {
     }
     host.sockets_to_clients.connection_count = 0;
 
-    SDLNet_FreeSocketSet(host.clients_host_set);
     network_utility_sdlnet_drain_and_close(host.host_socket);
+    SDLNet_FreeSocketSet(host.clients_host_set);
     host.host_socket = nullptr;
     host.clients_host_set = nullptr;
     host.ip_self.host = INADDR_NONE;
@@ -198,8 +200,10 @@ network_context_client network_context_client_create(const char *host, const uin
 void network_context_client_destroy(network_context_client &client) {
     assert(network_context_client_connected(client) && "error: client context must be connected before destroying");
     
-    SDLNet_FreeSocketSet(client.client_set);
+    SDLNet_CheckSockets(client.client_set, 0);
     network_utility_sdlnet_drain_and_close(client.socket_to_master);
+    
+    SDLNet_FreeSocketSet(client.client_set);
     client.socket_to_master = nullptr;
     client.client_set = nullptr;
     client.ip_host.host = INADDR_NONE;

@@ -11,6 +11,7 @@
 #include "../../ecs/Entity.h"
 #include "../../sdlutils/Texture.h"
 #include "../../network/network_utility.hpp"
+#include <fstream>
 
 #ifdef GENERATE_LOG
 #include "../../our_scripts/log_writer_to_csv.hpp"
@@ -135,17 +136,15 @@ static void multiplayer_menu_host_loop(network_context &ctx) {
                 connection_index
             );
             if (status & network_context_host_accept_connection_status_accepted) {
-                std::cout << "Accepted connection. Connection index: " << connection_index << std::endl;
-            }
-            else if (status & network_context_host_accept_connection_status_rejected) {
-                std::cout << "Rejected connection" << std::endl;
+                std::cout << "message: accepted connection. Connection index: " << connection_index << std::endl;
+            } else if (status & network_context_host_accept_connection_status_rejected) {
+                std::cout << "warning: rejected connection" << std::endl;
             }
             
             if (status & network_context_host_accept_connection_status_full) {
-                std::cout << "Connection full" << std::endl;
-            }
-            else if (status & network_context_host_accept_connection_status_error) {
-                std::cerr << "Error accepting connection" << std::endl;
+                std::cout << "warning: connection full" << std::endl;
+            } else if (status & network_context_host_accept_connection_status_error) {
+                std::cerr << "error: error accepting connection" << std::endl;
             }
         }
         for (network_connection_size i = 0; i < ctx.profile.host.sockets_to_clients.connection_count; ++i) {
@@ -188,6 +187,8 @@ static mulitplayer_menu_handle_text_input_result mulitplayer_menu_handle_text_in
                         }
                         result.regenerate_text |= true;
                     }
+                } else if (event.key.keysym.sym == SDLK_c) {
+                    SDL_SetClipboardText(ip_text.c_str());
                 }
             } else if (event.key.keysym.sym == SDLK_BACKSPACE) {
                 if (!ip_text.empty()) {
@@ -319,22 +320,32 @@ void MultiplayerMenu::create_play_button(const GameStructs::ButtonProperties& bp
 
     auto buttonComp = mngr->getComponent<Button>(e);
     buttonComp->connectClick([buttonComp, imgComp, mngr]() {
+        if (!Game::Instance()->is_host()) {
+            return;
+        }
         imgComp->_filter = false;
         imgComp->swap_textures();
         Game::Instance()->change_Scene(Game::SELECTIONMENU);
-        });
+    });
 
     buttonComp->connectHover([buttonComp, imgComp]() {
+        if (!Game::Instance()->is_host()) {
+            return;
+        }
         imgComp->_filter = true;
         imgComp->swap_textures();
-        });
+    });
 
     buttonComp->connectExit([buttonComp, imgComp]() {
+        if (!Game::Instance()->is_host()) {
+            return;
+        }
         imgComp->_filter = false;
         imgComp->swap_textures();
-        });
+    });
 }
 
+[[maybe_unused]]
 static std::string multiplayer_menu_get_ip(const uint16_t port) {
     const IPaddress ip{
         .host = INADDR_ANY,
@@ -368,24 +379,34 @@ void MultiplayerMenu::create_host_button(const GameStructs::ButtonProperties& bp
 
     auto buttonComp = mngr->getComponent<Button>(e);
     buttonComp->connectClick([buttonComp, imgComp, this]() {
+        if (!Game::Instance()->is_network_none()) {
+            return;
+        }
         imgComp->_filter = false;
         imgComp->swap_textures();
         
         network_context &network = Game::Instance()->get_network();
+        // std::string canonical_ip = multiplayer_menu_get_ip(Game::default_port);
         network = network_context_create_host(nullptr, Game::default_port);
         network_context_host_connect_alloc(network.profile.host);
         std::cout << "Host at port: " << Game::default_port << std::endl;
     });
 
     buttonComp->connectHover([buttonComp, imgComp]() {
+        if (!Game::Instance()->is_network_none()) {
+            return;
+        }
         imgComp->_filter = true;
         imgComp->swap_textures();
-        });
+    });
 
     buttonComp->connectExit([buttonComp, imgComp]() {
+        if (!Game::Instance()->is_network_none()) {
+            return;
+        }
         imgComp->_filter = false;
         imgComp->swap_textures();
-        });
+    });
 }
 
 
@@ -408,81 +429,31 @@ void MultiplayerMenu::create_copy_ip_button(const GameStructs::ButtonProperties&
         imgComp->_filter = false;
         imgComp->swap_textures();
 
-        const IPaddress ip{
-            .host = INADDR_ANY,
-            .port = Game::default_port,
-        };
-        const std::string canonical_ip = multiplayer_menu_get_ip(Game::default_port);
-        SDL_SetClipboardText(canonical_ip.c_str());
-        std::cout << "Congratulations! Your IP: " << canonical_ip << " has been copied to the clipboard." << std::endl;
-    });
-
-    buttonComp->connectHover([buttonComp, imgComp]() {
-        imgComp->_filter = true;
-        imgComp->swap_textures();
-    });
-
-    buttonComp->connectExit([buttonComp, imgComp]() {
-        imgComp->_filter = false;
-        imgComp->swap_textures();
-    });
-}
-
-void MultiplayerMenu::create_client_button(const GameStructs::ButtonProperties& bp)
-{
-    auto* mngr = Game::Instance()->get_mngr();
-    auto e = create_button(bp);
-
-    auto imgComp = mngr->addComponent<ImageForButton>(e,
-        &sdlutils().images().at(bp.sprite_key),
-        &sdlutils().images().at(bp.sprite_key + "_selected"),
-        bp.rect,
-        0,
-        Game::Instance()->get_mngr()->getComponent<camera_component>(
-            Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA))->cam
-    );
-
-    auto buttonComp = mngr->getComponent<Button>(e);
-    buttonComp->connectClick([buttonComp, imgComp, this]() {
-        imgComp->_filter = false;
-        imgComp->swap_textures();
-
-        if (!network_context_client_can_resolve(_ipHost.c_str(), Game::default_port)) {
-            std::cerr << "warning: could not resolve host with ip: " << _ipHost << " at port: " << Game::default_port << std::endl;
-            return;
+        std::system("curl \"https://api.ipify.org\" >czpp_ip.txt");
+        std::string canonical_external_ip; {
+            std::ifstream ip_file{"czpp_ip.txt"};
+            canonical_external_ip = std::string{
+                std::istreambuf_iterator<char>(ip_file),
+                std::istreambuf_iterator<char>()
+            };
         }
+        std::remove("czpp_ip.txt");
         
-        network_context &network = Game::Instance()->get_network();
-        network = network_context_create_client(_ipHost.c_str(), Game::default_port);
-
-        auto connection = network_context_client_connect_alloc(network.profile.client);
-        if (connection & network_context_client_connect_status_connected) {
-            std::cout << "Connected to host." << std::endl;
-        } else if (connection & network_context_client_connect_status_rejected) {
-            std::cout << "Connection rejected." << std::endl;
-        } else if (connection & network_context_client_connect_status_error) {
-            if (connection & network_context_client_connect_status_invalid) {
-                std::cout << "Invalid connection." << std::endl;
-            } else {
-                std::cout << "Error connecting to host." << std::endl;
-            }
-        } else {
-            std::cout << "Unknown error." << std::endl;
-        }
-
-        //TODO: intial message if any
+        SDL_SetClipboardText(canonical_external_ip.c_str());
+        std::cout << "Congratulations! Your IP: " << canonical_external_ip << " has been copied to the clipboard." << std::endl;
     });
 
     buttonComp->connectHover([buttonComp, imgComp]() {
         imgComp->_filter = true;
         imgComp->swap_textures();
-        });
+    });
 
     buttonComp->connectExit([buttonComp, imgComp]() {
         imgComp->_filter = false;
         imgComp->swap_textures();
-        });
+    });
 }
+
 
 static void multiplayer_menu_destroy_network_context(network_context &ctx) {
 	switch (ctx.profile_status) {
@@ -512,6 +483,83 @@ static void multiplayer_menu_destroy_network_context(network_context &ctx) {
 	ctx.profile_status = network_context_profile_status_none;
 }
 
+void MultiplayerMenu::create_client_button(const GameStructs::ButtonProperties& bp) {
+    auto* mngr = Game::Instance()->get_mngr();
+    auto e = create_button(bp);
+
+    auto imgComp = mngr->addComponent<ImageForButton>(e,
+        &sdlutils().images().at(bp.sprite_key),
+        &sdlutils().images().at(bp.sprite_key + "_selected"),
+        bp.rect,
+        0,
+        Game::Instance()->get_mngr()->getComponent<camera_component>(
+            Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA))->cam
+    );
+
+    auto buttonComp = mngr->getComponent<Button>(e);
+    buttonComp->connectClick([buttonComp, imgComp, this]() {
+        if (!Game::Instance()->is_network_none()) {
+            return;
+        }
+
+        imgComp->_filter = false;
+        imgComp->swap_textures();
+
+        char ip_buffer[network_utility_write_canonical_ip_buffer_size] = {0};
+        if (
+            !network_utility_canonicalize_ip(_ipHost.c_str(), ip_buffer)
+            || !network_context_client_can_resolve(ip_buffer, Game::default_port)
+        ) {
+            std::cerr << "warning: could not resolve host with ip: " << _ipHost << " at port: " << Game::default_port << std::endl;
+            return;
+        }
+        
+        network_context &network = Game::Instance()->get_network();
+        network = network_context_create_client(ip_buffer, Game::default_port);
+
+        auto connection = network_context_client_connect_alloc(network.profile.client);
+        if (connection & network_context_client_connect_status_connected) {
+            std::cout << "message: connected to host. Host public ip: " << ip_buffer
+                << " Host port: " << Game::default_port << std::endl;
+        } else if (connection & network_context_client_connect_status_error) {
+            if (connection & network_context_client_connect_status_invalid) {
+                std::cerr << "warning: invalid connection. Machine with public ip: " << ip_buffer
+                    << " is not accepting connections at port: " << Game::default_port << std::endl;
+            } else if (connection & network_context_client_connect_status_rejected) {
+                std::cerr << "warning: connection rejected. A connection with machine (public): " << ip_buffer
+                    << " was made but rejected the connection. Maybe the host application is full." << std::endl;
+            } else {
+                assert(false && "unreachable: invalid connection status");
+                std::exit(EXIT_FAILURE);
+            }
+            std::cout << "error log: SDLNet error: " << SDLNet_GetError() << std::endl;
+            multiplayer_menu_destroy_network_context(network);
+        } else {
+            assert(false && "unreachable: invalid connection status");
+            std::exit(EXIT_FAILURE);
+        }
+
+        //TODO: intial message if any
+    });
+
+    buttonComp->connectHover([buttonComp, imgComp]() {
+        if (!Game::Instance()->is_network_none()) {
+            return;
+        }
+        imgComp->_filter = true;
+        imgComp->swap_textures();
+    });
+
+    buttonComp->connectExit([buttonComp, imgComp]() {
+        if (!Game::Instance()->is_network_none()) {
+            return;
+        }
+        imgComp->_filter = false;
+        imgComp->swap_textures();
+    });
+}
+
+
 void MultiplayerMenu::create_back_button(const GameStructs::ButtonProperties& bp) {
     auto* mngr = Game::Instance()->get_mngr();
     auto e = create_button(bp);
@@ -533,8 +581,7 @@ void MultiplayerMenu::create_back_button(const GameStructs::ButtonProperties& bp
         Game::Instance()->change_Scene(Game::MAINMENU);
 
         // TODO: if they back out they should really disconnect
-        // but for testing it's commented out
-        //multiplayer_menu_destroy_network_context(Game::Instance()->get_network());
+        multiplayer_menu_destroy_network_context(Game::Instance()->get_network());
     });
 
     buttonComp->connectHover([buttonComp, imgComp]() {

@@ -60,7 +60,7 @@ private:
 	void create_camera();
 
 public:
-	constexpr static const uint16_t default_port = 1234;
+	constexpr static const uint16_t default_port = 52224; //49152-65535
 	//Network
 	inline network_context& get_network() {
 		return network;
@@ -71,6 +71,9 @@ public:
 
 	inline network_context_profile_status_option network_profile_status() const {
 		return network.profile_status;
+	}
+	inline bool is_network_none() const {
+		return network_profile_status() == network_context_profile_status_none;
 	}
 	inline bool is_host() const {
 		return network_profile_status() == network_context_profile_status_host;
