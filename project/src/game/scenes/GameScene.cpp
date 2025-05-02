@@ -31,6 +31,7 @@
 #include "../../our_scripts/components/rendering/FlipXController.h"
 #include "../../our_scripts/components/AnimationComponent.h"
 #include "../../our_scripts/components/rendering/camera_component.hpp"
+#include "../../our_scripts/components/rendering/RotationComponent.h"
 
 #include "../../our_scripts/components/Health.h"
 #include "../../our_scripts/components/weapons/BulletData.h"
@@ -1166,7 +1167,7 @@ void GameScene::spawn_fog()
 #pragma endregion
 
 #pragma region Proyectile
-void GameScene::generate_proyectile(const GameStructs::BulletProperties &bp, ecs::grpId_t gid, ecs::sceneId_t scene)
+ecs::entity_t GameScene::generate_proyectile(const GameStructs::BulletProperties &bp, ecs::grpId_t gid, ecs::sceneId_t scene)
 {
 	auto manager = Game::Instance()->get_mngr();
 	(void)gid;
@@ -1175,7 +1176,7 @@ void GameScene::generate_proyectile(const GameStructs::BulletProperties &bp, ecs
 	auto &&rect = *new rect_component{0, 0, bp.width, bp.height};
 	auto &&player_rigidbody = *new rigidbody_component{rect_f32{{0.15f, -0.125}, {0.5f, 0.75f}}, mass_f32{7.0f}, 1.0f};
 	auto &&player_collisionable = *new collisionable{transform, player_rigidbody, rect, collisionable_option_trigger};
-
+	
 	auto e = create_entity(
 		gid,
 		scene,
@@ -1197,11 +1198,13 @@ void GameScene::generate_proyectile(const GameStructs::BulletProperties &bp, ecs
 		//manager->addComponent<collision_registration_by_id>(e, bp.bitset);
 	//else 
 	if (bp.collision_filter == GameStructs::collide_with::enemy || bp.collision_filter == GameStructs::collide_with::all)
-	manager->addComponent<collision_registration_by_id>(e, bp.bitset);
+		manager->addComponent<collision_registration_by_id>(e);
+
+	return e;
 }
-void GameScene::create_proyectile(const GameStructs::BulletProperties &bp, ecs::grpId_t gid)
+ecs::entity_t GameScene::create_proyectile(const GameStructs::BulletProperties &bp, ecs::grpId_t gid)
 {
-	generate_proyectile(bp, gid);
+	return generate_proyectile(bp, gid);
 }
 #pragma endregion
 

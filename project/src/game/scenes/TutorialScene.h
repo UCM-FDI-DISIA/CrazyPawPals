@@ -33,7 +33,7 @@ public:
 	void update(uint32_t delta_time) override;
 	void render() override;
 
-	void create_proyectile(const GameStructs::BulletProperties& bp, ecs::grpId_t gid) override;
+	ecs::entity_t create_proyectile(const GameStructs::BulletProperties& bp, ecs::grpId_t gid) override;
 	void event_callback0(const event_system::event_receiver::Msg& m) override;
 private:
 	bool has_pass_input();
