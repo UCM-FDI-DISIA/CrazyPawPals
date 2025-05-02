@@ -353,7 +353,7 @@ static std::string multiplayer_menu_get_ip(const uint16_t port) {
     };
     char ip_host[network_utility_write_canonical_ip_buffer_size] = {0};
     network_utility_write_canonical_ip(
-        network_utility_get_host_ip(
+        network_utility_get_host_local_ip(
             network_utility_get_host_name(ip),
             port
         ),
@@ -429,18 +429,12 @@ void MultiplayerMenu::create_copy_ip_button(const GameStructs::ButtonProperties&
         imgComp->_filter = false;
         imgComp->swap_textures();
 
-        std::system("curl \"https://api.ipify.org\" >czpp_ip.txt");
-        std::string canonical_external_ip; {
-            std::ifstream ip_file{"czpp_ip.txt"};
-            canonical_external_ip = std::string{
-                std::istreambuf_iterator<char>(ip_file),
-                std::istreambuf_iterator<char>()
-            };
-        }
-        std::remove("czpp_ip.txt");
+        std::string canonical_public_ip{
+            network_utility_get_host_canonical_public_ip(Game::default_port)
+        };
         
-        SDL_SetClipboardText(canonical_external_ip.c_str());
-        std::cout << "Congratulations! Your IP: " << canonical_external_ip << " has been copied to the clipboard." << std::endl;
+        SDL_SetClipboardText(canonical_public_ip.c_str());
+        std::cout << "Congratulations! Your IP: " << canonical_public_ip << " has been copied to the clipboard." << std::endl;
     });
 
     buttonComp->connectHover([buttonComp, imgComp]() {
