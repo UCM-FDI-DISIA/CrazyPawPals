@@ -11,6 +11,7 @@
 #include "../../ecs/Entity.h"
 #include "../../sdlutils/Texture.h"
 #include "../../network/network_utility.hpp"
+#include <fstream>
 
 #ifdef GENERATE_LOG
 #include "../../our_scripts/log_writer_to_csv.hpp"
@@ -409,13 +410,18 @@ void MultiplayerMenu::create_copy_ip_button(const GameStructs::ButtonProperties&
         imgComp->_filter = false;
         imgComp->swap_textures();
 
-        const IPaddress ip{
-            .host = INADDR_ANY,
-            .port = Game::default_port,
-        };
-        const std::string canonical_ip = multiplayer_menu_get_ip(Game::default_port);
-        SDL_SetClipboardText(canonical_ip.c_str());
-        std::cout << "Congratulations! Your IP: " << canonical_ip << " has been copied to the clipboard." << std::endl;
+        std::system("curl \"https://api.ipify.org\" >czpp_ip.txt");
+        std::string canonical_external_ip; {
+            std::ifstream ip_file{"czpp_ip.txt"};
+            canonical_external_ip = std::string{
+                std::istreambuf_iterator<char>(ip_file),
+                std::istreambuf_iterator<char>()
+            };
+        }
+        std::remove("czpp_ip.txt");
+        
+        SDL_SetClipboardText(canonical_external_ip.c_str());
+        std::cout << "Congratulations! Your IP: " << canonical_external_ip << " has been copied to the clipboard." << std::endl;
     });
 
     buttonComp->connectHover([buttonComp, imgComp]() {
