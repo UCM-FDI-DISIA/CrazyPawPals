@@ -108,16 +108,10 @@ void RotationComponent::update(uint32_t delta_time)
 	break;
 	}
 
-	if (_can_flip && _dy)
+	if (_can_flip && _dy && now - _last_flip_time >= _flip_time)
 	{
-		if (now - _last_flip_time >= _flip_time)
-		{
-			_dy->flip = (SDL_FLIP_HORIZONTAL == _dy->flip) ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
-			_last_flip_time = now;
-			std::cout << "_last_flip_time " << _last_flip_time << std::endl;
-			std::cout << "_flip_time " << _flip_time << std::endl;
-			std::cout << "now " << now << std::endl;
-		}
+		_dy->flip = (SDL_FLIP_HORIZONTAL == _dy->flip) ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
+		_last_flip_time = now;
 	}
 }
 
