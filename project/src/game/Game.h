@@ -31,10 +31,6 @@ public:
 	void initGame();
 	void start();
 
-	void startAsHost();
-	void startAsClient(const std::string& ip);
-	std::string getLocalIP() const;
-
 	ecs::Manager* get_mngr();
 	event_system::event_manager* get_event_mngr();
 	
@@ -52,12 +48,11 @@ private:
 	int _current_scene_index = -1;
 	std::vector<Scene*> _scenes;
 	std::vector<bool> _scene_inits;
-	std::pair<int, int> _screen_size = std::make_pair(960,540);
+	std::pair<int, int> _screen_size = std::make_pair(960, 540);
 	Game();
 	ecs::Manager* _mngr;
 	network_context network;
 	void set_volumes();
-	void create_camera();
 
 public:
 	constexpr static const uint16_t default_port = 52224; //49152-65535

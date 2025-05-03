@@ -79,11 +79,13 @@ using network_context_profile_status_option = uint8_t;
 struct network_context {
     network_context_profile profile;
     network_context_profile_status_option profile_status;
+    uint8_t player_id;
 };
 inline network_context network_context_create_host(const char *const host_name, const uint16_t port) {
     return network_context{
         .profile = {.host = network_context_host_create(host_name, port)},
         .profile_status = network_context_profile_status_host,
+        .player_id = 0,
     };
 }
 inline network_context network_context_create_client(const char *host, const uint16_t port) {

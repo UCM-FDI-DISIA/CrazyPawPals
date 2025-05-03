@@ -256,7 +256,7 @@ ecs::entity_t GameScene::create_player(ecs::sceneId_t scene)
 			player_rect,
 			camera,
 			sdlutils().images().at("piu"),
-			player_transform),
+			player_transform, "piu"),
 		new render_ordering{1},
 		new Health(100, true),
 		new ManaComponent(),
@@ -281,6 +281,7 @@ bool GameScene::change_player_tex(const std::string &text_name)
 	if (auto &&dy = manager.getComponent<dyn_image_with_frames>(player))
 	{
 		dy->texture = &sdlutils().images().at(text_name);
+		dy->texture_name = text_name;
 		return true;
 	}
 	return false;

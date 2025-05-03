@@ -152,4 +152,12 @@ namespace GameStructs
 		int reload;
 		int mana_regen;
 	};
+
+	struct NetPlayerData {
+		uint8_t id;
+		Vector2D pos;
+		int health;
+		bool is_ghost;
+		std::string sprite_key;
+	};
 }

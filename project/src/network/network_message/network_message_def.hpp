@@ -170,21 +170,49 @@ inline NetworkBulletProperties network_message_bulletProperties_create(GameStruc
     return n_bp;
 }
 
-// Struct de player que se conecta
-struct network_message_player_connect
-{
+//Struct de player cuando se conecta
+struct network_message_player_connect {
     uint8_t player_id;
+    int32_t pos[2];
+    int16_t health;
     uint8_t sprite_key_length;
     char sprite_key[32];
-    GameStructs::WeaponType weapon_type = GameStructs::DEFAULT;
+    uint8_t is_ghost;
 };
 
-// Struct sincronizar player
-struct network_message_player_update
-{
+inline network_message_player_connect create_player_connect_message(const GameStructs::NetPlayerData& player) {
+    network_message_player_connect player_connet;
+
+    //uint8_t player id
+    player_connet.player_id = player.id;
+
+    //Vector2D pos
+    SDLNet_Write32(player.pos.getX() * fact_float_int, &player_connet.pos[0]);
+    SDLNet_Write32(player.pos.getY() * fact_float_int, &player_connet.pos[1]);
+
+    //int health
+    SDLNet_Write16(player.health, &player_connet.health);
+    
+    //bool is_ghost
+    player_connet.is_ghost = static_cast<uint8_t>(player.is_ghost);
+
+    //string
+    const size_t key_size = player.sprite_key.size();
+    assert(key_size < sizeof(player_connet.sprite_key) && "error: string size too long");
+    player_connet.sprite_key_length = static_cast<uint8_t>(key_size);
+
+    std::copy(player.sprite_key.begin(), player.sprite_key.end(), player_connet.sprite_key);
+
+    return player_connet;
+}
+
+
+//Struct sincronizar player
+struct network_message_player_update {
     uint8_t player_id;
-    int8_t pos_x;
-    int8_t pos_y;
+    int16_t pos[2];
+    int16_t health;
+    uint8_t is_ghost;
 };
 
 // Struct de EnemyProperties
@@ -204,5 +232,26 @@ inline NetworkEnemyProperties network_message_enemyProperties_create(GameStructs
 
     return n_ep;
 }
+
+inline network_message_player_update create_player_update_message(const GameStructs::NetPlayerData& player) {
+    network_message_player_update player_connet;
+
+    //uint8_t player id
+    player_connet.player_id = player.id;
+
+    //Vector2D pos
+    SDLNet_Write32(player.pos.getX() * fact_float_int, &player_connet.pos[0]);
+    SDLNet_Write32(player.pos.getY() * fact_float_int, &player_connet.pos[1]);
+
+    //int health
+    SDLNet_Write16(player.health, &player_connet.health);
+
+    //bool is_ghost
+    player_connet.is_ghost = static_cast<uint8_t>(player.is_ghost);
+
+    return player_connet;
+}
+
+
 
 #endif

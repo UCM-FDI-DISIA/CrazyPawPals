@@ -2,14 +2,19 @@
 #include "../../ecs/Component.h"
 
 class Transform;
-class EnemySynchronize :public ecs::Component
+class Health;
+class PlayerSynchronize :public ecs::Component
 {
 public:
 	__CMPID_DECL__(ecs::cmp::SYNCHRONIZE);
-	EnemySynchronize();
-	~EnemySynchronize();
+	PlayerSynchronize();
+	~PlayerSynchronize();
 	void initComponent() override;
 	void update(uint32_t delta_time) override;
 protected:
+	uint8_t _player_id;
 	Transform* _tr;
+	Health* _health;
+	std::string _tex_name;
+	bool _is_ghost;
 };
