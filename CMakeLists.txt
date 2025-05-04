@@ -6,7 +6,6 @@ project(CrazyPawPals C CXX)
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
     set(CMAKE_CXX_EXTENSIONS OFF)
 
-    message(STATUS "Compiler: ${CMAKE_C_COMPILER}")
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         add_definitions(-D_CRTDBG_MAP_ALLOC)
     endif()

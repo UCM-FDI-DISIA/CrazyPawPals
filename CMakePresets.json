@@ -47,9 +47,13 @@
         {
             "name": "x64-Debug-Clang",
             "inherits": "x64-Debug",
-            "toolchainFile": "${sourceDir}/user/clang-win-x64.cmake",
+            "generator": "Ninja",
             "environment": {
                 "DBG_NETWORK": "false"
+            },
+            "cacheVariables": {
+                "CMAKE_CXX_COMPILER": "clang++",
+                "CMAKE_C_COMPILER": "clang"
             }
         },
         {
