@@ -42,5 +42,6 @@ network_message_dynamic_pack network_message_dynamic_pack_receive(TCPsocket sock
         assert(false && "fatal error: SDLNet_TCP_Recv invalid number of bytes received");
         std::exit(EXIT_FAILURE);
     }
+    buffer.release();
     return message;
 }

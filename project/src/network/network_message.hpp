@@ -56,6 +56,12 @@ template <typename T>
 struct network_message_pack : public network_message {
     uint16_t padding;
     network_message_payload<T> payload;
+    struct deleter {
+        void operator()(network_message_pack<T> *ptr) const {
+            ptr->payload.content.~T();
+            delete[] reinterpret_cast<uint8_t *>(ptr);
+        }
+    };
 };
 
 template <typename T>
@@ -169,25 +175,25 @@ void network_message_pack_send(
 
 
 template <typename From, typename To>
-network_message_pack<To> &network_message_pack_into(network_message_pack<From> &from) {
+network_message_pack<To> network_message_pack_into(network_message_pack<From> &&from) {
     static_assert(
         sizeof(network_message_pack<To>) <= sizeof(network_message_pack<From>),
         "static error: network_message_pack<To> must be less than or equal to network_message_pack<From>"
     );
-    return reinterpret_cast<network_message_pack<To> &>(from);
+    return reinterpret_cast<network_message_pack<To> &>(std::move(from));
 }
 
 template <typename T>
 using network_message_resolved_dynamic_pack = std::unique_ptr<network_message_pack<T>, typename network_message_pack<T>::deleter>;
 template <typename To>
-network_message_resolved_dynamic_pack<To> &network_message_dynamic_pack_into(network_message_dynamic_pack &&from) {
+network_message_resolved_dynamic_pack<To> network_message_dynamic_pack_into(network_message_dynamic_pack &&from) {
     const size_t payload_size = size_t(SDLNet_Read16(&from->header.payload_size_n));
     if (sizeof(network_message_pack<To>) < payload_size) {
         assert(false && "fatal error: payload size must be less than or equal to the size of the payload");
         std::exit(EXIT_FAILURE);
     }
 
-    network_message *ptr = from.release();
+    network_message *ptr = std::move(from).release();
     if (ptr == nullptr) {
         assert(false && "fatal error: pointer must not be null before resolving dynamic pack");
         std::exit(EXIT_FAILURE);
@@ -195,7 +201,7 @@ network_message_resolved_dynamic_pack<To> &network_message_dynamic_pack_into(net
 
     return network_message_resolved_dynamic_pack<To>{
         static_cast<network_message_pack<To> *>(ptr),
-        network_message_pack<To>::payload::deleter()
+        typename network_message_pack<To>::deleter()
     };
 }
 

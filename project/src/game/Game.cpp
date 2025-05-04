@@ -263,7 +263,7 @@ static void game_start_network_dbg(network_context &ctx) {
 		}
 
 		network_message_pack_send(
-			ctx.profile.client.socket_to_master,
+			ctx.profile.client.socket_to_host,
 			network_message_pack_create(
 				network_message_type_dbg_print_two_byte_test,
 				network_message_payload_dbg_print_create<256>(

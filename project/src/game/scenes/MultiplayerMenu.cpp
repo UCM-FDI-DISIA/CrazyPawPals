@@ -11,6 +11,7 @@
 #include "../../ecs/Entity.h"
 #include "../../sdlutils/Texture.h"
 #include "../../network/network_utility.hpp"
+#include "../../network/network_message.hpp"
 #include <fstream>
 
 #ifdef GENERATE_LOG
@@ -23,7 +24,7 @@ MultiplayerMenu::MultiplayerMenu() : Scene(ecs::scene::MULTIPLAYERMENUSCENE),
         sdlutils().renderer(),
         std::string{"Ip..."},
         sdlutils().fonts().at("ARIAL16"),
-        SDL_Color{ 0, 0, 0, 255 },
+        SDL_Color{ 0, 16, 24, 255 },
         SDL_Color{ 255, 255, 255, 255 }
     }, 
     _ipHost{""},
@@ -84,11 +85,11 @@ void MultiplayerMenu::initScene()
 
     GameStructs::ButtonProperties edit_ip_button_descriptor{
         rect_f32{
-            position2_f32{0.725f + 0.15f, 0.39f},
-            size2_f32{ 0.15f, 0.075f }
+            position2_f32{0.7f + 0.15f + 0.05f, 0.39f},
+            size2_f32{ 0.075f, 0.075f }
         },
         0.0f,
-        std::string{"confirm_reward"},
+        std::string{"edit_ip"},
         ecs::grp::DEFAULT
     };
     create_edit_ip_button(edit_ip_button_descriptor);
@@ -150,6 +151,31 @@ static void multiplayer_menu_host_loop(network_context &ctx) {
         for (network_connection_size i = 0; i < ctx.profile.host.sockets_to_clients.connection_count; ++i) {
             TCPsocket &connection = ctx.profile.host.sockets_to_clients.connections[i];
             if (SDLNet_SocketReady(connection)) {
+                network_message_dynamic_pack dyn_message = network_message_dynamic_pack_receive(connection);
+                const uint16_t type_n{dyn_message->header.type_n};
+                const uint16_t type_h{SDLNet_Read16(&type_n)};
+                switch (type_h) {
+                case network_message_type::network_message_type_dbg_print: [[fallthrough]];
+                case network_message_type::network_message_type_dbg_print_two_byte_test: {
+                    // std::unique_ptr<network_message_pack<network_message_payload_dbg_print<64>>, typename network_message_pack<network_message_payload_dbg_print<64>>::deleter> m;
+                    auto message =
+                        network_message_dynamic_pack_into<network_message_payload_dbg_print<64>>(std::move(dyn_message));
+                    auto &&payload = message->payload.content;
+
+                    const uint32_t args_size_h{SDLNet_Read32(&payload.args_size_n)};
+                    assert(
+                        args_size_h < sizeof(payload.args)
+                        && "error: payload size must be less than the size of the payload"
+                        "There is no space for the null terminator"
+                    );
+                    payload.args[args_size_h] = '\0';
+                    std::cout << "message: " << payload.args.data() << std::endl;
+                    break;
+                }
+                default: {
+                    break;
+                }
+                }
                 // TODO: listen to custom messages
             }
         }
@@ -205,7 +231,7 @@ static mulitplayer_menu_handle_text_input_result mulitplayer_menu_handle_text_in
 
 void MultiplayerMenu::update(uint32_t delta_time) {
     Scene::update(delta_time);
-
+    
     if (input_field_has_focus) {
         const auto &input = ih();
         const auto result = mulitplayer_menu_handle_text_input(input, _ipHost);
@@ -215,8 +241,8 @@ void MultiplayerMenu::update(uint32_t delta_time) {
                 sdlutils().renderer(),
                 _ipHost.empty() ? std::string{"Ip..."} : _ipHost,
                 sdlutils().fonts().at("ARIAL16"),
-                SDL_Color{0, 0, 0, 255},
-                SDL_Color{255, 255, 255, 255},
+                SDL_Color{0, 16, 24, 255},
+                SDL_Color{255, 255, 255, 0},
             };
         }
 
@@ -255,8 +281,8 @@ void MultiplayerMenu::render() {
     //Adapted to screep
     const rect_f32 textInput = rect_f32_screen_rect_from_viewport(
         rect_f32{
-            position2_f32{ 0.725f, 0.39f },
-            size2_f32{ 0.15f, 0.075f }
+            position2_f32{ 0.7f, 0.39f },
+            size2_f32{ 0.15f + 0.05f, 0.075f }
         },
         _cam.cam.screen
     );
@@ -267,7 +293,17 @@ void MultiplayerMenu::render() {
         int(textInput.size.x),
         int(textInput.size.y)
     };
-    ip_input.render(textField);
+    auto &renderer = *sdlutils().renderer();
+    SDL_SetRenderDrawColor(&renderer, 255, 255, 255, 255);
+    SDL_RenderFillRect(&renderer, &textField);
+    
+    const SDL_Rect occupied_text_field{
+        textField.x + ((textField.w - ip_input.width()) >> 1),
+        textField.y + ((textField.h - ip_input.height()) >> 1),
+        ip_input.width(),
+        ip_input.height()
+    };
+    ip_input.render(occupied_text_field);
 }
 
 ecs::entity_t MultiplayerMenu::create_edit_ip_button(const GameStructs::ButtonProperties& bp) {
@@ -535,7 +571,15 @@ void MultiplayerMenu::create_client_button(const GameStructs::ButtonProperties& 
             std::exit(EXIT_FAILURE);
         }
 
-        //TODO: intial message if any
+        network_message_pack_send(
+            network.profile.client.socket_to_host,
+            network_message_pack_create(
+                network_message_type::network_message_type_dbg_print_two_byte_test,
+                network_message_payload_dbg_print_create<32>(
+                    "Hello from client!"
+                )
+            )
+        );
     });
 
     buttonComp->connectHover([buttonComp, imgComp]() {

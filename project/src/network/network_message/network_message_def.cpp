@@ -16,6 +16,7 @@ network_message_header network_message_header_receive(TCPsocket socket) {
         &header,
         int(sizeof(header))
     );
+    // FIXME: allow for connection closed message
     if (recv_result == network_utility_sdl_net_failure) {
         assert(false && "fatal error: SDLNet_TCP_Recv failed");
         std::exit(EXIT_FAILURE);

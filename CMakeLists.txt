@@ -1,39 +1,43 @@
-cmake_minimum_required(VERSION 3.15..3.30)
+cmake_minimum_required(VERSION 3.6)
 
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
- add_definitions(-D_CRTDBG_MAP_ALLOC)
- endif()
-
-if (MSVC OR MSVC_IDE OR TRUE)
-    add_compile_options(
-        /W4
-        /Zi
-
-        /nologo
-        #-D DBG_COLLISIONS=true
-    )
-else()
-    add_compile_options(
-        -Wall
-        -Wextra
-        -Wpedantic
-        # -Werror
-
-        -Wno-c++98-compat
-        -Wno-c++98-compat-pedantic
-        -Wno-reserved-identifier
-
-        -Wno-shadow-field
-        -Wno-shadow-field-in-constructor
-
-        -Wno-c++20-extensions
-    )
-endif()
 
 project(CrazyPawPals C CXX)
     set(CMAKE_CXX_STANDARD 20)
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
     set(CMAKE_CXX_EXTENSIONS OFF)
+
+    message(STATUS "Compiler: ${CMAKE_C_COMPILER}")
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        add_definitions(-D_CRTDBG_MAP_ALLOC)
+    endif()
+
+    if ((MSVC OR MSVC_IDE) AND (NOT (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")))
+        message(STATUS "MSVC detected")
+        add_compile_options(
+            /W4
+            /Zi
+
+            /nologo
+            #-D DBG_COLLISIONS=true
+        )
+    else()
+        message(STATUS "GCC/Clang detected")
+        add_compile_options(
+            -Wall
+            -Wextra
+            -Wpedantic
+            # -Werror
+
+            -Wno-c++98-compat
+            -Wno-c++98-compat-pedantic
+            -Wno-reserved-identifier
+
+            -Wno-shadow-field
+            -Wno-shadow-field-in-constructor
+
+            -Wno-c++20-extensions
+        )
+    endif()
 
     set(
         CrazyPawPals_PROJECT_DIRECTORY

@@ -68,17 +68,8 @@ network_message_header network_message_header_receive(TCPsocket socket);
 void network_message_header_send(TCPsocket socket, const network_message_header header);
 
 template <typename T, typename = std::enable_if_t<std::is_trivially_copyable_v<T>>>
-struct network_message_payload
-{
+struct network_message_payload {
     T content;
-    struct deleter
-    {
-        void operator()(T *ptr) const
-        {
-            ptr->~T();
-            delete[] reinterpret_cast<uint8_t *>(ptr);
-        }
-    };
 };
 
 template <uint32_t ArgumentsSize>
