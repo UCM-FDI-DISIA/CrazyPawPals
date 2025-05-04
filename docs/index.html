@@ -1,99 +1,148 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&family=Modak&family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap');
-    body {
-      /* background-image: url('img/floor_bg.png'); */
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-    }
-  </style>
-  <meta charset="utf-8">
-  <title>Crazy Paw Pals</title>
-  <link rel="icon" type="image/x-icon" href="img/curtainreaper32.png">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <link rel="stylesheet" href="css/style.css">
+    <meta charset="utf-8">
+    <title>Crazy Paw Pals</title>
+    <link rel="icon" type="image/x-icon" href="img/curtainreaper32.png">
+    <link href="https://fonts.googleapis.com/css2?family=Sour+Gummy&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik+Bubbles&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sue+Ellen+Francisco&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Barriecito&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
-    <h1>Crazy Paw Pals</h1>
-    <h2>¡Únete a la gatalla!</h2>
+    <div class="encabezado">
+        <img src="gif/piu.gif" alt="Logo" class="logo">
+        <h1 class="titulo-principal">CRAZY PAW PALS</h1>
+        <h1 class="slogan">¡Únete a la gatalla!</h1>
+    </div>
+
     <div class="tab">
-        <button id="StartingButton"class="tablinks" onclick="openTab(event, 'Information')">About CPP</button>
-        <button class="tablinks" onclick="openTab(event, 'Dev')">Dev Team</button>
+        <button id="StartingButton" class="tablinks" onclick="openTab(event, 'Information')">About CPP</button>
         <button class="tablinks" onclick="openTab(event, 'Trailer')">Trailer</button>
-        <button class="tablinks" onclick="openTab(event, 'Play')">Play</button>
+        <button class="tablinks" onclick="openTab(event, 'Install')">Install</button>
+        <button class="tablinks" onclick="openTab(event, 'Controls')">Controls</button>
+        <button class="tablinks" onclick="openTab(event, 'Dev')">Dev Team</button>
+        <button class="tablinks" onclick="openTab(event, 'Credits')">Credits</button>
     </div>
 
     <div id="Information" class="tabcontent">
-        <p>Crazy Paw Pals es un juego de acción roguelike en el que deberás defender un café de gatos a lo largo de varias oleadas.</p>
-
-        <!-- Ambos bloques -->
-        <div style="display: flex; justify-content: space-between;">
-
-            <!-- Bloque izq -->
-            <div style="width: 45%; display: flex; align-items: center;">
-                <!-- Título e Imagen -->
-                <div style="display: flex;">
-                    <!-- Título -->
-                    <div style="width: 50%;">
-                        <h3>¡Zarpa a zarpa!</h3>
-                    </div>
-
-                    <!-- Imagen -->
-                    <div style="width: 50%; text-align: center;">
-                        <img src="img/michi_mafioso.png" width=50 height=50>
-                    </div>
-                </div>
-                <!-- Texto -->
-                <p>El café será sitiado por numerosos enemigos. ¡Neutraliza su ofensiva y contraataca con tu propia!</p>
+        <div class="info1">
+            <div class="info1-text">
+                <p>¿Qué es Crazy Paw Pals? /ᐠ. ᴗ.ᐟ\</p>
+                <p>Crazy Paw Pals es un juego de acción roguelike en el que deberás defender un café de gatos a lo largo de varias oleadas.</p>
             </div>
+            <img src="img/boceto.png" alt="Imagen de CPP" class="info1-img">
+        </div>
 
-            <div style="width: 45%; display: flex; align-items: center;">
-                <div style="width: 50%;">
-                    <h3>¡Construye tu miauzo!</h3>
-                    <p>Tus cartas serán tu línea de defensa ante las amenazas. ¡Experimenta con arquetipos variados para alcanzar la victoria!</p>
-                </div>
-                <div style="width: 50%; text-align: center;">
-                    <img src="img/sarno_rata.png" width=50 height=50>
-                </div>
+        <div class="info2">
+            <img src="img/catkuza_shadow.png" alt="Imagen de CPP" class="logo1">
+            <img src="img/enemies.png" alt="Imagen de enemigos" class="info2-img">
+            <div class="info2-text">
+                <p>CPP está en peligro (=‘ｘ‘=)</p>
+                <p>El café será atacado por numerosos roedores y gatos traidores. ¡Frena su ofensiva y contraataca con tu propia!</p>
             </div>
         </div>
 
-
-
-        <!-- <div style = "text-align:center;"> -->
-        <div class="centered">
-            <img src="img/bocetoPersonaje1.png" width=10% height=10%>
+        <div class="info1">
+            <div class="info1-text">
+                <p>A la GATALLA /ᐠ.ꞈ.ᐟ\</p>
+                <p>Elige tu arma y crea tu miauzo. Tus cartas serán tu línea de defensa ante las amenazas. Cada carta tiene su efecto único. ¡Juégalas con estrategia y experimenta con arquetipos variados para alcanzar la victoria!</p>
+            </div>
+            <img src="gif/cartas.gif" alt="cartas" class="info1-img">
         </div>
-
-        <div class="footer">
-            Curtain Reaper, 2025.
-            <div class="iconimage"><img src="img/curtainreaper32.png"></div>
+        <div class="info2">
+            <img src="gif/boss.gif" alt="Imagen de boss" class="info2-img">
+            <div class="info2-text">
+                <p>Enemigos fuertes... pero posibles</p>
+                <p>Cuidado con los michis traidores, son muy potentes. Pero con la ayuda de las recompensas y los objetos míticos los vencerás</p>
+            </div>
+        </div>
+        <div class="info1">
+            <div class="info1-text">
+                <p>Cuidado con las trampas...</p>
+                <p>Durante la gatalla, habrá eventos aleatorios que perjudican tu proceso, ¡supéralos!</p>
+            </div>
+            <img src="gif/eventos.gif" alt="Imagen de eventos" class="info1-img">
+        </div>
+        <div class="info2">
+            <img src="gif/multi.gif" alt="Imagen de multi" class="info2-img">
+            <div class="info2-text">
+                <p>Reúne a todos los michis</p>
+                <p>¡Es un juego multiplayer online! Invita a tus amigos a la gatalla, la fuerza de un equipo siempre es mayor que un solo michi.</p>
+            </div>
         </div>
     </div>
 
     <div id="Dev" class="tabcontent">
-        <h3>Dev Team</h3>
-        <div style="text-align:center;">
-            <p>Haoshuang Hou</p>
-            <p>José Narciso Robles Durán</p>
-            <p>Izan de Vega López</p>
-            <p>Bingcheng Wang</p>
-            <p>María Eduarda Beckers</p>
-            <p>Denisa Juarranz Berindea</p>
-            <p>Óscar Melquiades Durán Narganes</p>
-            <p>Javier Fueyo López</p>
-            <p>Amiel Ramos Juez</p>
+        <h3>(^･ｪ･^) Curtain reaper members</h3>
+        <div class="dev-info">
+            <img src="img/revolver.png" alt="cafe" class="logo1">
+            <div style="text-align: center;">
+                <p>Haoshuang Hou</p>
+                <p>José Narciso Robles Durán</p>
+                <p>Izan de Vega López</p>
+                <p>Bingcheng Wang</p>
+                <p>María Eduarda Beckers</p>
+                <p>Denisa Juarranz Berindea</p>
+                <p>Óscar Melquiades Durán Narganes</p>
+                <p>Javier Fueyo López</p>
+                <p>Amiel Ramos Juez</p>
+            </div>
+            <img src="gif/mimi.gif" alt="gato" class="logo1">
         </div>
     </div>
     <div id="Trailer" class="tabcontent">
-    </div>
-    <div id="Play" class="tabcontent">
+        <div style="display: flex; align-items: center; justify-content: center; gap: 40px; margin: 20px 0;">
+            <img src="img/watch_it.png" alt="cafe" style="margin-left: 0; width: 600px; height: auto;">
+            <iframe width="650" height="400"
+                    src="https://www.youtube.com/embed/5FgwmDY8MK8"
+                    title="trailer"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowfullscreen>
+            </iframe>
+        </div>
     </div>
 
+    <div id="Install" class="tabcontent">
+        <h2>Instalador</h2>
+    </div>
+    <div id="Credits" class="tabcontent">
+        <div class="credits-info">
+            <!-- Columna 1 -->
+            <div class="credits-column">
+                <h2>🎨Arte🖌️</h2>
+                <p>Haoshuang Hou</p>
+                <p>María Eduarda Beckers</p>
+                <p>Izan de Vega López</p>
+                <p>Bingcheng Wang</p>
+                <p>Denisa Juarranz Berindea</p>
+                <p>Óscar Melquiades Durán Narganes</p>
+            </div>
+
+            <!-- Columna 2 -->
+            <div class="credits-column">
+                <h2>🎧Sonido🎶</h2>
+                <p>Bingcheng Wang</p>
+                <p>Óscar Melquiades Durán Narganes</p>
+                <img src="img/plim_plim.png" alt="cartas" class="logo1">
+            </div>
+        </div>
+    </div>
+    <div id="Controls" class="tabcontent" style="display: flex; justify-content: center; align-items: center; gap: 40px; flex-wrap: wrap;">
+        <img src="img/movimiento.png" alt="movimiento" class="controls">
+        <img src="img/usar_carta.png" alt="carta" class="controls">
+        <img src="img/ataque.png" alt="ataque" class="controls">
+        <img src="img/reload.png" alt="recarga" class="controls">
+        <img src="img/rey_basurero.png" alt="rey" style="margin-left: auto; width: 300px; height: auto; position: relative; left: 40%;">
+    </div>
+    <div class="centered">
+        <img src="img/curtainreaper.png" width=5% height=5%>
+    </div>
     <script>
         function openTab(evt, id_to_show) {
             var i, tabcontent, tablinks;
