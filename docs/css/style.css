@@ -26,41 +26,53 @@
     font-weight: 400;
     font-style: normal;
 }
+.barriecito-regular {
+    font-family: "Barriecito", system-ui;
+    font-weight: 400;
+    font-style: normal;
+}
+
 body {
-    background-color: #e7b273;
+/*    border: 10px solid #675547;*/
+    background-color: #a87a56;
     background-size: cover;
     background-repeat: no-repeat;
     background-attachment: fixed;
 }
 .encabezado {
-    background-color: #a87a56; /* Fondo del h1, puedes usar cualquier color */
+    border: 5px solid #675547;
+    border-bottom-width: 0px;
+    background-color: #877465;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
     display: flex;
     align-items: center; /* Alinea verticalmente la imagen y el texto */
-    gap: 75px; /* Espacio entre imagen y texto */
-    padding: 20px;
+    gap: 50px; /* Espacio entre imagen y texto */
+    padding-left: 15px;
 }
 
 .logo {
-    width: 50px; /* Ajusta según el tamaño que necesites */
+    width: 75px;
     height: auto;
 }
 h1 {
     padding: 0;
     margin: 0;
+    color: #c9b8a7;
 }
 .titulo-principal {
     font-family: "Cherry Bomb One", system-ui;
-    font-size: 120px;
-    color: black;
+    font-size: 110px;
     text-align: center;
+    padding-left: 150px;
+    -webkit-text-stroke: 1px black; /* grosor y color del contorno */
 }
 
 .slogan {
-    font-family: "Sour Gummy", sans-serif;
+    font-family: "Barriecito", system-ui;
     font-size: 22px;
-    text-align: right;
-    color: black;
-    padding-right: 20px;
+    text-align: center;
+    padding-top: 100px;
 }
 h2{
     font-family: "Modak";
@@ -132,39 +144,74 @@ p {
 }
 
 
-/* Style the tab */
 .tab {
-    overflow: hidden;
-    /*border: 1px solid #ccc;
-    background-color: #f1f1f1;*/
+    display: flex;
+    justify-content: center; /* Centra los botones horizontalmente */
+    gap: 150px; /* Espacio entre botones */
+    border-left: 5px solid #675547; /* Borde izquierdo (si lo deseas) */
+    border-right: 5px solid #675547; /* Borde derecho (si lo deseas) */
+    border-bottom: 5px solid #675547; /* Color del borde superior */
+    background-color: #fcd1d1;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
 }
 
-    /* Style the buttons inside the tab */
     .tab button {
-        background-color: inherit;
-        float: left;
-        border: none;
+        font-family: "Sour Gummy", sans-serif;
+        background-color: #f4e9d3;
         outline: none;
         cursor: pointer;
-        padding: 14px 16px;
+        padding: 20px 30px;
+        font-size: 20px;
         transition: 0.3s;
-        font-size: 17px;
+        border-bottom-left-radius: 20px;
+        border-bottom-right-radius: 20px;
     }
 
         /* Change background color of buttons on hover */
         .tab button:hover {
-            background-color: #ddd;
+            background-color: #8e817a;
         }
 
         /* Create an active/current tablink class */
         .tab button.active {
-            background-color: #ccc;
+            background-color: #c1e1df;
         }
 
 /* Style the tab content */
 .tabcontent {
     display: none;
-    padding: 6px 12px;
     /*border: 1px solid #ccc;*/
     border-top: none;
 }
+.info1 {
+    display: flex;
+    align-items: center; /* Centra verticalmente imagen y texto */
+    width: 100%;
+}
+
+.info1-img {
+    width: 600px; /* Tamaño de la imagen */
+    height: auto;
+    padding-right: 60px;
+}
+
+.info1-text p:first-child {
+    font-weight: bold;
+    font-size: 48px;
+    width: 100%;
+    padding-top: 40px;
+    padding-bottom: 0px;
+}
+
+.info1-text p {
+    text-align: left;
+    font-size: 24px;
+    margin-left: 0px; /* Elimina el margen si no lo necesitas ahora */
+    padding-bottom: 150px;
+    padding-left: 50px;
+}
+/*.info1-text {
+    background-color: #f4e9d3;
+    border-radius:30px;
+}*/
