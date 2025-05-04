@@ -519,6 +519,7 @@ void RewardScene::create_reward_selected_button(const GameStructs::ButtonPropert
             //heal a 50%
             int hn = phealth->getMaxHealth() * 5 / 10;
             phealth->heal(hn);
+            _lr->swap_textures();
         }
         //we only select a reward if previously we have chosen something
         else if (_lr != nullptr && !_selected) {

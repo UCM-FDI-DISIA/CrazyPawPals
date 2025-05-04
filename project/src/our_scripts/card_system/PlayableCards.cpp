@@ -119,7 +119,7 @@ void Kunai::on_play(Deck& d, const Vector2D* player_position, const Vector2D* ta
 	bp.width = 2.3;
 	bp.life_time = 2;
 	bp.sprite_key = "p_kunai";
-	bp.damage = 2;
+	bp.damage = 5;
 	bp.pierce_number = INT_MAX;
 	bp.collision_filter = GameStructs::collide_with::enemy;
 	

@@ -95,7 +95,7 @@ bool Game::init() {
 	
 	// fullscreen mode
 	// HACK: uncomment this to fullscreen
-	SDL_SetWindowFullscreen(sdlutils().window(), 0);//SDL_WINDOW_FULLSCREEN_DESKTOP);
+	SDL_SetWindowFullscreen(sdlutils().window(), SDL_WINDOW_FULLSCREEN_DESKTOP); //0 for non-full screen mode
 	
 	initGame();
 
