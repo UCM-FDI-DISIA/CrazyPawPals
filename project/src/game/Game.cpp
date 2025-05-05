@@ -50,11 +50,11 @@ Game::~Game() {
 	if (SDLUtils::HasInstance())
 		SDLUtils::Release();
 
+	if (_mngr != nullptr) delete _mngr;
+
 	// release event_manager if the instance was created correctly.
 	if (event_system::event_manager::HasInstance())
 		event_system::event_manager::Release();
-
-	if (_mngr != nullptr) delete _mngr;
 #ifdef GENERATE_LOG
 	if (log_writer_to_csv::HasInstance())
 		log_writer_to_csv::Release();

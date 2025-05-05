@@ -63,8 +63,8 @@ namespace event_system {
 			: suscribers_vec(new std::forward_list<std::pair<event_receiver*,ev_rec_func>>) {}
 		//not tested
 		~event_triggerer() {
-			suscribers_vec->clear();
-			delete suscribers_vec;
+			//suscribers_vec->clear();
+			//delete suscribers_vec;
 		}
 		inline void suscribe(event_receiver* e, ev_rec_func event_receiver_function) {
 			suscribers_vec->push_front(std::make_pair(e,event_receiver_function));
