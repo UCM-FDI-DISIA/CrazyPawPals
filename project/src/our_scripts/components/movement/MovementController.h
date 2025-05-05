@@ -1,9 +1,9 @@
 #pragma once
+#include "../../../utils/checkML.h"
 
 #include "../../../ecs/Component.h"
 #include "../../../utils/Vector2D.h"
 #include "../../../utils/EventsSystem.hpp"
-#include "../../../utils/checkML.h"
 
 class Transform;
 class collisionable;

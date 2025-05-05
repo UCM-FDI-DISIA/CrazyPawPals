@@ -21,6 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+#include "../utils/checkML.h"
 
 #include "../json/JSONValue.h"
 
@@ -32,7 +33,6 @@
 #include <sstream>
 #include <iostream>
 #include <math.h>
-#include "../utils/checkML.h"
 
 
 
