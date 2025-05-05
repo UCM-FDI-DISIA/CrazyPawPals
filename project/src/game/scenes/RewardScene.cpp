@@ -64,11 +64,6 @@ void RewardScene::exitScene()
 
     auto cImg = mngr->getComponent<ImageForButton>(cb);
 
-    cImg->destination_rect.position.x = 10.0f;
-    cImg->_filter = false;
-    cImg->swap_textures();
-    cImg->_filter = false;
-
     if (!_exchange && _last_deck_card_img != nullptr) {
         auto eImg = mngr->getComponent<ImageForButton>(eb);
         _last_deck_card_img->destination_rect.position.y += 0.05f;
