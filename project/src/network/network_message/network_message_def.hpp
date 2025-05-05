@@ -168,18 +168,20 @@ inline NetworkBulletProperties network_message_bulletProperties_create(GameStruc
 
 //si esta preparado para empezar el juego (si ha eleigo mazo y arma)
 struct network_message_player_ready {
+    uint32_t id_n;
     bool is_ready;
 };
 
-inline network_message_player_ready create_player_ready_message (bool is_ready) {
+inline network_message_player_ready create_player_ready_message (uint32_t id, bool is_ready) {
     network_message_player_ready msg;
+    SDLNet_Write32(id, &msg.id_n);
     msg.is_ready = is_ready;
     return msg;
 };
 
 //mensaje sin contenido
 struct network_message_payload_empty {
-    // Estructura intencionalmente vac¨ªa
+    //vac¨ªa
 };
 
 inline network_message_payload_empty create_payload_empty_create_message() {

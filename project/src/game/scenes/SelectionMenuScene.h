@@ -44,7 +44,7 @@ private:
 	void reset();
 
 	//net
-	std::unordered_map<uint32_t, bool> _clients_ready;
+	std::vector<bool> _player_ready;
 	bool _is_ready = false;
 	ecs::entity_t _waiting_text = nullptr;
 	void showWaitingText(bool show);

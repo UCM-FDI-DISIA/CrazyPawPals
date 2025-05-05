@@ -157,23 +157,12 @@ void SelectionMenuScene::enterScene()
     reset();
     _is_ready = false;
     if (Game::Instance()->is_host()) {
-        //network_context& network = Game::Instance()->get_network();
-        //for (auto& client : network.profile.host.sockets_to_clients.connections) {
-        //    _clients_ready[client] = false;  // Inicializar todos como no listos
-        //}
+        for (auto p : _player_ready) p = false;
     }
 }
 
 void SelectionMenuScene::exitScene()
 {
-    /*_weapon_selected = false;
-    _deck_selected = false;
-    _last_weapon_button->swap_textures();
-    _last_deck_button->swap_textures();
-    _last_weapon_button = nullptr;
-    _last_deck_button = nullptr;
-    _activate_play_button = false;
-    */
     auto* mngr = Game::Instance()->get_mngr();
     if(_activate_play_button)mngr->getComponent<ImageForButton>(mngr->getHandler(ecs::hdlr::TOGAMEBUTTON))->swap_textures();
 
@@ -424,27 +413,25 @@ void SelectionMenuScene::create_enter_button() {
     buttonComp->connectClick([buttonComp, mngr, imgComp, this]() {
         if (_weapon_selected && _deck_selected) {
             if (!Game::Instance()->is_network_none()) {
-                if (!_is_ready) {
-                    _is_ready = true;
-
-                    network_context& network = Game::Instance()->get_network();
-                    if (Game::Instance()->is_host()) {
-                        checkAllPlayersReady();
-                    }
-                    else {
-                        network_message_pack_send(
-                            network.profile.client.socket_to_host,
-                            network_message_pack_create(network_message_type_player_ready,
-                                create_player_ready_message(true))
-                       );
-                    }
-                    showWaitingText(true);
+                network_context& network = Game::Instance()->get_network();
+                if (Game::Instance()->is_host()) {
+                    checkAllPlayersReady();
                 }
-                else {
-                    imgComp->_filter = false;
-                    Game::Instance()->change_Scene(Game::GAMESCENE);
-                    imgComp->destination_rect.position.x = 10.0f;
+                else if(!_is_ready){
+                    uint32_t id = Game::Instance()->get_local_player_id();
+                    network_message_pack_send(
+                        network.profile.client.socket_to_host,
+                        network_message_pack_create(network_message_type_player_ready,
+                            create_player_ready_message(id,true))
+                    );
                 }
+                _is_ready = false;
+                showWaitingText(true);
+            }
+            else {
+                imgComp->_filter = false;
+                Game::Instance()->change_Scene(Game::GAMESCENE);
+                imgComp->destination_rect.position.x = 10.0f;
             }
         }
     });
@@ -475,31 +462,44 @@ void SelectionMenuScene::update(uint32_t delta_time) {
         network_context& network = Game::Instance()->get_network();
 
         if (Game::Instance()->is_host()) {
-
-            for (auto& client : network.profile.host.sockets_to_clients.connections) {
-                if (client && SDLNet_SocketReady(client)) {
-                    auto msg = network_message_dynamic_pack_receive(client);
-                    const uint16_t type_n{ msg->header.type_n };
-                    const uint16_t type_h{ SDLNet_Read16(&type_n) };
-                    if (type_h == network_message_type_player_ready) {
- /*                       auto message = network_message_dynamic_pack_into<network_message_player_ready>(std::move(msg));
-                        _clients_ready[client] = message->payload.content.is_ready;
-                        checkAllPlayersReady();*/
+            if (SDLNet_CheckSockets(network.profile.host.clients_host_set, 0) > 0) {
+                for (network_connection_size i = 0; i < network.profile.host.sockets_to_clients.connection_count; ++i) {
+                    TCPsocket& connection = network.profile.host.sockets_to_clients.connections[i];
+                    if (SDLNet_SocketReady(connection)) {
+                        network_message_dynamic_pack dyn_message = network_message_dynamic_pack_receive(connection);
+                        const uint16_t type_n{ dyn_message->header.type_n };
+                        const uint16_t type_h{ SDLNet_Read16(&type_n) };
+                        switch (type_h) {
+                        case network_message_type_player_ready: {
+                            auto message = network_message_dynamic_pack_into<network_message_player_ready>(std::move(dyn_message));
+                            auto&& payload = message->payload.content;
+                            uint32_t id_n = payload.id_n;
+                            uint32_t id = SDLNet_Read32(&id_n);
+                            _player_ready[id] = message->payload.content.is_ready;
+                            checkAllPlayersReady();
+                            break;
+                        }
+                        default: {
+                            break;
+                        }
+                        }
                     }
                 }
             }
         }
         else {
-            int active_sockets = SDLNet_CheckSockets(network.profile.client.client_set, 100);
-            TCPsocket socket = network.profile.client.socket_to_host;
-            if (active_sockets > 0 && SDLNet_SocketReady(socket)) {
-
-                auto msg = network_message_dynamic_pack_receive(socket);
+            int active_sockets = SDLNet_CheckSockets(network.profile.client.client_set, 0);
+            if (active_sockets > 0 && SDLNet_SocketReady(network.profile.client.socket_to_host)) {
+                auto msg = network_message_dynamic_pack_receive(network.profile.client.socket_to_host);
                 const uint16_t type_n{ msg->header.type_n };
                 const uint16_t type_h{ SDLNet_Read16(&type_n) };
-                if (type_h == network_message_type_start_game) {
+                switch (type_h) {
+                case network_message_type_start_game: {
                     std::cout << "mensaje de ir al juego" << std::endl;
                     Game::Instance()->change_Scene(Game::GAMESCENE);
+                    break;
+                }
+                default: break;
                 }
             }
 
@@ -518,8 +518,8 @@ void SelectionMenuScene::checkAllPlayersReady()
     if (!Game::Instance()->is_host() || !_is_ready) return;
 
     bool all_ready = true;
-    for (const auto&c : _clients_ready) {
-        if (!c.second) {
+    for (const auto& player:_player_ready) {
+        if (!player) {
             all_ready = false;
             break;
         }
@@ -527,7 +527,6 @@ void SelectionMenuScene::checkAllPlayersReady()
 
     if (all_ready) {
         network_context& network = Game::Instance()->get_network();
-
         // enviar start a todos los clientes
         for (auto& client : network.profile.host.sockets_to_clients.connections) {
             if (client) {
