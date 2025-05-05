@@ -253,6 +253,26 @@
       "file": "resources/images/enemies/ratatouille.png"
     },
     {
+      "id": "claw1",
+      "file": "resources/images/ui/decoration/claw.png"
+    },
+    {
+      "id": "claw2",
+      "file": "resources/images/ui/decoration/claw_1.png"
+    },
+    {
+      "id": "claw3",
+      "file": "resources/images/ui/decoration/claw_2.png"
+    },
+    {
+      "id": "curtain_reaper_title",
+      "file": "resources/images/ui/decoration/curtain_reaper.png"
+    },
+    {
+      "id": "ui_star",
+      "file": "resources/images/ui/decoration/stars.png"
+    },
+    {
       "id": "heart",
       "file": "resources/images/ui/hud/heart.png"
     },

@@ -100,6 +100,7 @@ namespace GameStructs
 		std::string sprite_key;
 		ecs::grpId_t ID;
 	};
+	
 	struct CardButtonProperties : public ButtonProperties
 	{
 		Card *iterator;

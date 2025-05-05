@@ -11,11 +11,11 @@ public:
 
 	enum class Mode
 	{
-		NONE,		   // No gira
-		CONTINUOUS,	   // Gira indefinidamente
-		LIMITED_ANGLE, // Gira hasta cierto ángulo y se detiene
-		TOGGLE,		   // Cambia sentido cada cierto tiempo
-		CYCLE		   // Ciclos de girar y pausar
+		NONE = 0,		   // No gira
+		CONTINUOUS = 1,	   // Gira indefinidamente
+		LIMITED_ANGLE = 2, // Gira hasta cierto ángulo y se detiene
+		TOGGLE = 3,		   // Cambia sentido cada cierto tiempo
+		CYCLE = 4		   // Ciclos de girar y pausar
 	};
 
 	RotationComponent(Mode mode,

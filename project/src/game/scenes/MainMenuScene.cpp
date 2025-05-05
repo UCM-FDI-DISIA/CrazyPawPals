@@ -31,7 +31,7 @@ MainMenuScene::initScene()
         { {0.35f, 0.22f},{0.30f, 0.25f} },
         0.0f, ""
     };
-
+    
     //Button start
     GameStructs::ButtonProperties startB = buttonPropTemplate;
     startB.sprite_key = "enter_game";
@@ -54,6 +54,21 @@ MainMenuScene::initScene()
     GameStructs::ButtonProperties exitB = buttonPropTemplate;
     exitB.sprite_key = "exit_game";
     create_exit_button(exitB);
+
+    GameStructs::ButtonProperties image_p = { 
+        { {0.35f, 0.22f},{0.30f, 0.25f} },
+        0.0f, ""
+    };
+
+    create_decoration_images(image_p);
+    image_p.sprite_key = "stars2";
+    image_p.rect.position.y += 0.18f;
+    create_decoration_images(image_p);
+    image_p.rect.position.y += 0.18f;
+    create_decoration_images(image_p);
+    image_p.rect.position.y += 0.18f;
+    create_decoration_images(image_p);
+    image_p.rect.position.y += 0.18f;
 }
 
 void 
@@ -107,6 +122,11 @@ MainMenuScene::create_start_button(const GameStructs::ButtonProperties& bp) {
         imgComp->_filter = false;
         imgComp->swap_textures();
     });
+}
+
+void MainMenuScene::create_decoration_images(const GameStructs::ButtonProperties &ip)
+{
+
 }
 
 void MainMenuScene::create_multiplayer_button(const GameStructs::ButtonProperties& bp)

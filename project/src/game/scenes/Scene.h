@@ -54,6 +54,7 @@ protected:
 	ecs::sceneId_t _scene_ID;
 
 	ecs::entity_t create_button(const GameStructs::ButtonProperties& bp);
+	ecs::entity_t create_decoration_image(const GameStructs::ButtonProperties& ip);
 	void create_static_background(Texture* bg);
 public:
 	ecs::sceneId_t get_scene_id() const { return _scene_ID; }
