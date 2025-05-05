@@ -46,9 +46,13 @@ Game::~Game() {
 	if (InputHandler::HasInstance())
 		InputHandler::Release();
 
-	// release SLDUtil if the instance was created correctly.
+	// release SDLUtils if the instance was created correctly.
 	if (SDLUtils::HasInstance())
 		SDLUtils::Release();
+
+	// release event_manager if the instance was created correctly.
+	if (event_system::event_manager::HasInstance())
+		event_system::event_manager::Release();
 
 	if (_mngr != nullptr) delete _mngr;
 #ifdef GENERATE_LOG

@@ -8,7 +8,7 @@
 int main(int, char**) {
 
 	//para buscar donde esta el memory leaks
-	//_CrtSetBreakAlloc(8319);
+	//_CrtSetBreakAlloc(8379);
 	try {
 		if(Game::Init())Game::Instance()->start();
 		Game::Instance()->Release();
