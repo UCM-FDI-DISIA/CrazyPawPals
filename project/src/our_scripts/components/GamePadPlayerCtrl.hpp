@@ -1,7 +1,7 @@
 #pragma once
+#include "../../utils/checkML.h"
 #include "../../ecs/Component.h" 
 #include <SDL.h>
-#include "../../utils/checkML.h"
 class AnimationComponent;
 class MovementController;
 class Deck;

@@ -1,12 +1,12 @@
 #ifdef GENERATE_LOG
 #pragma once
+#include "../utils/checkML.h"
 
 #include "utils/Singleton.h"
 #include <chrono>
 #include <ctime>
 #include <fstream>
 #include <iostream>
-#include "../utils/checkML.h"
 
 
 #define file_name "log_"

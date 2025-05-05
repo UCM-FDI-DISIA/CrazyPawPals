@@ -1,4 +1,5 @@
 #pragma once
+#include "../../utils/checkML.h"
 
 #include <functional>
 #include "../../ecs/Component.h"
@@ -6,7 +7,6 @@
 #include "../wave_events/wave_event.hpp"
 #include "rendering/transformless_dyn_image.h"
 #include "../../utils/EventsSystem.hpp"
-#include "../../utils/checkML.h"
 
 enum events {
     NONE = -1, // 0xffffffffff

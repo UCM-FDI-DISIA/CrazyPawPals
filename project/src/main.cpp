@@ -1,8 +1,8 @@
 #define _CRTDBG_MAP_ALLOC
+#include "utils/checkML.h"
 #include <stdlib.h>
 #include<crtdbg.h>
 #include <iostream>
-
 #include "game/Game.h"
 
 int main(int, char**) {
@@ -26,6 +26,6 @@ int main(int, char**) {
 		std::cerr << "Caught and exception of unknown type ...";
 	}
 
-	_CrtDumpMemoryLeaks();
+	//_CrtDumpMemoryLeaks();
 	return 0;
 }

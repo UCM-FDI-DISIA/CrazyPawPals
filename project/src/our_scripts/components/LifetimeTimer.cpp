@@ -1,9 +1,9 @@
+#include "../../utils/checkML.h"
 
 #include "LifetimeTimer.h"
 
 #include "../../sdlutils/SDLUtils.h"
 #include "../../ecs/Manager.h"
-#include "../../utils/checkML.h"
 #include "../../game/Game.h"
 LifetimeTimer::LifetimeTimer(float lifetime)
 	:_lifetime(sdlutils().virtualTimer().currTime() + lifetime * 1000) {}

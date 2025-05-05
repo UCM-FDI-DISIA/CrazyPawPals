@@ -1,5 +1,5 @@
-#include "AnimationComponent.h"
 #include "../../utils/checkML.h"
+#include "AnimationComponent.h"
 
 #include "../../game/Game.h"
 #include "../../ecs/Manager.h"

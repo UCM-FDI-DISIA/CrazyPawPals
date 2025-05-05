@@ -1,6 +1,6 @@
+#include "../../utils/checkML.h"
 #include "../../ecs/Component.h"
 #include "../../ecs/ecs.h"
-#include "../../utils/checkML.h"
 
 struct player_collision_triggerer : public ecs::Component {
 	__CMPID_DECL__(ecs::cmp::PLAYER_TRIGGERER);

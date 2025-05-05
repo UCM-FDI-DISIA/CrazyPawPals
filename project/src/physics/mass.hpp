@@ -1,5 +1,6 @@
 #ifndef MASS_HPP
 #define MASS_HPP
+#include "../utils/checkML.h"
 
 template <typename Numeric>
 struct mass {

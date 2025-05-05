@@ -1,5 +1,6 @@
 #ifndef RIGIDBODY_COMPONENT_HPP
 #define RIGIDBODY_COMPONENT_HPP
+#include "../../utils/checkML.h"
 
 #include "../../ecs/Component.h"
 #include "../../utils/checkML.h"

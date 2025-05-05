@@ -1,7 +1,7 @@
 #pragma once
+#include "../../utils/checkML.h"
 #include "../../ecs/Component.h"
 #include "../../game/GameStructs.h"
-#include "../../utils/checkML.h"
 
 struct dyn_image_with_frames;
 class MovementController;

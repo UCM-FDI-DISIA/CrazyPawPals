@@ -1,5 +1,6 @@
 #ifndef CAMERA_HPP
 #define CAMERA_HPP
+#include "../utils/checkML.h"
 
 #include <SDL.h>
 #include "rect.hpp"

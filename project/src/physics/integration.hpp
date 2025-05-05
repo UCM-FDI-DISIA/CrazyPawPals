@@ -1,5 +1,6 @@
 #ifndef INTEGRATION_HPP
 #define INTEGRATION_HPP
+#include "../utils/checkML.h"
 
 #include "../rendering/rect.hpp"
 

@@ -1,7 +1,9 @@
 
 #pragma once
+#include "checkML.h"
 #include <iostream>
 #include <cassert>
+
 
 /*
  * This is an attempt to have a single Singleton class that can be used
