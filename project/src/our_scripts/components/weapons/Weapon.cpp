@@ -1,7 +1,7 @@
+#include "../../../utils/checkML.h"
 #include "Weapon.h"
 #include "../../../game/Game.h"
 #include "../../../ecs/Manager.h"
-#include "../../../utils/checkML.h"
 #include "../../../sdlutils/SDLUtils.h"
 #include "../../../sdlutils/VirtualTimer.h"
 #include "../movement/Transform.h"

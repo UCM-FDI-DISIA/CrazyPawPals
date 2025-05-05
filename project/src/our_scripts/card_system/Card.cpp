@@ -1,6 +1,7 @@
+#include "../../utils/checkML.h"
 #include "Card.hpp"
 #include "../components/cards/Deck.hpp"
-#include "../../utils/checkML.h"
+
 
 
 Card::Card(std::string card_name, Resources r,Destination pd, Destination dd, Destination md)

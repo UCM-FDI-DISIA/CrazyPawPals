@@ -1,11 +1,11 @@
 #pragma once
+#include "../../utils/checkML.h"
 #include <string>
 #include <ostream>
 #include <iostream>
 #include <algorithm>
 #include "../../utils/Vector2D.h"
 #include "../components/cards/Deck.hpp"
-#include "../../utils/checkML.h"
 enum Destination {
 	DRAW_PILE,
 	DISCARD_PILE,

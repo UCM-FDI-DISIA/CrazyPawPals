@@ -1,9 +1,8 @@
 #ifndef SHOOT_PATRONS
 #define SHOOT_PATRONS
-
+#include "../../utils/checkML.h"
 #include <algorithm>
 #include "../../game/GameStructs.h"
-#include "../../utils/checkML.h"
 #include "../../ecs/ecs.h"
 #include "../../game/Game.h"
 #include "../../game/scenes/GameScene.h"

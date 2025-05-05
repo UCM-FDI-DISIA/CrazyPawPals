@@ -1,4 +1,5 @@
 #pragma once
+#include "../../../../utils/checkML.h"
 #include "../Weapon.h"
 class Rampage : public Weapon {
 protected:
