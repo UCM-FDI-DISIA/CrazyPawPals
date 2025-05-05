@@ -506,6 +506,7 @@ void MultiplayerMenu::create_host_button(const GameStructs::ButtonProperties& bp
 
         Game::Instance()->set_local_player_id(0);
         auto player = Game::Instance()->get_mngr()->getHandler(ecs::hdlr::PLAYER);
+        Game::Instance()->add_network_player(0, player);
 
     });
 

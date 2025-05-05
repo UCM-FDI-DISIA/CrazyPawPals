@@ -157,7 +157,8 @@ void SelectionMenuScene::enterScene()
     reset();
     _is_ready = false;
     if (Game::Instance()->is_host()) {
-        for (auto p : _player_ready) p = false;
+        std::size_t numPlayers = Game::Instance()->get_network_players_num();
+        _player_ready = std::vector<bool>(numPlayers, false);
     }
 }
 
@@ -415,9 +416,12 @@ void SelectionMenuScene::create_enter_button() {
             if (!Game::Instance()->is_network_none()) {
                 network_context& network = Game::Instance()->get_network();
                 if (Game::Instance()->is_host()) {
+                    _is_ready = true;
+                    _player_ready[0] = true;
                     checkAllPlayersReady();
                 }
                 else if(!_is_ready){
+                    _is_ready = true;
                     uint32_t id = Game::Instance()->get_local_player_id();
                     network_message_pack_send(
                         network.profile.client.socket_to_host,
@@ -425,7 +429,6 @@ void SelectionMenuScene::create_enter_button() {
                             create_player_ready_message(id,true))
                     );
                 }
-                _is_ready = false;
                 showWaitingText(true);
             }
             else {

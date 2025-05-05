@@ -83,8 +83,10 @@ public:
 
 
 	inline const std::unordered_map<uint32_t, ecs::entity_t>& get_network_players() const { return _network_players; };
+	inline const int get_network_players_num() const { return _network_players.size(); };
 	inline const ecs::entity_t get_network_player(uint32_t id) { return _network_players[id]; };
-	inline void add_network_player(uint32_t id, ecs::entity_t entity) { _network_players[id] = entity; };
+	void add_network_player(uint32_t id, ecs::entity_t entity);
+	
 
 	inline uint32_t get_local_player_id() const { return _player_id; };
 	inline void set_local_player_id(uint32_t id) { _player_id = id; };

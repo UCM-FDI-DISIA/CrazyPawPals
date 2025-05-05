@@ -379,3 +379,8 @@ void Game::set_volumes() {
 	sdlutils().soundEffects().at("reward").setVolume(40);
 	sdlutils().soundEffects().at("game_over").setVolume(40);
 }
+
+void Game::add_network_player(uint32_t id, ecs::entity_t entity)
+{
+	_network_players[id] = entity;
+}
