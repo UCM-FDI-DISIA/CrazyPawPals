@@ -1,8 +1,8 @@
 #include "WeaponReyBasurero.h"
+#include "../../../../utils/checkML.h"
 #include "../../../../game/Game.h"
 #include "../../../../game/scenes/GameScene.h"
 
-#include "../../../../utils/checkML.h"
 WeaponReyBasurero::WeaponReyBasurero() : Weapon(6, 8000, 25.0f, 0.02f, "p_michi_mafioso", 1.5f, 1.5f) {}
 
 WeaponReyBasurero::~WeaponReyBasurero() {}
