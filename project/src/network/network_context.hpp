@@ -6,6 +6,9 @@
 
 constexpr const network_connection_size network_context_host_maximum_connections =
     NETWORK_CONTEXT_HOST_MAXIMUM_CONNECTIONS;
+constexpr const network_connection_size network_context_maximum_connections{
+    network_context_host_maximum_connections + 1
+};
 struct network_context_host {
     network_context_connections<network_context_host_maximum_connections> sockets_to_clients;
     TCPsocket host_socket;

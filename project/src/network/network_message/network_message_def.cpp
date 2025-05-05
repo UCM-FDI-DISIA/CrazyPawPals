@@ -1,6 +1,8 @@
 #include "network_message_def.hpp"
 #include "../network_utility.hpp"
 
+#include <limits>
+
 extern inline bool network_message_header_valid(const network_message_header header);
 extern inline bool network_message_header_in_network_endian(const network_message_header header);
 
@@ -56,4 +58,18 @@ NetworkWaveEvent network_message_wave_event_create(events event_type) {
 	//n_we.event_type = event_type;
 	SDLNet_Write32(event_type, &n_we.event_type);
     return n_we;
+}
+
+network_message_payload_new_connection_sync_request network_message_payload_new_connection_sync_create(const std::string_view sprite_key) {
+    static_assert(
+        network_user_sprite_key_maximum_key_length <= std::numeric_limits<uint8_t>::max(),
+        "static error: sprite key length exceeds uint8_t max"
+    );
+    assert(
+        sprite_key.size() <= network_user_sprite_key_maximum_key_length
+        && "error: sprite key size exceeds capacity"
+    );
+    return network_message_payload_new_connection_sync_request{
+        network_user_sprite_key_create<network_user_sprite_key_maximum_buffer_size>(sprite_key)
+    };
 }

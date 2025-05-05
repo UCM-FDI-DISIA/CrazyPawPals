@@ -10,16 +10,20 @@
 #include "../../game/GameStructs.h"
 #include "../src/our_scripts/components/WaveManager.h"
 
+
 int const fact_float_int = 1024;
 enum network_message_type
 {
     network_message_type_none = 0,
     network_message_type_any,
     network_message_type_dbg_print,
-    network_message_type_dbg_print_two_byte_test = 0x0102,
+    // network_message_type_dbg_print_two_byte_test = 0x0102,
     network_message_type_summon_true_bullet,
     network_message_type_summon_dummy_bullet,
-    network_message_type_player_connect,
+
+    network_message_type_new_connection_sync_request,
+    network_message_type_new_connection_sync_response,
+    
     network_message_type_player_update,
     network_message_type_client_id,
     network_message_type_new_player,
@@ -179,7 +183,7 @@ inline network_message_player_ready create_player_ready_message (bool is_ready) 
 
 //mensaje sin contenido
 struct network_message_payload_empty {
-    // Estructura intencionalmente vac¨ªa
+    // Estructura intencionalmente vacï¿½ï¿½a
 };
 
 inline network_message_payload_empty create_payload_empty_create_message() {
@@ -187,27 +191,66 @@ inline network_message_payload_empty create_payload_empty_create_message() {
 }
 
 
+constexpr static const uint8_t network_user_sprite_key_maximum_buffer_size{32};
+constexpr static const uint8_t network_user_sprite_key_maximum_key_length{
+    network_user_sprite_key_maximum_buffer_size - 1
+};
+template <uint8_t MaxKeyBufferSize>
+struct network_user_sprite_key {
+    std::array<char, MaxKeyBufferSize> sprite_key;
+    uint8_t sprite_key_length;
+};
+template <uint8_t MaxKeyBufferSize>
+network_user_sprite_key<MaxKeyBufferSize> network_user_sprite_key_create(
+    const std::string_view sprite_key
+) {
+    static_assert(
+        MaxKeyBufferSize <= std::numeric_limits<uint8_t>::max(),
+        "static error: sprite key length exceeds uint8_t max"
+    );
+    assert(
+        sprite_key.size() <= MaxKeyBufferSize && "error: sprite key size exceeds capacity"
+    );
+    network_user_sprite_key<MaxKeyBufferSize> payload;
+    payload.sprite_key_length = uint8_t(sprite_key.size());
+    std::copy_n(sprite_key.begin(), sprite_key.size(), payload.sprite_key.begin());
+    return payload;
+}
+
 //mandar al cliente su id
-struct network_message_client_id_from_host {
-    uint32_t client_id;
+struct network_message_payload_new_connection_sync_request {
+    network_user_sprite_key<network_user_sprite_key_maximum_buffer_size> sprite_key;
 };
+network_message_payload_new_connection_sync_request network_message_payload_new_connection_sync_create(const std::string_view sprite_key);
 
-inline network_message_client_id_from_host create_client_id_message (uint32_t client_id) {
 
-    network_message_client_id_from_host id_from_host;
-    SDLNet_Write32(client_id, &id_from_host.client_id);
-    return id_from_host;
+template <size_t MaximumConnections>
+struct network_message_payload_new_connection_sync_response {
+    std::array<network_user_sprite_key<network_user_sprite_key_maximum_buffer_size>, MaximumConnections> sprite_keys;
+    network_connections connections;
 };
+template <size_t MaximumConnections>
+network_message_payload_new_connection_sync_response<MaximumConnections> network_message_payload_new_connection_sync_response_create(
+    const network_connections connections,
+    const std::vector<std::string_view> &sprite_keys
+) {
+    network_message_payload_new_connection_sync_response<MaximumConnections> payload;
+    payload.connections = connections;
+    assert(
+        sprite_keys.size() <= MaximumConnections && "error: sprite keys size exceeds maximum connections"
+    );
+    for (size_t i = 0; i < sprite_keys.size(); ++i) {
+        payload.sprite_keys[i] = network_user_sprite_key_create<network_user_sprite_key_maximum_buffer_size>(sprite_keys[i]);
+    }
+    return payload;
+}
 
-inline uint32_t network_message_client_id_from_host_get_id(const network_message_client_id_from_host message) {
-    return message.client_id;
-};
 
 //Struct de player cuando se conecta 
 struct network_message_player_connect {
-    uint32_t player_id;           
     uint32_t sprite_key_length;
     char sprite_key[32];
+    uint8_t player_id;           
 };
 
 inline network_message_player_connect create_player_connect_message(uint32_t id, std::string texture) {

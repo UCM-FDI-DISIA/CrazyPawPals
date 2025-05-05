@@ -36,6 +36,13 @@ using namespace std;
 Game::Game() : _mngr(nullptr), network{
 	.profile = {},
 	.profile_status = network_context_profile_status_none,
+}, network_state{
+	.game_state = {},
+	.connections = {
+		.connected_users = 0,
+		.local_user_index = 0,
+		.oldest_non_host_index = 0
+	}
 } {
 
 }
