@@ -215,7 +215,7 @@ void GameScene::enterScene()
 	//spawn_catkuza(Vector2D{10.0f, 0.0f});
 	//spawn_rata_basurera(Vector2D{5.0f, 0.0f});
 	//spawn_rey_basurero(Vector2D{-5.0f, 0.0f});
-	//spawn_super_michi_mafioso(Vector2D{5.0f, 0.0f});
+	spawn_super_michi_mafioso(Vector2D{5.0f, 0.0f});
 #ifdef GENERATE_LOG
 	log_writer_to_csv::Instance()->add_new_log();
 	log_writer_to_csv::Instance()->add_new_log("ENTERED GAME SCENE");
@@ -253,7 +253,7 @@ ecs::entity_t GameScene::create_player(ecs::sceneId_t scene)
 			rect_f32{{0, 0}, {0.2, 1}},
 			player_rect,
 			camera,
-			sdlutils().images().at("piu"),
+			sdlutils().images().at("mimi"),
 			player_transform),
 		new render_ordering{1},
 		new Health(100, true),

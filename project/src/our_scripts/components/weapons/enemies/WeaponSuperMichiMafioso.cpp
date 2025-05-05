@@ -48,7 +48,7 @@ void WeaponSuperMichiMafioso::attack2(Vector2D shootPos) {
 	bp.life_time = 2.0f;
 	bp.width = _attack_width;
 	bp.height = _attack_height;
-	bp.sprite_key = "p_super_michi_mafioso";
+	bp.sprite_key = "p_super_michi_mafioso_attack2";
 	bp.collision_filter = GameStructs::collide_with::player;
 	bp.weapon_type = GameStructs::SUPER_MICHI;
 
