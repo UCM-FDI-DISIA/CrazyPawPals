@@ -1,9 +1,9 @@
+#include "../../../utils/checkML.h"
 #include "ImageForButton.h"
 
 #include <cassert>
 
 #include "../../../ecs/Manager.h"
-#include "../../../utils/checkML.h"
 #include "../../../sdlutils/macros.h"
 #include "../../../sdlutils/Texture.h"
 #include "../movement/Transform.h"

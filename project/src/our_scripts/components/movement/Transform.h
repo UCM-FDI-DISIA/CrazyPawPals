@@ -8,8 +8,8 @@
 * -Speed (float)
 */
 #pragma once
-#include "../../../ecs/Component.h"
 #include "../../../utils/checkML.h"
+#include "../../../ecs/Component.h"
 #include <cassert>
 #include <iostream>
 

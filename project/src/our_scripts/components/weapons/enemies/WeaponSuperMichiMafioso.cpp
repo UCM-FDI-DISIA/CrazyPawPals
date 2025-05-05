@@ -1,9 +1,9 @@
-﻿#include "WeaponSuperMichiMafioso.h"
+﻿#include "../../../../utils/checkML.h"
+#include "WeaponSuperMichiMafioso.h"
 #include "../../../../game/Game.h"
 #include "../../../../game/scenes/GameScene.h"
 #include "../../movement/Transform.h"
 #include <our_scripts/components/WaveManager.h>
-#include "../../../../utils/checkML.h"
 
 
 WeaponSuperMichiMafioso::WeaponSuperMichiMafioso()

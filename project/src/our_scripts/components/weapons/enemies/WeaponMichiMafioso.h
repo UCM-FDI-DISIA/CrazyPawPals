@@ -1,6 +1,6 @@
 #pragma once
-#include "../Weapon.h"
 #include "../../../../utils/checkML.h"
+#include "../Weapon.h"
 
 class WeaponMichiMafioso : public Weapon {
 protected:
