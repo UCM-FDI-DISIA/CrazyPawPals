@@ -10,7 +10,7 @@
 #include "../../game/GameStructs.h"
 #include "../src/our_scripts/components/WaveManager.h"
 
-int const fact_float_int = 1024;
+float const factor_float_int = 1024.0f;
 enum network_message_type {
     network_message_type_none = 0,
     network_message_type_any,
@@ -124,40 +124,40 @@ struct NetworkBulletProperties
 {
     int init_pos[2];
     int dir[2];
-    int speed = 0.0f;
+    int speed = 0;
     int damage = 0;
     int pierce_number = 0;
-    float life_time = 1.0f;
-    float width = 40;
-    float height = 40;
+    int life_time = 1;
+    int width = 40;
+    int height = 40;
     GameStructs::WeaponType weapon_type = GameStructs::DEFAULT;
     GameStructs::collide_with collision_filter;
     uint8_t sprite_key_length;
     char sprite_key[32];
 };
 
-//Constructor del struct de NetworkBulletProperties
+//Transformador de struct: BulletProperties -> NetworkBulletProperties
 NetworkBulletProperties network_message_bulletProperties_create(GameStructs::BulletProperties bp)
 {
     NetworkBulletProperties n_bp;
     
     //Vector2D init_pos
-    SDLNet_Write32(bp.init_pos.getX() * fact_float_int, &n_bp.init_pos[0]);
-    SDLNet_Write32(bp.init_pos.getY() * fact_float_int, &n_bp.init_pos[1]);
+    SDLNet_Write32(bp.init_pos.getX() * factor_float_int, &n_bp.init_pos[0]);
+    SDLNet_Write32(bp.init_pos.getY() * factor_float_int, &n_bp.init_pos[1]);
 
     //Vector2D dir
-    SDLNet_Write32(bp.dir.getX() * fact_float_int, &n_bp.dir[0]);
-    SDLNet_Write32(bp.dir.getY() * fact_float_int, &n_bp.dir[1]);
+    SDLNet_Write32(bp.dir.getX() * factor_float_int, &n_bp.dir[0]);
+    SDLNet_Write32(bp.dir.getY() * factor_float_int, &n_bp.dir[1]);
 
     //ints
-    SDLNet_Write32(bp.speed * fact_float_int, &n_bp.speed);
+    SDLNet_Write32(bp.speed * factor_float_int, &n_bp.speed);
     SDLNet_Write32(bp.damage, &n_bp.damage);
     SDLNet_Write32(bp.pierce_number, &n_bp.pierce_number);
 
     //floats
-    SDLNet_Write32(bp.life_time * fact_float_int, &n_bp.life_time);
-    SDLNet_Write32(bp.width * fact_float_int, &n_bp.width);
-    SDLNet_Write32(bp.height * fact_float_int, &n_bp.height);
+    SDLNet_Write32(bp.life_time * factor_float_int, &n_bp.life_time);
+    SDLNet_Write32(bp.width * factor_float_int, &n_bp.width);
+    SDLNet_Write32(bp.height * factor_float_int, &n_bp.height);
 
     //ints
     SDLNet_Write32(bp.weapon_type, &n_bp.weapon_type);
@@ -168,11 +168,44 @@ NetworkBulletProperties network_message_bulletProperties_create(GameStructs::Bul
     assert(
         size < 32 && "error: string size exceeds 32"
     );
-    SDLNet_Write32(32, &n_bp.sprite_key_length);
+    SDLNet_Write32(size, &n_bp.sprite_key_length);
     
     std::copy(bp.sprite_key.begin(), bp.sprite_key.end(), n_bp.sprite_key);
 
     return n_bp;
 }
 
+//Transformador de struct: NetworkBulletProperties -> BulletProperties
+GameStructs::BulletProperties network_message_bulletProperties_receive(NetworkBulletProperties n_bp)
+{
+    GameStructs::BulletProperties bp;
+    
+    //Vector2D init_pos
+    bp.init_pos.setX(SDLNet_Read32(&n_bp.init_pos[0]) / factor_float_int);
+    bp.init_pos.setY(SDLNet_Read32(&n_bp.init_pos[1]) / factor_float_int);
+
+    //Vector2D dir
+    bp.dir.setX(SDLNet_Read32(&n_bp.dir[0]) / factor_float_int);
+    bp.dir.setY(SDLNet_Read32(&n_bp.dir[1]) / factor_float_int);
+
+    //ints
+    bp.speed = SDLNet_Read32(&n_bp.speed) / factor_float_int;
+    bp.damage = SDLNet_Read32(&n_bp.damage);
+    bp.pierce_number = SDLNet_Read32(&n_bp.pierce_number);
+
+    //floats
+    bp.life_time = SDLNet_Read32(&n_bp.life_time) / factor_float_int;
+    bp.width = SDLNet_Read32(&n_bp.width) / factor_float_int;
+    bp.height = SDLNet_Read32(&n_bp.height) / factor_float_int;
+
+    //ints
+    bp.weapon_type = (GameStructs::WeaponType)(int)SDLNet_Read32(&n_bp.weapon_type);
+    bp.collision_filter = (GameStructs::collide_with)(int)SDLNet_Read32(&n_bp.collision_filter);
+
+    //strings
+    n_bp.sprite_key[n_bp.sprite_key_length] = '\0';
+    bp.sprite_key = std::string{n_bp.sprite_key};
+
+    return bp;
+}
 #endif
