@@ -42,4 +42,14 @@ private:
 	bool _activate_play_button;
 
 	void reset();
+
+	//net
+	std::unordered_map<uint32_t, bool> _clients_ready;
+	bool _is_ready = false;
+	ecs::entity_t _waiting_text = nullptr;
+	void showWaitingText(bool show);
+	void checkAllPlayersReady();
+
+
+
 };

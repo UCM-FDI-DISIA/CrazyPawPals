@@ -17,6 +17,10 @@
 #include "../../our_scripts/components/cards/Deck.hpp"
 #include "../../our_scripts/components/rendering/Image.h"
 #include "../../our_scripts/components/rendering/ImageForButton.h"
+
+
+#include "../../network/network_utility.hpp"
+#include "../../network/network_message.hpp"
 #ifdef GENERATE_LOG
 #include "../../our_scripts/log_writer_to_csv.hpp"
 #endif
@@ -142,6 +146,7 @@ void SelectionMenuScene::reset() {
         img->set_texture(&sdlutils().images().at("initial_info"));
     }
 }
+
 void SelectionMenuScene::enterScene()
 {
     Game::Instance()->get_mngr()->change_ent_scene(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA), ecs::scene::SELECTIONMENUSCENE);
@@ -150,6 +155,13 @@ void SelectionMenuScene::enterScene()
     log_writer_to_csv::Instance()->add_new_log("ENTERED SELECTION MENU SCENE");
 #endif
     reset();
+    _is_ready = false;
+    if (Game::Instance()->is_host()) {
+        //network_context& network = Game::Instance()->get_network();
+        //for (auto& client : network.profile.host.sockets_to_clients.connections) {
+        //    _clients_ready[client] = false;  // Inicializar todos como no listos
+        //}
+    }
 }
 
 void SelectionMenuScene::exitScene()
@@ -409,13 +421,33 @@ void SelectionMenuScene::create_enter_button() {
 
     auto buttonComp = mngr->getComponent<Button>(e);
 
-    buttonComp->connectClick([buttonComp, mngr, imgComp,this]() {
+    buttonComp->connectClick([buttonComp, mngr, imgComp, this]() {
         if (_weapon_selected && _deck_selected) {
-            imgComp->_filter = false;
-            Game::Instance()->change_Scene(Game::GAMESCENE);
-            imgComp->destination_rect.position.x = 10.0f;
+            if (!Game::Instance()->is_network_none()) {
+                if (!_is_ready) {
+                    _is_ready = true;
+
+                    network_context& network = Game::Instance()->get_network();
+                    if (Game::Instance()->is_host()) {
+                        checkAllPlayersReady();
+                    }
+                    else {
+                        network_message_pack_send(
+                            network.profile.client.socket_to_host,
+                            network_message_pack_create(network_message_type_player_ready,
+                                create_player_ready_message(true))
+                       );
+                    }
+                    showWaitingText(true);
+                }
+                else {
+                    imgComp->_filter = false;
+                    Game::Instance()->change_Scene(Game::GAMESCENE);
+                    imgComp->destination_rect.position.x = 10.0f;
+                }
+            }
         }
-    }); 
+    });
     buttonComp->connectHover([buttonComp, imgComp, this]() {     
         if (!_activate_play_button) return;
         sdlutils().soundEffects().at("button_hover").play(); 
@@ -428,13 +460,84 @@ void SelectionMenuScene::create_enter_button() {
     imgComp->swap_textures();});
 }
 void SelectionMenuScene::update(uint32_t delta_time) {
+
     Scene::update(delta_time);
 
-    if (!_activate_play_button && _last_weapon_button != nullptr && _last_deck_button != nullptr) {
+    if (!_activate_play_button && _last_weapon_button && _last_deck_button) {
         auto* mngr = Game::Instance()->get_mngr();
         auto imgComp = mngr->getComponent<ImageForButton>(mngr->getHandler(ecs::hdlr::TOGAMEBUTTON));
         imgComp->set_texture(&sdlutils().images().at("ready"));
         _activate_play_button = true;
         imgComp->destination_rect.position.x = 0.4f;
+    }
+
+    if (!Game::Instance()->is_network_none()) {
+        network_context& network = Game::Instance()->get_network();
+
+        if (Game::Instance()->is_host()) {
+
+            for (auto& client : network.profile.host.sockets_to_clients.connections) {
+                if (client && SDLNet_SocketReady(client)) {
+                    auto msg = network_message_dynamic_pack_receive(client);
+                    const uint16_t type_n{ msg->header.type_n };
+                    const uint16_t type_h{ SDLNet_Read16(&type_n) };
+                    if (type_h == network_message_type_player_ready) {
+ /*                       auto message = network_message_dynamic_pack_into<network_message_player_ready>(std::move(msg));
+                        _clients_ready[client] = message->payload.content.is_ready;
+                        checkAllPlayersReady();*/
+                    }
+                }
+            }
+        }
+        else {
+            int active_sockets = SDLNet_CheckSockets(network.profile.client.client_set, 100);
+            TCPsocket socket = network.profile.client.socket_to_host;
+            if (active_sockets > 0 && SDLNet_SocketReady(socket)) {
+
+                auto msg = network_message_dynamic_pack_receive(socket);
+                const uint16_t type_n{ msg->header.type_n };
+                const uint16_t type_h{ SDLNet_Read16(&type_n) };
+                if (type_h == network_message_type_start_game) {
+                    std::cout << "mensaje de ir al juego" << std::endl;
+                    Game::Instance()->change_Scene(Game::GAMESCENE);
+                }
+            }
+
+        }
+       
+    }
+}
+
+void SelectionMenuScene::showWaitingText(bool show)
+{
+
+}
+
+void SelectionMenuScene::checkAllPlayersReady()
+{
+    if (!Game::Instance()->is_host() || !_is_ready) return;
+
+    bool all_ready = true;
+    for (const auto&c : _clients_ready) {
+        if (!c.second) {
+            all_ready = false;
+            break;
+        }
+    }
+
+    if (all_ready) {
+        network_context& network = Game::Instance()->get_network();
+
+        // enviar start a todos los clientes
+        for (auto& client : network.profile.host.sockets_to_clients.connections) {
+            if (client) {
+                network_message_pack_send(
+                    client,
+                    network_message_pack_create(network_message_type_start_game, 
+                        create_payload_empty_create_message())
+                );
+            }
+        }
+        Game::Instance()->change_Scene(Game::GAMESCENE);
     }
 }

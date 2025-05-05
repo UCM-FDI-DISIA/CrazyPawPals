@@ -1,13 +1,13 @@
 #include "GhostStateComponent.h"
 
-#include "../../game/Game.h"
-#include "../../ecs/Manager.h"
+#include "../../../game/Game.h"
+#include "../../../ecs/Manager.h"
 
-#include "rendering/dyn_image_with_frames.hpp"
-#include "movement/MovementController.h"
-#include "weapons/Weapon.h"
-#include "cards/Mana.h"
-#include "cards/Deck.hpp"
+#include "../rendering/dyn_image_with_frames.hpp"
+#include "../movement/MovementController.h"
+#include "../weapons/Weapon.h"
+#include "../cards/Mana.h"
+#include "../cards/Deck.hpp"
 
 GhostStateComponent::GhostStateComponent()
     :_dy(nullptr), _mc(nullptr), _mana(nullptr), _deck(nullptr), _weapon(nullptr),
