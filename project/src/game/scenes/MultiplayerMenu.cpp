@@ -261,6 +261,7 @@ void MultiplayerMenu::update(uint32_t delta_time) {
         break;
     }
     case network_context_profile_status_client: {
+        
         break;
     }
     default: {
