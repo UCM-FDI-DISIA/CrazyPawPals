@@ -6,6 +6,8 @@
 #include <ctime>
 #include <fstream>
 #include <iostream>
+#include "../utils/checkML.h"
+
 
 #define file_name "log_"
 

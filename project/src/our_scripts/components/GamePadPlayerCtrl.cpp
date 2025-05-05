@@ -7,6 +7,7 @@
 #include "our_scripts/components/AnimationComponent.h"
 #include "our_scripts/components/cards/Deck.hpp"
 #include "our_scripts/components/weapons/Weapon.h"
+#include "../../utils/checkML.h"
 
 void GamePadPlayerCtrl::initComponent()
 {

@@ -5,6 +5,7 @@
 #include "game/Game.h"
 #include "game/scenes/GameScene.h"
 #include "sdlutils/SDLUtils.h"
+#include "../../utils/checkML.h"
 #include "../components/Fog.h"
 #include "../wave_events/no_event.hpp"
 #include "../wave_events/ice_skating_event.hpp"
