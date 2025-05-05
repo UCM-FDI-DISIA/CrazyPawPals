@@ -1,3 +1,4 @@
+
 // This file is part of the course TPV2@UCM - Samir Genaim
 #pragma once
 #include <iostream>
@@ -265,6 +266,7 @@ public:
 		//Quitar de escena actual
 		
 		//anyadir a la cola de otra escena
+
 		e->_sId = new_scene_id;
 		_pendingEntities.push_back(e);
 	}
