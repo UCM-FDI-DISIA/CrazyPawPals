@@ -1,9 +1,9 @@
 #pragma once
 #pragma once
+#include "../../../utils/checkML.h"
 #include "../../../ecs/Component.h"
 #include "../cards/Mana.h"
 #include "../Health.h"
-#include "../../../utils/checkML.h"
 #include "../cards/Deck.hpp"
 #include "../movement/Transform.h"
 #include "../rendering/camera_component.hpp"
