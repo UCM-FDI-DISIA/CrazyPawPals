@@ -1,12 +1,12 @@
 #ifndef CAMERA_COMPONENT_HPP
 #define CAMERA_COMPONENT_HPP
+#include "../../../utils/checkML.h"
 
 #include "../../../ecs/Component.h"
 #include "../../../utils/Vector2D.h"
 #include "../../../rendering/camera.hpp"
 #include "../../../rendering/camera_follow.hpp"
 #include "../movement/Transform.h"
-#include "../../../utils/checkML.h"
 
 struct camera_component : public ecs::Component {
 	__CMPID_DECL__(ecs::cmp::CAMERA);

@@ -1,8 +1,8 @@
+#include "../../../utils/checkML.h"
 #include "HUD.h"
 #include "game/Game.h"
 #include "ecs/Manager.h"
 #include "../../../sdlutils/SDLUtils.h"
-#include "../../../utils/checkML.h"
 
 HUD::HUD():_camera(nullptr),_wm(nullptr)
 {

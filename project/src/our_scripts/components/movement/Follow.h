@@ -1,7 +1,7 @@
 #pragma once
-#include "../../../ecs/Component.h"
-#include "../../../ecs/Component.h"
 #include "../../../utils/checkML.h"
+#include "../../../ecs/Component.h"
+#include "../../../ecs/Component.h"
 
 class Transform;
 class Follow : public ecs::Component

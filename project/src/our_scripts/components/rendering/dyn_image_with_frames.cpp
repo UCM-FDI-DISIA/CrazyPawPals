@@ -1,7 +1,7 @@
+#include "../../../utils/checkML.h"
 #include "dyn_image_with_frames.hpp"
 #include "sdlutils/Texture.h"
 #include "sdlutils/SDLUtils.h"
-#include "../../../utils/checkML.h"
 
 
 void dyn_image_with_frames::update(uint32_t delta_time)
