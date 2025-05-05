@@ -4,6 +4,7 @@
 #include "../../../rendering/rect.hpp"
 #include "../../../sdlutils/Texture.h"
 #include "../../../rendering/camera.hpp"
+#include "../../../utils/checkML.h"
 #include "../rendering/camera_component.hpp"
 class Texture;
 struct camera_screen;

@@ -2,6 +2,7 @@
 #include "../../../../game/Game.h"
 #include "../../../../game/scenes/GameScene.h"
 #include "../../../card_system/ShootPatrons.hpp"
+#include "../../../../utils/checkML.h"
 
 WeaponPlimPlim::WeaponPlimPlim() : Weapon(4, 5000, 20.0f, 0.1f, "p_plimplim", 1.0f, 1.0f) { }
 

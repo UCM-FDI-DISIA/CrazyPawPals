@@ -4,6 +4,7 @@
 #include "../movement/Transform.h"
 #include "dyn_image.hpp"
 #include "dyn_image_with_frames.hpp"
+#include "../../../utils/checkML.h"
 
 FlipXController::FlipXController() :_tr(nullptr), _dy(nullptr) {}
 

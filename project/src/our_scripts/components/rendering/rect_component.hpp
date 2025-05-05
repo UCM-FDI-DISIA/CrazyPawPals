@@ -3,6 +3,7 @@
 
 #include "../../../ecs/Component.h"
 #include "../../../rendering/rect.hpp"
+#include "../../../utils/checkML.h"
 
 
 struct rect_component : public ecs::Component {

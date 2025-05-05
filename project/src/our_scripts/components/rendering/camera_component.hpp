@@ -6,6 +6,7 @@
 #include "../../../rendering/camera.hpp"
 #include "../../../rendering/camera_follow.hpp"
 #include "../movement/Transform.h"
+#include "../../../utils/checkML.h"
 
 struct camera_component : public ecs::Component {
 	__CMPID_DECL__(ecs::cmp::CAMERA);

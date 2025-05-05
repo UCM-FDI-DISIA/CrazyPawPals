@@ -3,6 +3,7 @@
 #include "Follow.h"
 #include "../Health.h"
 #include "../../../ecs/Manager.h"
+#include "../../../utils/checkML.h"
 #include "../../../game/Game.h"
 
 Follow::Follow(GameStructs::EnemyFollow type) : _my_follow_type(type), _my_tr(nullptr), _act_follow(nullptr), last_time_act(0)

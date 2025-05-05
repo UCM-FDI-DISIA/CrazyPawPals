@@ -1,4 +1,5 @@
 #include "RewardDataComponent.h"
+#include "../../../utils/checkML.h"
 
 RewardDataComponent::RewardDataComponent() : _ct(GameStructs::LAST_CARD), _data("") {}
 

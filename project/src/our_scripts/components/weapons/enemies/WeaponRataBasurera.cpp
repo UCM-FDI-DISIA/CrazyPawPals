@@ -2,6 +2,7 @@
 #include "../../../../game/Game.h"
 #include "../../../../game/scenes/GameScene.h"
 #include "../../../../sdlutils/RandomNumberGenerator.h"
+#include "../../../../utils/checkML.h"
 
 WeaponRataBasurera::WeaponRataBasurera() : Weapon(0, 5000, 0.0f, 0.0f, "", 0.0f, 0.0f) { }
 
