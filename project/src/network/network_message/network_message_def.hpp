@@ -21,6 +21,10 @@ enum network_message_type
     network_message_type_summon_dummy_bullet,
     network_message_type_player_connect,
     network_message_type_player_update,
+    network_message_type_client_id,
+    network_message_type_new_player,
+    network_message_type_player_ready,
+    network_message_type_start_game,
 };
 using network_message_type_option = uint16_t;
 using network_message_header_size = uint16_t;
@@ -161,38 +165,63 @@ inline NetworkBulletProperties network_message_bulletProperties_create(GameStruc
     return n_bp;
 }
 
-//Struct de player cuando se conecta
-struct network_message_player_connect {
-    uint8_t player_id;
-    int32_t pos[2];
-    int16_t health;
-    uint8_t sprite_key_length;
-    char sprite_key[32];
-    uint8_t is_ghost;
+
+//si esta preparado para empezar el juego (si ha eleigo mazo y arma)
+struct network_message_player_ready {
+    bool is_ready;
 };
 
-inline network_message_player_connect create_player_connect_message(const GameStructs::NetPlayerData& player) {
+inline network_message_player_ready create_player_ready_message (bool is_ready) {
+    network_message_player_ready msg;
+    msg.is_ready = is_ready;
+    return msg;
+};
+
+//mensaje sin contenido
+struct network_message_payload_empty {
+    // Estructura intencionalmente vac¨ªa
+};
+
+inline network_message_payload_empty create_payload_empty_create_message() {
+    return network_message_payload_empty{};
+}
+
+
+//mandar al cliente su id
+struct network_message_client_id_from_host {
+    uint32_t client_id;
+};
+
+inline network_message_client_id_from_host create_client_id_message (uint32_t client_id) {
+
+    network_message_client_id_from_host id_from_host;
+    SDLNet_Write32(client_id, &id_from_host.client_id);
+    return id_from_host;
+};
+
+inline uint32_t network_message_client_id_from_host_get_id(const network_message_client_id_from_host message) {
+    return message.client_id;
+};
+
+//Struct de player cuando se conecta 
+struct network_message_player_connect {
+    uint32_t player_id;           
+    uint32_t sprite_key_length;
+    char sprite_key[32];
+};
+
+inline network_message_player_connect create_player_connect_message(uint32_t id, std::string texture) {
     network_message_player_connect player_connet;
 
-    //uint8_t player id
-    player_connet.player_id = player.id;
+    SDLNet_Write32(id, &player_connet.player_id);
 
-    //Vector2D pos
-    SDLNet_Write32(player.pos.getX() * fact_float_int, &player_connet.pos[0]);
-    SDLNet_Write32(player.pos.getY() * fact_float_int, &player_connet.pos[1]);
+    const size_t size = texture.size();
+    assert(size < sizeof(player_connet.sprite_key) && "error: string size exceeds sprite_key capacity");
+   
+    SDLNet_Write32(static_cast<uint32_t>(size), &player_connet.sprite_key_length);
 
-    //int health
-    SDLNet_Write16(player.health, &player_connet.health);
-    
-    //bool is_ghost
-    player_connet.is_ghost = static_cast<uint8_t>(player.is_ghost);
-
-    //string
-    const size_t key_size = player.sprite_key.size();
-    assert(key_size < sizeof(player_connet.sprite_key) && "error: string size too long");
-    player_connet.sprite_key_length = static_cast<uint8_t>(key_size);
-
-    std::copy(player.sprite_key.begin(), player.sprite_key.end(), player_connet.sprite_key);
+    std::copy_n(texture.begin(), size, player_connet.sprite_key);
+    player_connet.sprite_key[size] = '\0';
 
     return player_connet;
 }
@@ -205,24 +234,6 @@ struct network_message_player_update {
     int16_t health;
     uint8_t is_ghost;
 };
-
-// Struct de EnemyProperties
-struct NetworkEnemyProperties
-{
-    int _pos[2];
-};
-
-// Constructor del struct de NetworkBulletProperties
-inline NetworkEnemyProperties network_message_enemyProperties_create(GameStructs::DumbEnemyProperties ep)
-{
-    NetworkEnemyProperties n_ep;
-
-    // Vector2D init_pos
-    SDLNet_Write32(ep._pos.getX() * fact_float_int, &n_ep._pos[0]);
-    SDLNet_Write32(ep._pos.getY() * fact_float_int, &n_ep._pos[1]);
-
-    return n_ep;
-}
 
 inline network_message_player_update create_player_update_message(const GameStructs::NetPlayerData& player) {
     network_message_player_update player_connet;
@@ -243,6 +254,24 @@ inline network_message_player_update create_player_update_message(const GameStru
     return player_connet;
 }
 
+
+// Struct de EnemyProperties
+struct NetworkEnemyProperties
+{
+    int _pos[2];
+};
+
+// Constructor del struct de NetworkBulletProperties
+inline NetworkEnemyProperties network_message_enemyProperties_create(GameStructs::DumbEnemyProperties ep)
+{
+    NetworkEnemyProperties n_ep;
+
+    // Vector2D init_pos
+    SDLNet_Write32(ep._pos.getX() * fact_float_int, &n_ep._pos[0]);
+    SDLNet_Write32(ep._pos.getY() * fact_float_int, &n_ep._pos[1]);
+
+    return n_ep;
+}
 
 
 #endif

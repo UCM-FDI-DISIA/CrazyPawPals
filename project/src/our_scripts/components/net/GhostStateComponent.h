@@ -1,6 +1,6 @@
 #pragma once
-#include "../../ecs/Component.h"
-#include "../../game/GameStructs.h"
+#include "../../../ecs/Component.h"
+#include "../../../game/GameStructs.h"
 
 struct dyn_image_with_frames;
 class MovementController;

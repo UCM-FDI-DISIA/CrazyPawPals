@@ -1,5 +1,5 @@
 #pragma once
-#include "../../ecs/Component.h"
+#include "../../../ecs/Component.h"
 
 class Transform;
 class EnemySynchronize :public ecs::Component

@@ -1,5 +1,5 @@
 #pragma once
-#include "../../ecs/Component.h"
+#include "../../../ecs/Component.h"
 
 class Transform;
 class Health;
@@ -11,7 +11,9 @@ public:
 	~PlayerSynchronize();
 	void initComponent() override;
 	void update(uint32_t delta_time) override;
+
 protected:
+	void sendPlayerUpdate();
 	uint8_t _player_id;
 	Transform* _tr;
 	Health* _health;

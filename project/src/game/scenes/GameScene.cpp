@@ -11,7 +11,7 @@
 #include "../../our_scripts/components/movement/Transform.h"
 #include "../../our_scripts/components/movement/Follow.h"
 #include "../../our_scripts/components/movement/MovementController.h"
-#include "../../our_scripts/components/enemy_synchronize.h"
+#include "../../our_scripts/components/net/enemy_synchronize.h"
 #include "../../our_scripts/components/LifetimeTimer.h"
 #include "../../our_scripts/states/Conditions.h"
 #include "../../our_scripts/states/WalkingState.h"
@@ -68,7 +68,8 @@
 #include "../../our_scripts/card_system/CardUpgrade.hpp"
 
 #include "../../our_scripts/components/MythicComponent.h"
-#include "../../our_scripts/components/GhostStateComponent.h"
+#include "../../our_scripts/components/net/GhostStateComponent.h"
+#include "../../our_scripts/components/net/player_synchronize.h"
 #include "RewardScene.h"
 #ifdef GENERATE_LOG
 #include "../../our_scripts/log_writer_to_csv.hpp"
@@ -232,6 +233,29 @@ void GameScene::exitScene()
 	log_writer_to_csv::Instance()->add_new_log("EXIT GAME SCENE");
 	log_writer_to_csv::Instance()->add_new_log();
 #endif
+}
+
+void GameScene::update(uint32_t delta_time)
+{
+	Scene::update(delta_time);
+
+	network_context& network = Game::Instance()->get_network();
+	switch (network.profile_status) {
+	case network_context_profile_status_none:
+		break;
+	case network_context_profile_status_host: {
+		host_handle_menssage(network);
+		break;
+	}
+	case network_context_profile_status_client: {
+		client_handle_menssage(network);
+		break;
+	}
+	default: {
+		assert(false && "unreachable: invalid network profile status");
+		std::exit(EXIT_FAILURE);
+	}
+	}
 }
 
 // metodos de create/spawn
@@ -1333,9 +1357,100 @@ void GameScene::event_callback1(const event_system::event_receiver::Msg &m)
 	mngr.getComponent<WaveManager>(mngr.getHandler(ecs::hdlr::WAVE))->reset_wave_manager();
 
 	// si es multiplayer hay que hacer add del componente fantastma
-	/*auto player = mngr.getHandler(ecs::hdlr::PLAYER);
-	if (!mngr.hasComponent<GhostStateComponent>(player)) mngr.addComponent<GhostStateComponent>(player);*/
-	// sino se resetea al jugador y pasa al gameOver
-	reset_player();
-	Game::Instance()->change_Scene(Game::GAMEOVER);
+	if (Game::Instance()->is_host() || Game::Instance()->is_client()) {
+		auto player = mngr.getHandler(ecs::hdlr::PLAYER);
+		if (!mngr.hasComponent<GhostStateComponent>(player)) mngr.addComponent<GhostStateComponent>(player);
+	}
+	else {
+		// sino se resetea al jugador y pasa al gameOver
+		reset_player();
+		Game::Instance()->change_Scene(Game::GAMEOVER);
+	}
+}
+
+
+void GameScene::host_handle_menssage(network_context& ctx)
+{
+	if (SDLNet_CheckSockets(ctx.profile.host.clients_host_set, 0) > 0) {
+		for (network_connection_size i = 0; i < ctx.profile.host.sockets_to_clients.connection_count; ++i) {
+			TCPsocket& connection = ctx.profile.host.sockets_to_clients.connections[i];
+			if (SDLNet_SocketReady(connection)) {
+				network_message_dynamic_pack dyn_message = network_message_dynamic_pack_receive(connection);
+				const uint16_t type_n{ dyn_message->header.type_n };
+				const uint16_t type_h{ SDLNet_Read16(&type_n) };
+				switch (type_h) {
+				case network_message_type_player_update: {
+					auto message = network_message_dynamic_pack_into<network_message_player_update>(std::move(dyn_message));
+					break;
+				}
+				default: {
+					break;
+				}
+				}
+				// TODO: listen to custom messages
+			}
+		}
+	}
+}
+
+void GameScene::client_handle_menssage(network_context& ctx)
+{
+	int active_sockets = SDLNet_CheckSockets(ctx.profile.client.client_set, 0);
+	if (active_sockets > 0 && SDLNet_SocketReady(ctx.profile.client.socket_to_host)) {
+
+		auto msg = network_message_dynamic_pack_receive(ctx.profile.client.socket_to_host);
+		const uint16_t type_n{ msg->header.type_n };
+		const uint16_t type_h{ SDLNet_Read16(&type_n) };
+		switch (type_h) {
+		case network_message_type_player_update: {
+
+			break;
+		}
+		default: {
+			break;
+		}
+		}
+	}
+}
+
+void GameScene::update_player(const network_message_player_update& msg)
+{
+}
+
+bool GameScene::change_player_tex(uint32_t playerId, const std::string& key_name)
+{
+	auto player = Game::Instance()->get_network_player(playerId);
+	auto&& manager = *Game::Instance()->get_mngr();
+	if (auto&& dy = manager.getComponent<dyn_image_with_frames>(player)) {
+		dy->texture = &sdlutils().images().at(key_name);
+		dy->texture_name = key_name;
+		return true;
+	}
+	return false;
+}
+
+ecs::entity_t  GameScene::create_dumb_player(ecs::sceneId_t scene, uint32_t playerId, std::string tex_name)
+{
+	auto&& manager = *Game::Instance()->get_mngr();
+	auto&& camera = manager.getComponent<camera_component>(manager.getHandler(ecs::hdlr::CAMERA))->cam;
+
+	auto&& player_transform = *new Transform({ 0.0f, 0.0f }, { 0.0f, 0.0f }, 0.0f, 2.0f);
+	auto&& player_rect = *new rect_component{ 0, 0, 1.125f, 1.5f };
+	ecs::entity_t player = create_entity(
+		ecs::grp::PLAYER,
+		scene,
+		&player_transform,
+		new dyn_image_with_frames(
+			rect_f32{ {0, 0}, {0.2, 1} },
+			player_rect,
+			camera,
+			sdlutils().images().at(tex_name),
+			player_transform, tex_name),
+		new render_ordering{ 1 },
+		new Health(100, true),
+		new ManaComponent());
+
+
+	Game::Instance()->add_network_player(playerId, player);
+	return player;
 }

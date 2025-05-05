@@ -2,6 +2,7 @@
 #include "../../our_scripts/components/ui/Button.h"
 #include "../../our_scripts/components/rendering/transformless_dyn_image.h"
 #include "../../our_scripts/components/rendering/ImageForButton.h"
+#include "../../our_scripts/components/rendering/dyn_image_with_frames.hpp"
 
 #include "../GameStructs.h"
 #include "GameScene.h"
@@ -160,9 +161,9 @@ static void multiplayer_menu_host_loop(network_context &ctx) {
                     // std::unique_ptr<network_message_pack<network_message_payload_dbg_print<64>>, typename network_message_pack<network_message_payload_dbg_print<64>>::deleter> m;
                     auto message =
                         network_message_dynamic_pack_into<network_message_payload_dbg_print<64>>(std::move(dyn_message));
-                    auto &&payload = message->payload.content;
+                    auto&& payload = message->payload.content;
 
-                    const uint32_t args_size_h{SDLNet_Read32(&payload.args_size_n)};
+                    const uint32_t args_size_h{ SDLNet_Read32(&payload.args_size_n) };
                     assert(
                         args_size_h < sizeof(payload.args)
                         && "error: payload size must be less than the size of the payload"
@@ -172,12 +173,87 @@ static void multiplayer_menu_host_loop(network_context &ctx) {
                     std::cout << "message: " << payload.args.data() << std::endl;
                     break;
                 }
+                case network_message_type_player_connect: {
+                    auto message = network_message_dynamic_pack_into<network_message_player_connect>(std::move(dyn_message));
+                    auto&& payload = message->payload.content;
+
+                    static uint32_t next_id = 1;
+                    uint32_t new_id = next_id++;
+
+                    uint32_t  key_length = SDLNet_Read32(&payload.sprite_key_length);
+                    std::string sprite_key(payload.sprite_key, key_length);
+
+                    GameScene::create_dumb_player(ecs::scene::GAMESCENE, new_id, sprite_key);
+
+                    auto id_msg = network_message_pack_create(
+                        network_message_type_client_id,
+                        create_client_id_message(new_id)
+                    );
+                    network_message_pack_send(connection, id_msg);
+
+
+                    std::cout << "Player conectado. ID asignado: " << std::to_string(new_id) << ", sprite: " << payload.sprite_key << std::endl;
+
+                    auto new_player_msg = create_player_connect_message(new_id, sprite_key);
+
+                    for (network_connection_size i = 0; i < ctx.profile.host.sockets_to_clients.connection_count; ++i) {
+                        TCPsocket& client = ctx.profile.host.sockets_to_clients.connections[i];
+
+                        if (client != connection) {
+                            network_message_pack_send(
+                                client,
+                                network_message_pack_create(network_message_type_new_player, new_player_msg));
+                        }
+                    }
+
+                    break;
+                }
                 default: {
                     break;
                 }
                 }
                 // TODO: listen to custom messages
             }
+        }
+    }
+}
+
+static void multiplayer_menu_client_loop(network_context& ctx) {
+    int active_sockets = SDLNet_CheckSockets(ctx.profile.client.client_set, 0);
+    if (active_sockets > 0 && SDLNet_SocketReady(ctx.profile.client.socket_to_host)) {
+
+        auto msg = network_message_dynamic_pack_receive(ctx.profile.client.socket_to_host);
+        const uint16_t type_n{ msg->header.type_n };
+        const uint16_t type_h{ SDLNet_Read16(&type_n) };
+        switch (type_h) {
+        case network_message_type::network_message_type_client_id: {
+            auto message = network_message_dynamic_pack_into<network_message_client_id_from_host>(std::move(msg));
+            auto&& payload = message->payload.content;
+
+            uint32_t id = SDLNet_Read32(&payload.client_id);
+
+            Game::Instance()->set_local_player_id(id);
+            std::cout << "player id:" << std::to_string(id) << std::endl;
+
+            break;
+        }
+        case network_message_type::network_message_type_new_player: {
+            auto message = network_message_dynamic_pack_into<network_message_player_connect>(std::move(msg));
+            auto&& payload = message->payload.content;
+
+            uint32_t id = SDLNet_Read32(&payload.player_id);
+            std::cout << "nuevo player con id:" << std::to_string(id) << std::endl;
+
+            uint32_t  key_length = SDLNet_Read32(&payload.sprite_key_length);
+            std::string sprite_key(payload.sprite_key, key_length);
+
+            GameScene::create_dumb_player(ecs::scene::GAMESCENE, id, sprite_key);
+
+            break;
+        }
+        default: {
+            break;
+        }
         }
     }
 }
@@ -261,7 +337,7 @@ void MultiplayerMenu::update(uint32_t delta_time) {
         break;
     }
     case network_context_profile_status_client: {
-        
+        multiplayer_menu_client_loop(network);
         break;
     }
     default: {
@@ -357,7 +433,7 @@ void MultiplayerMenu::create_play_button(const GameStructs::ButtonProperties& bp
 
     auto buttonComp = mngr->getComponent<Button>(e);
     buttonComp->connectClick([buttonComp, imgComp, mngr]() {
-        if (!Game::Instance()->is_host()) {
+        if (Game::Instance()->is_network_none()) {
             return;
         }
         imgComp->_filter = false;
@@ -366,7 +442,7 @@ void MultiplayerMenu::create_play_button(const GameStructs::ButtonProperties& bp
     });
 
     buttonComp->connectHover([buttonComp, imgComp]() {
-        if (!Game::Instance()->is_host()) {
+        if (Game::Instance()->is_network_none()) {
             return;
         }
         imgComp->_filter = true;
@@ -374,7 +450,7 @@ void MultiplayerMenu::create_play_button(const GameStructs::ButtonProperties& bp
     });
 
     buttonComp->connectExit([buttonComp, imgComp]() {
-        if (!Game::Instance()->is_host()) {
+        if (Game::Instance()->is_network_none()) {
             return;
         }
         imgComp->_filter = false;
@@ -415,7 +491,7 @@ void MultiplayerMenu::create_host_button(const GameStructs::ButtonProperties& bp
     );
 
     auto buttonComp = mngr->getComponent<Button>(e);
-    buttonComp->connectClick([buttonComp, imgComp, this]() {
+    buttonComp->connectClick([buttonComp, imgComp,mngr, this]() {
         if (!Game::Instance()->is_network_none()) {
             return;
         }
@@ -427,6 +503,10 @@ void MultiplayerMenu::create_host_button(const GameStructs::ButtonProperties& bp
         network = network_context_create_host(nullptr, Game::default_port);
         network_context_host_connect_alloc(network.profile.host);
         std::cout << "Host at port: " << Game::default_port << std::endl;
+
+        Game::Instance()->set_local_player_id(0);
+        auto player = Game::Instance()->get_mngr()->getHandler(ecs::hdlr::PLAYER);
+
     });
 
     buttonComp->connectHover([buttonComp, imgComp]() {
@@ -528,7 +608,7 @@ void MultiplayerMenu::create_client_button(const GameStructs::ButtonProperties& 
     );
 
     auto buttonComp = mngr->getComponent<Button>(e);
-    buttonComp->connectClick([buttonComp, imgComp, this]() {
+    buttonComp->connectClick([buttonComp, imgComp, mngr, this]() {
         if (!Game::Instance()->is_network_none()) {
             return;
         }
@@ -579,6 +659,20 @@ void MultiplayerMenu::create_client_button(const GameStructs::ButtonProperties& 
                 network_message_payload_dbg_print_create<32>(
                     "Hello from client!"
                 )
+            )
+        );
+
+        auto player = mngr->getHandler(ecs::hdlr::PLAYER);
+        auto name = mngr->getComponent<dyn_image_with_frames>(player)->texture_name;
+        auto connect_msg = create_player_connect_message(0,name);
+
+        std::cout << "Player solicita conexion, con textura " << name << std::endl;
+
+        network_message_pack_send(
+            network.profile.client.socket_to_host,
+            network_message_pack_create(
+                network_message_type_player_connect,
+                connect_msg
             )
         );
     });
@@ -672,8 +766,5 @@ void MultiplayerMenu::create_skin_button(const GameStructs::ButtonProperties& bp
     });
 }
 
-void MultiplayerMenu::handleIPInput() {
-    auto& ihdlr = ih();
-}
 
 

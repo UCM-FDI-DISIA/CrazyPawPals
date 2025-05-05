@@ -1,9 +1,9 @@
 ﻿#include "enemy_synchronize.h"
-#include "../../sdlutils/SDLUtils.h"
-#include "../../ecs/Manager.h"
-#include "../../game/Game.h"
+#include "../../../sdlutils/SDLUtils.h"
+#include "../../../ecs/Manager.h"
+#include "../../../game/Game.h"
 #include <algorithm>
-#include "movement/Transform.h"
+#include "../movement/Transform.h"
 
 
 EnemySynchronize::EnemySynchronize() 

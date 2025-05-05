@@ -8,7 +8,7 @@
 #include "ui/DamagePopup.h"
 #include "movement/Transform.h"
 #include "rendering/camera_component.hpp"
-#include "GhostStateComponent.h"
+#include "net/GhostStateComponent.h"
 #ifdef GENERATE_LOG
 #include "../../our_scripts/log_writer_to_csv.hpp"
 #endif
@@ -87,6 +87,10 @@ Health::takeDamage(int damage)
 void
 Health::setMaxHeatlh(int maxHeatlh) {
 	if (maxHeatlh > 0) _maxHealth = maxHeatlh;
+}
+void Health::setHeatlh(int h)
+{
+	if (h > 0 && h < _maxHealth) _currentHealth = h;
 }
 void Health::resetCurrentHeatlh()
 {
