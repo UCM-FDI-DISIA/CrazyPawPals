@@ -25,7 +25,7 @@ MainMenuScene::~MainMenuScene()
 void 
 MainMenuScene::initScene()
 {
-    create_static_background(&sdlutils().images().at("background"));
+   create_static_background(&sdlutils().images().at("background"));
 
     GameStructs::ButtonProperties buttonPropTemplate = { 
         { {0.35f, 0.22f},{0.30f, 0.25f} },
@@ -55,20 +55,30 @@ MainMenuScene::initScene()
     exitB.sprite_key = "exit_game";
     create_exit_button(exitB);
 
-    GameStructs::ButtonProperties image_p = { 
-        { {0.35f, 0.22f},{0.30f, 0.25f} },
-        0.0f, ""
-    };
+   
+    GameStructs::ButtonProperties curtain_reaper_text = buttonPropTemplate;
+    curtain_reaper_text.rect.position.x = 0.85f;
+    curtain_reaper_text.rect.position.y = 0.86f;
+    curtain_reaper_text.rect.size.x = 0.15f;
+    curtain_reaper_text.rect.size.y = 0.15f;
 
-    create_decoration_images(image_p);
-    image_p.sprite_key = "stars2";
-    image_p.rect.position.y += 0.18f;
-    create_decoration_images(image_p);
-    image_p.rect.position.y += 0.18f;
-    create_decoration_images(image_p);
-    image_p.rect.position.y += 0.18f;
-    create_decoration_images(image_p);
-    image_p.rect.position.y += 0.18f;
+    curtain_reaper_text.sprite_key = "curtain_reaper_title";
+    create_decoration_images(curtain_reaper_text);
+
+    GameStructs::ButtonProperties star_derecha = buttonPropTemplate;
+    GameStructs::ButtonProperties star_izquierda = buttonPropTemplate;
+    GameStructs::ButtonProperties claw_type_1 = buttonPropTemplate;
+    GameStructs::ButtonProperties claw_type_2 = buttonPropTemplate;
+    GameStructs::ButtonProperties claw_type_3 = buttonPropTemplate;
+
+    // image_p.sprite_key = "ui_star";
+    // image_p.rect.position.y += 0.18f;
+    // create_decoration_images(image_p);
+    // image_p.rect.position.y += 0.18f;
+    // create_decoration_images(image_p);
+    // image_p.rect.position.y += 0.18f;
+    // create_decoration_images(image_p);
+    // image_p.rect.position.y += 0.18f;
 }
 
 void 
@@ -126,7 +136,8 @@ MainMenuScene::create_start_button(const GameStructs::ButtonProperties& bp) {
 
 void MainMenuScene::create_decoration_images(const GameStructs::ButtonProperties &ip)
 {
-
+    std::cout << "Creating decoration image" << std::endl;
+    create_decoration_image(ip);
 }
 
 void MainMenuScene::create_multiplayer_button(const GameStructs::ButtonProperties& bp)

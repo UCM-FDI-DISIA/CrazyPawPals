@@ -6,6 +6,7 @@
 
 #include "../../our_scripts/components/rendering/transformless_dyn_image.h"
 #include "../../our_scripts/components/rendering/dyn_image.hpp"
+#include "../../our_scripts/components/rendering/RotationComponent.h"
 #include "../../our_scripts/components/ui/Button.h"
 #include <string>
 Scene::Scene(ecs::sceneId_t id) : _scene_ID(id) {}
@@ -76,14 +77,17 @@ ecs::entity_t Scene::create_decoration_image(const GameStructs::ButtonProperties
     Vector2D pos = {ip.rect.position.x, ip.rect.position.y};
     auto &&transform = *new Transform(pos, {0.0f,0.0f}, 0.0f, 0.0f);
     auto manager = Game::Instance()->get_mngr();
-    auto e = create_entity(ip.ID,
+    auto e = create_entity(
+        ip.ID,
         _scene_ID,
-        transform,
-        new dyn_image(rect_f32{{0, 0}, {1, 1}},
-			ip.rect,
-			manager->getComponent<camera_component>(manager->getHandler(ecs::hdlr::CAMERA))->cam,
-			sdlutils().images().at(ip.sprite_key),
-			transform)
+        &transform,
+        new transformless_dyn_image(ip.rect,
+            0,
+            Game::Instance()->get_mngr()->getComponent<camera_component>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA))->cam,
+            &sdlutils().images().at(ip.sprite_key)),
+        new RotationComponent(RotationComponent::Mode::CONTINUOUS,
+            0.5f,
+            360.0f)
     );
 
     return e;
