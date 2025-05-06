@@ -1,8 +1,10 @@
 #pragma once
+
 #include "Scene.h"
 #include <string>
 #include <list>
 #include <unordered_set>
+
 #include <utility>
 
 class Button;

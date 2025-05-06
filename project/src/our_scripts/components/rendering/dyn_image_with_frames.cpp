@@ -1,3 +1,4 @@
+
 #include "dyn_image_with_frames.hpp"
 #include "sdlutils/Texture.h"
 #include "sdlutils/SDLUtils.h"

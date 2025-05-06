@@ -1,4 +1,5 @@
 #pragma region includes
+
 #include "GameScene.h"
 
 #include "../Game.h"
@@ -147,11 +148,9 @@ static game_scene_map_walls game_scene_create_map_walls(ecs::Manager &manager, c
 
 	for (size_t i = 0; i < wall_entities.size(); ++i)
 	{
-		manager.addComponent<Transform>(wall_entities[i], *wall_transforms[i]);
-		manager.addComponent<rect_component>(wall_entities[i], *wall_rects[i]);
-		manager.addComponent<rigidbody_component>(wall_entities[i], *wall_rigidbodies[i]);
-		manager.addComponent<collisionable>(wall_entities[i], *wall_collisionables[i]);
+		manager.addExistingComponent(wall_entities[i],wall_transforms[i], wall_rects[i], wall_rigidbodies[i], wall_collisionables[i]);
 		manager.addComponent<render_ordering>(wall_entities[i], 0);
+		
 	}
 
 	return game_scene_map_walls{

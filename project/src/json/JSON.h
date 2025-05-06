@@ -25,12 +25,14 @@
 #ifndef _JSON_H_
 #define _JSON_H_
 
+
 #include <vector>
 #include <string>
 #include <map>
 #include <cstring>
 #include <cstdlib>
 #include <cwctype>
+
 
 static inline bool simplejson_isnan(double x) {
 	return x != x;

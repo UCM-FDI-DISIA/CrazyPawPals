@@ -1,3 +1,4 @@
+
 #include "Game.h"
 
 #include "../ecs/Manager.h"
@@ -80,11 +81,15 @@ Game::~Game() {
 	if (InputHandler::HasInstance())
 		InputHandler::Release();
 
-	// release SLDUtil if the instance was created correctly.
+	// release SDLUtils if the instance was created correctly.
 	if (SDLUtils::HasInstance())
 		SDLUtils::Release();
 
 	if (_mngr != nullptr) delete _mngr;
+
+	// release event_manager if the instance was created correctly.
+	if (event_system::event_manager::HasInstance())
+		event_system::event_manager::Release();
 #ifdef GENERATE_LOG
 	if (log_writer_to_csv::HasInstance())
 		log_writer_to_csv::Release();
@@ -158,7 +163,7 @@ bool Game::init() {
 	
 	// fullscreen mode
 	// HACK: uncomment this to fullscreen
-	SDL_SetWindowFullscreen(sdlutils().window(), 0);//SDL_WINDOW_FULLSCREEN_DESKTOP);
+	SDL_SetWindowFullscreen(sdlutils().window(), SDL_WINDOW_FULLSCREEN_DESKTOP); //0 for non-full screen mode
 	
 	initGame();
 

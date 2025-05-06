@@ -1,3 +1,4 @@
+
 #include "MythicComponent.h"
 #include "../../game/Game.h"
 #include "../../ecs/Manager.h"

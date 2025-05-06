@@ -1,6 +1,6 @@
 #pragma once
-#include "../../ecs/Component.h"
 
+#include "../../ecs/Component.h"
 
 class BulletData :public ecs::Component
 {

@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../Weapon.h"
 #include "../../../../utils/EventsSystem.hpp"
 #include "../../../card_system/ShootPatrons.hpp"

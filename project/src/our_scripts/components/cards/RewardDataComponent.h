@@ -1,6 +1,8 @@
 #pragma once
+
 #include "../../../ecs/Component.h"
 #include "../../../game/GameStructs.h"
+
 #include <string>
 
 struct RewardDataComponent : public ecs::Component{

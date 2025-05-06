@@ -1,3 +1,4 @@
+
 #include <cassert>
 #include "camera_follow.hpp"
 

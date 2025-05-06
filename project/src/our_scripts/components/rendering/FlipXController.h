@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../../../ecs/Component.h"
 class Transform;
 struct 	offset_dyn_image;

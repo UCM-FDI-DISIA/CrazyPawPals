@@ -795,6 +795,18 @@
     {
       "id": "edit_ip_selected",
       "file": "resources/images/ui/buttons/edit_ip_selected.png"
+    },
+    {
+      "id": "event_ice_skate",
+      "file": "resources/images/enviroment/icesCATe_event.png"
+    },
+    {
+      "id": "event_star_shower",
+      "file": "resources/images/enviroment/starFall_event.png"
+    },
+    {
+      "id": "event_paw_patrol",
+      "file": "resources/images/enviroment/pawPatrol_event.png"
     }
   ],
   "messages": [

@@ -1,7 +1,9 @@
 #pragma once
+
+#include "../../../sdlutils/Texture.h"
 #include <algorithm>
 #include "../../../ecs/Component.h" 
-#include "../../../sdlutils/Texture.h"
+
 #include "SDL.h"
 #include "SDL_image.h"
 #include "../../../sdlutils/SDLUtils.h"

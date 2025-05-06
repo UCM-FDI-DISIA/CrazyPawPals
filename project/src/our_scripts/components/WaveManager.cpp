@@ -1,3 +1,4 @@
+
 #include <vector>
 #include <random>
 #include "WaveManager.h"
@@ -289,7 +290,7 @@ void WaveManager::endwave()
     player_movement_controller->total_movement = 0;
 
 #endif
-    if (_currentWave == 2) {
+    if (_currentWave == 9) {
         Game::Instance()->change_Scene(Game::State::VICTORY);
     }
     else {

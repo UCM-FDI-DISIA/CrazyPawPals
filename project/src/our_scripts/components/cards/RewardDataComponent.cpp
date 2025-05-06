@@ -1,3 +1,4 @@
+
 #include "RewardDataComponent.h"
 
 RewardDataComponent::RewardDataComponent() : _ct(GameStructs::LAST_CARD), _data("") {}

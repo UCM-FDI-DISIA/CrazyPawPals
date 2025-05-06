@@ -1,6 +1,7 @@
 #ifndef RIGIDBODY_HPP
 #define RIGIDBODY_HPP
 
+
 #include "../rendering/rect.hpp"
 #include "integration.hpp"
 #include "mass.hpp"

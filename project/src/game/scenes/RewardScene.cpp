@@ -1,3 +1,4 @@
+
 #include "RewardScene.h"
 
 #include "../../our_scripts/components/ui/Button.h"
@@ -63,11 +64,6 @@ void RewardScene::exitScene()
     auto eb = mngr->getHandler(ecs::hdlr::EXCHANGEBUTTON);
 
     auto cImg = mngr->getComponent<ImageForButton>(cb);
-
-    cImg->destination_rect.position.x = 10.0f;
-    cImg->_filter = false;
-    cImg->swap_textures();
-    cImg->_filter = false;
 
     if (!_exchange && _last_deck_card_img != nullptr) {
         auto eImg = mngr->getComponent<ImageForButton>(eb);
@@ -519,6 +515,7 @@ void RewardScene::create_reward_selected_button(const GameStructs::ButtonPropert
             //heal a 50%
             int hn = phealth->getMaxHealth() * 5 / 10;
             phealth->heal(hn);
+            _lr->swap_textures();
         }
         //we only select a reward if previously we have chosen something
         else if (_lr != nullptr && !_selected) {

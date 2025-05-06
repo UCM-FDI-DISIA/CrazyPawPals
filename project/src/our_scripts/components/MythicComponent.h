@@ -1,6 +1,8 @@
 #pragma once
+
 #include <vector>
 #include "../../ecs/Component.h"
+
 
 class MythicItem;
 
