@@ -1,3 +1,4 @@
+#include "../../utils/checkML.h"
 #include "Scene.h"
 #include <cassert>
 
@@ -6,7 +7,7 @@
 
 #include "../../our_scripts/components/rendering/transformless_dyn_image.h"
 #include "../../our_scripts/components/ui/Button.h"
-#include "../../utils/checkML.h"
+
 #include <string>
 Scene::Scene(ecs::sceneId_t id) : _scene_ID(id) {}
 

@@ -1,4 +1,5 @@
 #pragma once
+#include "../../utils/checkML.h"
 #include <vector>
 #include "../../ecs/Manager.h"
 #include "../../ecs/Entity.h"
@@ -6,7 +7,6 @@
 #include "../GameStructs.h"
 #include "../../ecs/ecs.h"
 #include "../Game.h"
-#include "../../utils/checkML.h"
 
 class Transform;
 class Texture;

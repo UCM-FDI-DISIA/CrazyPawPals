@@ -1,10 +1,10 @@
+#include "../../utils/checkML.h"
 #include "SelectionMenuScene.h"
 #include "../../our_scripts/components/ui/Button.h"
 #include "../GameStructs.h"
 #include "../../utils/Vector2D.h"
 #include "../../sdlutils/SDLUtils.h"
 #include "../../sdlutils/InputHandler.h"
-#include "../../utils/checkML.h"
 #include "../../ecs/Entity.h"
 
 #include "../../our_scripts/components/weapons/player/Revolver.h"

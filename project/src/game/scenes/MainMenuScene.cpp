@@ -1,3 +1,4 @@
+#include "../../utils/checkML.h"
 #include "MainMenuScene.h"
 #include "../../our_scripts/components/ui/Button.h"
 #include "../../our_scripts/components/rendering/transformless_dyn_image.h"
@@ -9,7 +10,6 @@
 #include "../../sdlutils/InputHandler.h"
 #include "../../ecs/Entity.h"
 #include "../../sdlutils/Texture.h"
-#include "../../utils/checkML.h"
 #ifdef GENERATE_LOG
 #include "../../our_scripts/log_writer_to_csv.hpp"
 #endif

@@ -1,9 +1,9 @@
 #pragma once
+#include "../../utils/checkML.h"
 #include "Scene.h"
 #include <vector>
 #include <string>
 #include <list>
-#include "../../utils/checkML.h"
 
 class VictoryScene : public Scene
 {

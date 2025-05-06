@@ -1,7 +1,6 @@
 #pragma once
-
-#include "Scene.h"
 #include "../../utils/checkML.h"
+#include "Scene.h"
 
 class Texture;
 class ControlsScene : public Scene

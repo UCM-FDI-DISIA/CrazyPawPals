@@ -18,7 +18,7 @@ public:
 		//res = res + res_mod;
 		//my_card = this;
 	}
-	~BaseCardUpgrade() {
+	virtual ~BaseCardUpgrade() {
 		if (_card != nullptr)
 			delete _card;
 	}

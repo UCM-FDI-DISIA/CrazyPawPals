@@ -1,3 +1,4 @@
+#include "../../utils/checkML.h"
 #include "TutorialScene.h"
 
 #include "../../our_scripts/components/ui/Button.h"
@@ -6,7 +7,6 @@
 #include "../../sdlutils/SDLUtils.h"
 #include "../../sdlutils/InputHandler.h"
 #include "ecs/Manager.h"
-#include "../../utils/checkML.h"
 #include "game/Game.h"
 #include "game/scenes/GameScene.h"
 
