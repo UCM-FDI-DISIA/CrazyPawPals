@@ -82,6 +82,9 @@ bool Deck::use_card(const Vector2D* target_pos) noexcept
 		case DRAW_PILE:
 			_draw_pile.add_card(std::move(_hand));
 			break;
+		case DESTROY:
+			delete _hand;
+			_hand = nullptr;
 		}
 		_put_new_card_on_hand();
 
@@ -105,6 +108,9 @@ bool Deck::discard_card() noexcept
 		case DRAW_PILE:
 			_draw_pile.add_card(std::move(_hand));
 			break;
+		case DESTROY:
+			delete _hand;
+			_hand = nullptr;
 		}
 		_put_new_card_on_hand();
 		return true;

@@ -18,6 +18,10 @@ public:
 		//res = res + res_mod;
 		//my_card = this;
 	}
+	~BaseCardUpgrade() {
+		if (_card != nullptr)
+			delete _card;
+	}
 
 	void on_play (Deck& d, const Vector2D* player_position, const Vector2D* target_position) override {
 		_card->on_play(d,player_position, target_position);
