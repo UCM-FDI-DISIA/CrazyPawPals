@@ -24,17 +24,12 @@ void PlayerSynchronize::initComponent() {
     }
     _is_ghost = mngr->hasComponent<GhostStateComponent>(_ent);
 
-    // Asignar ID de jugador
-    if (Game::Instance()->is_host()) {
-        // El host asigna IDs a los jugadores
-        static uint8_t next_player_id = 1;
-        _player_id = next_player_id++;
-    }
+    _is_local_player = (_ent == Game::Instance()->get_mngr()->getHandler(ecs::hdlr::PLAYER));
 }
 
 void PlayerSynchronize::update(uint32_t delta_time) {
     (void)delta_time;
-    if (Game::Instance()->is_host() || Game::Instance()->is_client()) {
+    if (_is_local_player) {
         sendPlayerUpdate();
     }
 }
@@ -57,4 +52,15 @@ void PlayerSynchronize::sendPlayerUpdate()
        network.profile.client.socket_to_host,
        network_message_pack_create(network_message_type_player_update,msg)
     );
+}
+
+void PlayerSynchronize::updatePlayer(GameStructs::NetPlayerData& data) {
+    if (_tr != nullptr) {
+
+        _tr->setPos(data.pos);
+    }
+    if (_health != nullptr) {
+        _health->setHeatlh(data.health);
+    }
+    _is_ghost = data.is_ghost;
 }

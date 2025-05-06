@@ -154,7 +154,7 @@ namespace GameStructs
 	};
 
 	struct NetPlayerData {
-		uint8_t id;
+		uint32_t id;
 		Vector2D pos;
 		int health;
 		bool is_ghost;

@@ -189,6 +189,7 @@ void Game::initGame()
 		| Scene::rendering::camera_creation_descriptor_options::camera_creation_descriptor_options_clamp;
 	Scene::rendering::create_camera(ecs::scene::MAINMENUSCENE, flags, nullptr);
 
+	GameScene::create_environment();
 	//crear player
 	ecs::entity_t player = GameScene::create_player();
 	_mngr->setHandler(ecs::hdlr::PLAYER, player);

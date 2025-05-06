@@ -178,9 +178,9 @@ void GameScene::initScene()
 	auto &&manager = *Game::Instance()->get_mngr();
 	auto player = manager.getHandler(ecs::hdlr::PLAYER);
 	manager.addComponent<MythicComponent>(player);
+	if (!Game::Instance()->is_network_none())manager.addComponent<PlayerSynchronize>(player);
 
 	manager.refresh();
-	create_environment();
 	// spawn_sarno_rata(Vector2D{5.0f, 0.0f});
 	spawn_fog();
 	spawn_wave_manager();
@@ -281,7 +281,7 @@ ecs::entity_t GameScene::create_player(ecs::sceneId_t scene)
 			camera,
 			sdlutils().images().at("piu"),
 			player_transform, "piu"),
-		new render_ordering{1},
+		new render_ordering{5},
 		new Health(100, true),
 		new ManaComponent(),
 		&player_rigidbody,
@@ -1380,7 +1380,7 @@ void GameScene::host_handle_menssage(network_context& ctx)
 				const uint16_t type_h{ SDLNet_Read16(&type_n) };
 				switch (type_h) {
 				case network_message_type_player_update: {
-					auto message = network_message_dynamic_pack_into<network_message_player_update>(std::move(dyn_message));
+					///auto message = network_message_dynamic_pack_into<network_message_player_update>(std::move(dyn_message));
 					break;
 				}
 				default: {
@@ -1434,7 +1434,7 @@ ecs::entity_t  GameScene::create_dumb_player(ecs::sceneId_t scene, uint32_t play
 	auto&& manager = *Game::Instance()->get_mngr();
 	auto&& camera = manager.getComponent<camera_component>(manager.getHandler(ecs::hdlr::CAMERA))->cam;
 
-	auto&& player_transform = *new Transform({ 0.0f, 0.0f }, { 0.0f, 0.0f }, 0.0f, 2.0f);
+	auto&& player_transform = *new Transform({ 1.0f, 2.0f }, { 0.0f, 0.0f }, 0.0f, 2.0f);
 	auto&& player_rect = *new rect_component{ 0, 0, 1.125f, 1.5f };
 	ecs::entity_t player = create_entity(
 		ecs::grp::PLAYER,
@@ -1446,9 +1446,8 @@ ecs::entity_t  GameScene::create_dumb_player(ecs::sceneId_t scene, uint32_t play
 			camera,
 			sdlutils().images().at(tex_name),
 			player_transform, tex_name),
-		new render_ordering{ 1 },
-		new Health(100, true),
-		new ManaComponent());
+		new render_ordering{1},
+		new Health(100, true));
 
 
 	Game::Instance()->add_network_player(playerId, player);

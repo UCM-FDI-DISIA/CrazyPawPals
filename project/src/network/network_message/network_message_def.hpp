@@ -231,27 +231,27 @@ inline network_message_player_connect create_player_connect_message(uint32_t id,
 
 //Struct sincronizar player
 struct network_message_player_update {
-    uint8_t player_id;
-    int16_t pos[2];
-    int16_t health;
-    uint8_t is_ghost;
+    uint32_t player_id_n;
+    int16_t pos_n[2];
+    int16_t health_n;
+    uint16_t is_ghost_n;
 };
 
 inline network_message_player_update create_player_update_message(const GameStructs::NetPlayerData& player) {
     network_message_player_update player_connet;
 
-    //uint8_t player id
-    player_connet.player_id = player.id;
+    //uint32_t player id
+    SDLNet_Write32(player.id, &player_connet.player_id_n);
 
     //Vector2D pos
-    SDLNet_Write32(player.pos.getX() * fact_float_int, &player_connet.pos[0]);
-    SDLNet_Write32(player.pos.getY() * fact_float_int, &player_connet.pos[1]);
+    SDLNet_Write16(player.pos.getX() * fact_float_int, &player_connet.pos_n[0]);
+    SDLNet_Write16(player.pos.getY() * fact_float_int, &player_connet.pos_n[1]);
 
     //int health
-    SDLNet_Write16(player.health, &player_connet.health);
+    SDLNet_Write16(player.health, &player_connet.health_n);
 
     //bool is_ghost
-    player_connet.is_ghost = static_cast<uint8_t>(player.is_ghost);
+    SDLNet_Write16(player.is_ghost, &player_connet.is_ghost_n);
 
     return player_connet;
 }
