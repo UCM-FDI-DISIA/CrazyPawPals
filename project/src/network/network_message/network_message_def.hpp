@@ -10,7 +10,7 @@
 #include "../../game/GameStructs.h"
 #include "../src/our_scripts/components/WaveManager.h"
 
-int const fact_float_int = 1024;
+static int const fact_float_int = 1024;
 enum network_message_type
 {
     network_message_type_none = 0,
@@ -233,7 +233,7 @@ inline network_message_player_connect create_player_connect_message(uint32_t id,
 struct network_message_player_update {
     uint32_t player_id_n;
     int16_t pos_n[2];
-    int16_t health_n;
+    uint16_t health_n;
     uint16_t is_ghost_n;
 };
 

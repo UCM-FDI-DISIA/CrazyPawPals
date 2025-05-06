@@ -178,7 +178,7 @@ void GameScene::initScene()
 	auto &&manager = *Game::Instance()->get_mngr();
 	auto player = manager.getHandler(ecs::hdlr::PLAYER);
 	manager.addComponent<MythicComponent>(player);
-	if (!Game::Instance()->is_network_none())manager.addComponent<PlayerSynchronize>(player);
+	if (!Game::Instance()->is_network_none())manager.addComponent<PlayerSynchronize>(player, Game::Instance()->get_local_player_id());
 
 	manager.refresh();
 	// spawn_sarno_rata(Vector2D{5.0f, 0.0f});
@@ -1380,7 +1380,32 @@ void GameScene::host_handle_menssage(network_context& ctx)
 				const uint16_t type_h{ SDLNet_Read16(&type_n) };
 				switch (type_h) {
 				case network_message_type_player_update: {
-					///auto message = network_message_dynamic_pack_into<network_message_player_update>(std::move(dyn_message));
+					auto message = network_message_dynamic_pack_into<network_message_player_update>(std::move(dyn_message));
+					auto&& payload = message->payload.content;
+
+					GameStructs::NetPlayerData playerData;
+					playerData.id = SDLNet_Read32(&payload.player_id_n);
+					playerData.health = SDLNet_Read16(&payload.health_n);
+					playerData.is_ghost = SDLNet_Read16(&payload.is_ghost_n);
+					playerData.pos.setX(static_cast<int16_t>(SDLNet_Read16(&payload.pos_n[0])) / static_cast<float>(fact_float_int));
+					playerData.pos.setY(static_cast<int16_t>(SDLNet_Read16(&payload.pos_n[1])) / static_cast<float>(fact_float_int));
+
+					auto player = Game::Instance()->get_network_player(playerData.id);
+					Game::Instance()->get_mngr()->getComponent<PlayerSynchronize>(player)->updatePlayer(playerData);
+
+					std::cout << "Player con id " << std::to_string(playerData.id) << "actualizado con isGhost" << std::to_string(playerData.is_ghost) << std::endl;
+
+					auto player_update_msg = create_player_update_message(playerData);
+
+					for (network_connection_size i = 0; i < ctx.profile.host.sockets_to_clients.connection_count; ++i) {
+						TCPsocket& client = ctx.profile.host.sockets_to_clients.connections[i];
+
+						if (client != connection) {
+							network_message_pack_send(
+								client,
+								network_message_pack_create(network_message_type_player_update, player));
+						}
+					}
 					break;
 				}
 				default: {
@@ -1398,11 +1423,25 @@ void GameScene::client_handle_menssage(network_context& ctx)
 	int active_sockets = SDLNet_CheckSockets(ctx.profile.client.client_set, 0);
 	if (active_sockets > 0 && SDLNet_SocketReady(ctx.profile.client.socket_to_host)) {
 
-		auto msg = network_message_dynamic_pack_receive(ctx.profile.client.socket_to_host);
-		const uint16_t type_n{ msg->header.type_n };
+		auto dyn_message = network_message_dynamic_pack_receive(ctx.profile.client.socket_to_host);
+		const uint16_t type_n{ dyn_message->header.type_n };
 		const uint16_t type_h{ SDLNet_Read16(&type_n) };
 		switch (type_h) {
 		case network_message_type_player_update: {
+			auto message = network_message_dynamic_pack_into<network_message_player_update>(std::move(dyn_message));
+			auto&& payload = message->payload.content;
+
+			//GameStructs::NetPlayerData playerData;
+			//playerData.id = SDLNet_Read32(&payload.player_id_n);
+			//playerData.health = SDLNet_Read16(&payload.health_n);
+			//playerData.is_ghost = SDLNet_Read16(&payload.is_ghost_n);
+			//playerData.pos.setX(SDLNet_Read16(&payload.pos_n[0]));
+			//playerData.pos.setY(SDLNet_Read16(&payload.pos_n[1]));
+
+			//auto player = Game::Instance()->get_network_player(playerData.id);
+			//Game::Instance()->get_mngr()->getComponent<PlayerSynchronize>(player)->updatePlayer(playerData);
+
+			//std::cout << "Player con id " << std::to_string(playerData.id) << "actualizado con isGhost" << std::to_string(playerData.is_ghost) << std::endl;
 
 			break;
 		}
@@ -1411,10 +1450,6 @@ void GameScene::client_handle_menssage(network_context& ctx)
 		}
 		}
 	}
-}
-
-void GameScene::update_player(const network_message_player_update& msg)
-{
 }
 
 bool GameScene::change_player_tex(uint32_t playerId, const std::string& key_name)
@@ -1447,7 +1482,8 @@ ecs::entity_t  GameScene::create_dumb_player(ecs::sceneId_t scene, uint32_t play
 			sdlutils().images().at(tex_name),
 			player_transform, tex_name),
 		new render_ordering{1},
-		new Health(100, true));
+		new Health(100, true),
+		new PlayerSynchronize(playerId));
 
 
 	Game::Instance()->add_network_player(playerId, player);

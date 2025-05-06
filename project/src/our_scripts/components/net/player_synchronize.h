@@ -7,7 +7,7 @@ class PlayerSynchronize :public ecs::Component
 {
 public:
 	__CMPID_DECL__(ecs::cmp::SYNCHRONIZE);
-	PlayerSynchronize();
+	PlayerSynchronize(uint32_t _player_id);
 	~PlayerSynchronize();
 	void initComponent() override;
 	void update(uint32_t delta_time) override;
@@ -15,7 +15,7 @@ public:
 
 protected:
 	void sendPlayerUpdate();
-	uint8_t _player_id;
+	uint32_t _player_id;
 	Transform* _tr;
 	Health* _health;
 	std::string _tex_name;

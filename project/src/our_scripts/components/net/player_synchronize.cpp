@@ -9,27 +9,29 @@
 #include "../rendering/dyn_image_with_frames.hpp"
 #include "../../../network/network_message.hpp"
 
-PlayerSynchronize::PlayerSynchronize()
-    : _player_id(0), _tr(nullptr), _health(nullptr), _is_ghost(false) {};
+PlayerSynchronize::PlayerSynchronize(uint32_t _player_id)
+    : _player_id(_player_id), _tr(nullptr), _health(nullptr), _is_ghost(false) {};
 
 PlayerSynchronize::~PlayerSynchronize() {};
 
 void PlayerSynchronize::initComponent() {
     auto&& mngr = Game::Instance()->get_mngr();
     _tr = mngr->getComponent<Transform>(_ent);
+    assert(_tr != nullptr);
+
     _health = mngr->getComponent<Health>(_ent);
+    assert(_health != nullptr);
 
     if (mngr->hasComponent<dyn_image_with_frames>(_ent)) {
         _tex_name = mngr->getComponent<dyn_image_with_frames>(_ent)->texture_name;
     }
-    _is_ghost = mngr->hasComponent<GhostStateComponent>(_ent);
-
     _is_local_player = (_ent == Game::Instance()->get_mngr()->getHandler(ecs::hdlr::PLAYER));
 }
 
 void PlayerSynchronize::update(uint32_t delta_time) {
     (void)delta_time;
     if (_is_local_player) {
+        _is_ghost = Game::Instance()->get_mngr()->hasComponent<GhostStateComponent>(_ent);
         sendPlayerUpdate();
     }
 }
@@ -55,12 +57,7 @@ void PlayerSynchronize::sendPlayerUpdate()
 }
 
 void PlayerSynchronize::updatePlayer(GameStructs::NetPlayerData& data) {
-    if (_tr != nullptr) {
-
-        _tr->setPos(data.pos);
-    }
-    if (_health != nullptr) {
-        _health->setHeatlh(data.health);
-    }
+    _tr->setPos(data.pos);
+    _health->setHeatlh(data.health);
     _is_ghost = data.is_ghost;
 }

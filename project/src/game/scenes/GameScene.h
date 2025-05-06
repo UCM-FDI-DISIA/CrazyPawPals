@@ -20,7 +20,6 @@ class GameScene : public event_system::event_receiver, public Scene
 	void host_handle_menssage(network_context& ctx);
 	void client_handle_menssage(network_context& ctx);
 
-	void update_player(const network_message_player_update& msg);
 	bool change_player_tex(uint32_t playerId, const std::string& key_name);
 
 public:
