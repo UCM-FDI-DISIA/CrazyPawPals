@@ -43,6 +43,7 @@ void PlayerHUD::render()
 #pragma region health
 	int health = _health->getHealth();
 	int max_health = _health->getMaxHealth();
+	int shield = _health->getShield();
 	static constexpr float health_scale = 0.0015;
 
 	//bg
@@ -66,6 +67,17 @@ void PlayerHUD::render()
 		int(health2.size.y)
 	};
 	SDL_RenderFillRect(sdlutils().renderer(), &health2true);
+
+	//shield (overlaps health)
+	SDL_SetRenderDrawColor(sdlutils().renderer(), 190, 210, 255, 125);
+	rect_f32 shieldrect = rect_f32_screen_rect_from_viewport(rect_f32({ 0.13,0.815 }, { shield * health_scale,0.04 }), _camera->cam.screen);
+	SDL_Rect shieldrecttrue{
+		int(shieldrect.position.x),
+		int(shieldrect.position.y),
+		int(shieldrect.size.x),
+		int(shieldrect.size.y)
+	};
+	SDL_RenderFillRect(sdlutils().renderer(), &shieldrecttrue);
 
 #pragma endregion
 

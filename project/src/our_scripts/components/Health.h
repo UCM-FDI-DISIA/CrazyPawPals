@@ -16,6 +16,7 @@ public:
 	void setMaxHeatlh(int h);
 	void resetCurrentHeatlh();
 	int getHealth() const;
+	int getShield() const;
 	void takeShield(int s);
 	void payHealth(int cost);
 	void update(uint32_t delta_time) override;

@@ -99,6 +99,10 @@ void Health::resetCurrentHeatlh()
 }
 int
 Health::getHealth() const { return _currentHealth; }
+int Health::getShield() const
+{
+	return _shield;
+}
 void 
 Health::takeShield(int shield) {
 	_shield = shield;
