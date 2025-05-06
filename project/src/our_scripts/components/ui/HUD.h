@@ -1,4 +1,4 @@
-#pragma once
+
 #pragma once
 #include "../../../utils/checkML.h"
 #include "../../../ecs/Component.h"

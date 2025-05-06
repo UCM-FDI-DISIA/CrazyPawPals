@@ -1,5 +1,5 @@
-﻿#include "Health.h"
-#include "../../utils/checkML.h"
+﻿#include "../../utils/checkML.h"
+#include "Health.h"
 #include "../../sdlutils/SDLUtils.h"
 #include "../../ecs/Manager.h"
 #include "../../game/Game.h"

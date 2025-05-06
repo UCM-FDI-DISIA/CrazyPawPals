@@ -268,7 +268,12 @@ void Deck::set_primed(bool prime)
 CardList& Deck::move_discard_to_draw(bool menu) {
 	_discard_pile.move_from_this_to(_draw_pile);
 	if (menu) {
-		std::erase_if(_draw_pile.card_list(), [](Card* c) { return c->get_discard_destination() == DESTROY; });
+		std::erase_if(_draw_pile.card_list(), [](Card* c) { 
+			if (c->get_discard_destination() == DESTROY) { 
+				delete c; return true;
+			} 
+			return false; 
+		});
 		if (_hand != nullptr) {
 			if (_hand->get_discard_destination() == DESTROY)
 				delete _hand;
