@@ -1,7 +1,7 @@
 #ifndef RECT_COMPONENT_HPP
 #define RECT_COMPONENT_HPP
 
-#include "../../../utils/checkML.h"
+
 #include "../../../ecs/Component.h"
 #include "../../../rendering/rect.hpp"
 

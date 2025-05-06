@@ -1,5 +1,5 @@
 #pragma once
-#include "../../../utils/checkML.h"
+
 #include "../../ecs/Component.h"
 
 class BulletData :public ecs::Component

@@ -1,6 +1,6 @@
 #ifndef CAMERA_COMPONENT_HPP
 #define CAMERA_COMPONENT_HPP
-#include "../../../utils/checkML.h"
+
 
 #include "../../../ecs/Component.h"
 #include "../../../utils/Vector2D.h"

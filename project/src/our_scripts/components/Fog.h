@@ -1,5 +1,5 @@
 #pragma once
-#include "../../utils/checkML.h"
+
 #include "../../ecs/Component.h"
 #include "../../sdlutils/SDLUtils.h"
 #include <SDL.h> // Add this include to resolve the incomplete type error

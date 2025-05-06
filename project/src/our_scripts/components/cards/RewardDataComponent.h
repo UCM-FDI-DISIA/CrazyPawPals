@@ -1,8 +1,8 @@
 #pragma once
-#include "../../../utils/checkML.h"
+
 #include "../../../ecs/Component.h"
 #include "../../../game/GameStructs.h"
-#include "../../../utils/checkML.h"
+
 #include <string>
 
 struct RewardDataComponent : public ecs::Component{
