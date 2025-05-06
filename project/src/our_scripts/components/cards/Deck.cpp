@@ -7,6 +7,9 @@
 #include "../../../rendering/card_rendering.hpp"
 
 #include "../../card_system/PlayableCards.hpp"
+#ifdef GENERATE_LOG
+#include "../../log_writer_to_csv.hpp"
+#endif
 #include <algorithm>
 
 
@@ -75,6 +78,9 @@ bool Deck::use_card(const Vector2D* target_pos) noexcept
 			break;
 		}
 		_put_new_card_on_hand();
+
+		sdlutils().soundEffects().at("card_play").play();
+
 		return true;
 	}
 	else {
@@ -121,6 +127,9 @@ std::pair<bool, Card*> Deck::mill() noexcept
 		}
 		_av._last_milled_card_time = sdlutils().virtualTimer().currTime();
 		Game::Instance()->get_event_mngr()->fire_event(event_system::mill, mill_msg);
+
+		sdlutils().soundEffects().at("card_mill").play();
+
 	}
 	return std::make_pair(milled, _last_milled_card);
 }
@@ -128,6 +137,14 @@ std::pair<bool, Card*> Deck::mill() noexcept
 void Deck::reload() noexcept
 {
 	if (!_is_reloading) {
+#ifdef GENERATE_LOG
+		if (empty_hand())
+			log_writer_to_csv::Instance()->add_new_log("RELOAD STARTED", "AUTOMATIC RELOAD");
+		else {
+			log_writer_to_csv::Instance()->add_new_log("RELOAD STARTED", "MANUAL RELOAD", "CARDS LEFT", _draw_pile.card_list().size()+1, "CARD ON HAND", _hand->get_name());
+		}
+		times_reloaded++;
+#endif
 		//TODO -> block player action
 		_is_reloading = true;
 		_time_till_reload_finishes = _reload_time;
@@ -145,6 +162,9 @@ void Deck::reload() noexcept
 				_discard_pile.add_card(c);
 			}
 		}
+
+		sdlutils().soundEffects().at("shuffle").play();
+
 		_primed = false;
 	}
 }
@@ -266,4 +286,8 @@ std::ostream& operator<<(std::ostream& os, const Deck& deck)
 	os<<std::endl;
 	
 	return os;
+}
+int
+Deck::get_total_cards_num() {
+	return (_draw_pile.card_list().size() + _discard_pile.card_list().size() + !empty_hand()); 
 }

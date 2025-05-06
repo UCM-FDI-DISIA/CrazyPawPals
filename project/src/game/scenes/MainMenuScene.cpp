@@ -9,12 +9,26 @@
 #include "../../sdlutils/InputHandler.h"
 #include "../../ecs/Entity.h"
 #include "../../sdlutils/Texture.h"
+#include "../../utils/checkML.h"
+#ifdef GENERATE_LOG
+#include "../../our_scripts/log_writer_to_csv.hpp"
+#endif
 
 MainMenuScene::MainMenuScene() : Scene(ecs::scene::MAINMENUSCENE)
 {
+}
+
+MainMenuScene::~MainMenuScene()
+{
+
+}
+
+void 
+MainMenuScene::initScene()
+{
     create_static_background(&sdlutils().images().at("background"));
 
-    GameStructs::ButtonProperties buttonPropTemplate = { 
+    GameStructs::ButtonProperties buttonPropTemplate = {
         { {0.35f, 0.32f},{0.30f, 0.25f} },
         0.0f, ""
     };
@@ -37,27 +51,24 @@ MainMenuScene::MainMenuScene() : Scene(ecs::scene::MAINMENUSCENE)
     create_exit_button(exitB);
 }
 
-MainMenuScene::~MainMenuScene()
-{
-
-}
-
-void 
-MainMenuScene::initScene()
-{
-
-}
-
 void 
 MainMenuScene::enterScene()
 {
     Game::Instance()->get_mngr()->change_ent_scene(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA), ecs::scene::MAINMENUSCENE);
+    sdlutils().musics().at("main_menu_bgm").play();
+#ifdef GENERATE_LOG
+    log_writer_to_csv::Instance()->add_new_log();
+    log_writer_to_csv::Instance()->add_new_log("ENTERED MAIN MENU SCENE");
+#endif
 }
 
 void 
 MainMenuScene::exitScene()
 {
-
+#ifdef GENERATE_LOG
+    log_writer_to_csv::Instance()->add_new_log("EXIT MAIN MENU SCENE");
+    log_writer_to_csv::Instance()->add_new_log();
+#endif
 }
 
 void 
@@ -84,6 +95,7 @@ MainMenuScene::create_start_button(const GameStructs::ButtonProperties& bp) {
     buttonComp->connectHover([buttonComp, imgComp]() {
         imgComp->_filter = true;
         imgComp->swap_textures();
+        sdlutils().soundEffects().at("button_hover").play();
     });
 
     buttonComp->connectExit([buttonComp, imgComp]() {
@@ -111,11 +123,12 @@ MainMenuScene::create_controls_button(const GameStructs::ButtonProperties& bp)
         imgComp->_filter = false;
         imgComp->swap_textures();
         imgComp->_filter = false;
-        Game::Instance()->change_Scene(Game::CONTROLSSCENE);
+        Game::Instance()->change_Scene(Game::TUTORIAL);
     });
 
     buttonComp->connectHover([buttonComp, imgComp]() {
         imgComp->_filter = true;
+        sdlutils().soundEffects().at("button_hover").play();
         imgComp->swap_textures();
 
     });
@@ -150,6 +163,8 @@ MainMenuScene::create_exit_button(const GameStructs::ButtonProperties& bp)
 
     buttonComp->connectHover([buttonComp, imgComp]() {
         imgComp->_filter = true;
+        auto sfx = &sdlutils().soundEffects().at("button_hover");
+        sfx->play();
         imgComp->swap_textures();
     });
     

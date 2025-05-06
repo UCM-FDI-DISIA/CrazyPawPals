@@ -10,7 +10,8 @@ public:
     RewardDataComponent(const std::string& s);
     virtual ~RewardDataComponent();
     void set_data(const std::string& s, GameStructs::CardType ct);
-    const GameStructs::CardType& CT() { return _ct; };
+    inline const GameStructs::CardType& CT() { return _ct; };
+    inline const std::string& sprite() { return _data; };
 protected:
     GameStructs::CardType _ct;
     std::string _data;

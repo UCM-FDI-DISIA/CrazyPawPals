@@ -1,5 +1,6 @@
 #include "../../ecs/Component.h"
 #include "../../ecs/ecs.h"
+#include "../../utils/checkML.h"
 #include <bitset>
 class id_component : public ecs::Component {
 private:

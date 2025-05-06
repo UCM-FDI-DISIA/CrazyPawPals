@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include "../../game/GameStructs.h"
+#include "../../utils/checkML.h"
 #include "../../ecs/ecs.h"
 #include "../../game/Game.h"
 #include "../../game/scenes/GameScene.h"
@@ -23,9 +24,8 @@ namespace patrons {
 				initialRot.getX() * sin(angleOffset) + initialRot.getY() * cos(angleOffset)
 			);
 			bp.dir = rotatedDir;
-			//bp.rot = atan2(rotatedDir.getY(), rotatedDir.getX()) * 180.0f / M_PI;
 
-			static_cast<GameScene*>(Game::Instance()->get_currentScene())->generate_proyectile(bp, gId);
+			Game::Instance()->get_currentScene()->create_proyectile(bp, gId);
 		}
 	}
 }

@@ -4,6 +4,7 @@
 #include <list>
 #include <unordered_set>
 #include <utility>
+#include "../../utils/checkML.h"
 
 class Button;
 class Card;
@@ -17,6 +18,8 @@ public:
 	void enterScene() override;
 	void exitScene() override;
 	void update(uint32_t delta_time) override;
+	static void will_have_mythic(bool state) { 
+		_mythic = state; };
 private:
     ecs::entity_t create_card_button(const GameStructs::CardButtonProperties& bp);
 	//methods to show your actual deck info
@@ -36,10 +39,11 @@ private:
 	bool _selected;
 	bool _activate_confirm_button; //to add cards to deck
 	bool _activate_exchange_button; //to exchange cards from deck
+	bool _special_case; //when we only activate exchange
 	ecs::entity_t _chosen_card;
 	bool _exchange;
 
-
+	static bool _mythic;
 	//method to select a card randomly
 	std::string select_card(GameStructs::CardType ct);
 	std::pair<std::string, GameStructs::CardType> get_unique_card(std::unordered_set<std::string>& appeared_cards);
@@ -50,12 +54,9 @@ private:
 	void create_reward_buttons();
 	void refresh_rewards();
 
-	//method to create next round button
-	void create_next_round_button();
 
 	//method to change the position between health button and a card button
 	void change_pos(bool enter);
-	void resize(ImageForButton* im, float factor);
 
 	//method to create button to select card
 	void create_reward_selected_button(const GameStructs::ButtonProperties& bp);
@@ -69,4 +70,7 @@ private:
 
 	void add_new_reward_card();
 	void create_next_round_button(const GameStructs::ButtonProperties& bp);
+
+	//method to create a reward info (shown when hover)
+	void create_reward_info();
 };

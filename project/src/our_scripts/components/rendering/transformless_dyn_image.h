@@ -57,8 +57,11 @@ struct transformless_dyn_image : public ecs::Component {
 	}
 	inline void set_texture(Texture* t) { texture = t; };
 
-	void set_active(bool v) {
+	inline void set_active(bool v) {
 		active = v;
 	}
 
+	inline void resize(float value) { 
+		destination_rect.size = { destination_rect.size.x * value, destination_rect.size.y * value };
+	};
 };

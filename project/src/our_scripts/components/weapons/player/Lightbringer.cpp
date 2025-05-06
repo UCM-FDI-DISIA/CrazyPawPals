@@ -46,5 +46,5 @@ void Lightbringer::callback(Vector2D shootPos, Vector2D shootDir)
 	bp.collision_filter = GameStructs::collide_with::enemy;
 	bp.weapon_type = GameStructs::LIGHTBRINGER;
 
-	static_cast<GameScene*>(Game::Instance()->get_currentScene())->generate_proyectile(bp, ecs::grp::BULLET);
+	Game::Instance()->get_currentScene()->create_proyectile(bp, ecs::grp::BULLET);
 }

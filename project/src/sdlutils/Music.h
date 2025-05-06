@@ -1,4 +1,3 @@
-// This file is part of the course TPV2@UCM - Samir Genaim
 
 #pragma once
 
@@ -14,7 +13,12 @@ public:
 
 	Music(const std::string &fileName) {
 		_music = Mix_LoadMUS(fileName.c_str());
-		assert(_music != nullptr);
+		/*assert(_music != nullptr);*/
+		if (_music == nullptr) {
+			std::cerr << "Error cargando m�sica (" << fileName << "): " << Mix_GetError() << std::endl;
+			assert(false); // Forzar el fallo con m�s contexto
+		}
+
 	}
 
 	Music(Music &&other) noexcept {

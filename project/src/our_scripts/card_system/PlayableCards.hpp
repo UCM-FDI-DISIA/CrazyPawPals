@@ -1,4 +1,5 @@
 #include "Card.hpp"
+#include "../../utils/checkML.h"
 class MovementController;
 
 class Fireball : public Card /*, public event_system::event_receiver*/ {
@@ -40,8 +41,8 @@ private:
 	bool _playing;
 	int _time_since_played;
 	int _number_of_bullets_shot = 0;
-	int _number_of_shots = 3;
-	int _shooting_duration = 500;
+	int _number_of_shots = 10;
+	int _shooting_duration = 1500;
 };
 
 // Archetypes: Mill
@@ -102,6 +103,23 @@ private:
 	int _shooting_duration = 500;
 };
 
+class CatKuzaCard : public Card {
+public:
+	CatKuzaCard();
+	void on_play(Deck& d, const Vector2D* player_position, const Vector2D* target_position) override;
+
+private:
+	int _times_since_played;
+};
+
+class SuperMichiCard : public Card {
+public:
+	SuperMichiCard();
+	void on_play(Deck& d, const Vector2D* player_position, const Vector2D* target_position) override;
+private:
+	int _times_since_played;
+};
+
 class QuickFeet : public Card {
 public:
 	QuickFeet();
@@ -113,7 +131,6 @@ private:
 	int _effect_duration = 1000;
 	MovementController* _ctrl;
 };
-
 
 // The following cards exist for testing purposes and may not be playable in the finished product. These are subject to change.
 #pragma region TestCards

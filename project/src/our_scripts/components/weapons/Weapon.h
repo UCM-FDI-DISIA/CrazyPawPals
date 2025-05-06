@@ -31,8 +31,10 @@ public:
 	//not neccesary (50x50 as default value)
 	void set_attack_size(float w, float h);
 	bool shoot(const Vector2D& target);
+	bool shoot(float shootDirectionX, float shootDirectionY);
 	inline int damage() { return _damage; };
 	inline void set_damage(int damage) { _damage = damage; };
 	inline float cooldown() { return _cooldown; };
+	inline void set_cooldown(float cooldown) { _cooldown = cooldown; };
 	inline float distance() { return _distance; };
 };

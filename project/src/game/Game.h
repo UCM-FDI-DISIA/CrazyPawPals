@@ -13,16 +13,20 @@ class Game: public Singleton<Game>  {
 public:
 	enum State {
 		MAINMENU,
-		CONTROLSSCENE,
 		SELECTIONMENU,
 		GAMESCENE,
 		REWARDSCENE,
+		MYTHICSCENE,
+		UPGRADESCENE,
 		GAMEOVER,
+		VICTORY,
+		TUTORIAL,
 		NUM_SCENE,
 	};
 	friend Singleton<Game>;
 	virtual ~Game();
 	bool init();
+	void initGame();
 	void start();
 
 	ecs::Manager* get_mngr();
@@ -41,7 +45,10 @@ public:
 private:
 	int _current_scene_index = -1;
 	std::vector<Scene*> _scenes;
+	std::vector<bool> _scene_inits;
 	std::pair<int, int> _screen_size = std::make_pair(960,540);
 	Game();
 	ecs::Manager* _mngr;
+	void set_volumes();
+	void create_camera();
 };

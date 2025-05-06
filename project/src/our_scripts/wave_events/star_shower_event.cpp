@@ -205,7 +205,7 @@ void star_shower_event::update(unsigned int delta_time) {
 
         seconds_f32 delta_time_seconds = seconds_f32{float(delta_time) / 1000.0f};
         auto &&manager = *Game::Instance()->get_mngr();
-        for (ptrdiff_t i = drop_count - 1; i >= 0; --i) {
+        for (ptrdiff_t i = drop_count - 1; i >= 0 && drop_count==star_drops.size(); --i) {
             auto &&star_drop = star_drops[i];            
             if (star_drop.remaining_fall_time <= 0.0f) {
                 star_shower_event_on_impact(star_drop, manager, delta_time_seconds);

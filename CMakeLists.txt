@@ -4,6 +4,10 @@ enable_language(CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+ add_definitions(-D_CRTDBG_MAP_ALLOC)
+ endif()
+
 if (MSVC)
     add_compile_options(
         /W4
@@ -71,12 +75,13 @@ project(CrazyPawPals)
         ${PROJECT_NAME}
         ${CrazyPawPals_SRC_DIRECTORY}/main.cpp
         ${CrazyPawPals_SOURCES}
-     "project/src/our_scripts/components/ui/HUD.cpp" "project/src/our_scripts/components/ui/HUD.h")
+     "project/src/our_scripts/components/ui/HUD.cpp" "project/src/our_scripts/components/ui/HUD.h" "project/src/our_scripts/components/ui/DamagePopup.h" "project/src/our_scripts/components/ui/DamagePopup.cpp")
     target_compile_options(
         ${PROJECT_NAME}
         PRIVATE
         -D RIGIDBODY_COMPONENT_DEGEN_RESTITUTION_OFF
         -DDBG_COLLISIONS=false
+        #-DGENERATE_LOG
     )
     
     target_include_directories(

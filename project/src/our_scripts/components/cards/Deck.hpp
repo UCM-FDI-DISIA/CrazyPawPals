@@ -95,4 +95,9 @@ public:
 	inline std::list<Card*>& get_draw_pile() { return _draw_pile.card_list(); }
 	inline Card* last_milled_card() { return _last_milled_card; }
 	inline AnimationVars animation_vars() { return _av; } 
+	int get_total_cards_num();
+
+#ifdef GENERATE_LOG
+	uint8_t times_reloaded = 0;
+#endif // 
 };

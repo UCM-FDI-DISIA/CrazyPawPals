@@ -8,7 +8,7 @@
 
 using namespace ecs;
 
-Button::Button(): _current_state(EMPTY) {
+Button::Button(): _current_state(EMPTY),_previous_state() {
 }
 
 Button::~Button() {}
@@ -97,6 +97,10 @@ void Button::emitExit() const {
     }
 }
 
-CardButton::CardButton() : Button(), it(nullptr) {
+CardButton::CardButton() : Button(), it(nullptr), name() {
+
+}
+
+MythicButton::MythicButton() : Button(), it(nullptr), name() {
 
 }

@@ -1,12 +1,43 @@
 {
 
-  "fonts" : [
-    { "id" : "ARIAL16", "file" : "resources/fonts/ARIAL.ttf", "size": 16 },
-    { "id": "ARIAL24", "file": "resources/fonts/ARIAL.ttf", "size": 24 },
-    { "id": "PROTEST_GUERRILLA100", "file": "resources/fonts/ProtestGuerrilla-Regular.ttf", "size": 100}
+  "fonts": [
+    {
+      "id": "ARIAL16",
+      "file": "resources/fonts/ARIAL.ttf",
+      "size": 16
+    },
+    {
+      "id": "ARIAL24",
+      "file": "resources/fonts/ARIAL.ttf",
+      "size": 24
+    },
+    {
+      "id": "PROTEST_GUERRILLA100",
+      "file": "resources/fonts/ProtestGuerrilla-Regular.ttf",
+      "size": 100
+    },
+    {
+      "id": "ALFA_SLAB",
+      "file": "resources/fonts/AlfaSlabOne-Regular.ttf",
+      "size": 200
+    },
+    {
+      "id": "RUBIK_MONO",
+      "file": "resources/fonts/RubikMonoOne-Regular.ttf",
+      "size": 200
+    },
+    {
+      "id": "CAL_SANS",
+      "file": "resources/fonts/CalSans-Regular.ttf",
+      "size": 200
+    }
   ],
 
   "images": [
+    {
+      "id": "reticle",
+      "file": "resources/images/ui/reticle.png"
+    },
     {
       "id": "mimi",
       "file": "resources/images/characters/mimi.png"
@@ -80,6 +111,14 @@
       "file": "resources/images/projectiles/p_super_michi_mafioso.png"
     },
     {
+      "id": "p_super_michi_mafioso_attack2",
+      "file": "resources/images/projectiles/p_super_michi_attack2.png"
+    },
+    {
+      "id": "p_wind_catkuza",
+      "file": "resources/images/projectiles/catkuza_wind.png"
+    },
+    {
       "id": "attack_warning",
       "file": "resources/images/projectiles/attack_warning.png"
     },
@@ -90,6 +129,14 @@
     {
       "id": "card_kunai",
       "file": "resources/images/cards/card_kunai.png"
+    },
+    {
+      "id": "card_catkuza",
+      "file": "resources/images/cards/card_catkuza.png"
+    },
+    {
+      "id": "card_super_michi",
+      "file": "resources/images/cards/card_super_michi.png"
     },
     {
       "id": "card",
@@ -156,8 +203,16 @@
       "file": "resources/images/enemies/boom.png"
     },
     {
+      "id": "rey_basurero",
+      "file": "resources/images/enemies/rey_basurero.png"
+    },
+    {
+      "id": "basurero",
+      "file": "resources/images/enemies/basurero.png"
+    },
+    {
       "id": "catkuza",
-      "file": "resources/images/enemies/catkuza_shadow.png"
+      "file": "resources/images/enemies/catkuza.png"
     },
     {
       "id": "sarno_rata",
@@ -360,8 +415,16 @@
       "file": "resources/images/ui/infos/card_minigun_info.png"
     },
     {
+      "id": "p_minigun",
+      "file": "resources/images/projectiles/p_minigun.png"
+    },
+    {
       "id": "card_cardSpray_info",
       "file": "resources/images/ui/infos/card_spray_info.png"
+    },
+    {
+      "id": "card_catkuza_info",
+      "file": "resources/images/ui/infos/card_catkuza_info.png"
     },
     {
       "id": "card_lighting_info",
@@ -381,7 +444,7 @@
     },
     {
       "id": "card_fulgur_info",
-      "file": "resources/images/ui/infos/card_commune_info.png"
+      "file": "resources/images/ui/infos/card_fulgur_info.png"
     },
     {
       "id": "card_quickFeet_info",
@@ -421,8 +484,16 @@
       "file": "resources/images/ui/buttons/exit_selected.png"
     },
     {
+      "id": "exit",
+      "file": "resources/images/ui/buttons/exit.png"
+    },
+    {
       "id": "reward_health",
       "file": "resources/images/ui/rewards/reward_health.png"
+    },
+    {
+      "id": "reward_health_info",
+      "file": "resources/images/ui/infos/reward_health_info.png"
     },
     {
       "id": "reward_selected",
@@ -433,54 +504,276 @@
       "file": "resources/images/ui/buttons/confirm_reward.png"
     },
     {
+      "id": "confirm_reward_selected",
+      "file": "resources/images/ui/buttons/confirm_reward_selected.png"
+    },
+    {
       "id": "exchange_reward",
       "file": "resources/images/ui/buttons/exchange_reward.png"
+    },
+    {
+      "id": "exchange_reward_selected",
+      "file": "resources/images/ui/buttons/exchange_reward_selected.png"
     },
     {
       "id": "game_over",
       "file": "resources/images/enviroment/game_over.png"
     },
     {
+      "id": "victory",
+      "file": "resources/images/enviroment/victory.png"
+    },
+    {
       "id": "back",
       "file": "resources/images/ui/buttons/back.png"
+    },
+    {
+      "id": "back_selected",
+      "file": "resources/images/ui/buttons/back_selected.png"
     },
     {
       "id": "new_round",
       "file": "resources/images/ui/buttons/start.png"
     },
     {
+      "id": "new_round_selected",
+      "file": "resources/images/ui/buttons/start_selected.png"
+    },
+    {
+      "id": "next",
+      "file": "resources/images/ui/buttons/next.png"
+    },
+    {
+      "id": "next_selected",
+      "file": "resources/images/ui/buttons/next_selected.png"
+    },
+    {
       "id": "mythic",
       "file": "resources/images/ui/mythics/mythic.png"
     },
     {
-      "id": "m_blood_claw",
+      "id": "mythic_ambient",
+      "file": "resources/images/enviroment/mythic.png"
+    },
+    {
+      "id": "mythic_blood_claw",
       "file": "resources/images/ui/mythics/m_blood_claw.png"
     },
     {
-      "id": "m_curtain_reaper",
+      "id": "mythic_claw_file",
+      "file": "resources/images/ui/mythics/m_claw_file.png"
+    },
+    {
+      "id": "mythic_curtain_reaper",
       "file": "resources/images/ui/mythics/m_curtain_reaper.png"
     },
     {
-      "id": "m_blood_pact",
+      "id": "mythic_blood_pact",
       "file": "resources/images/ui/mythics/m_blood_pact.png"
+    },
+    {
+      "id": "mythic_incense",
+      "file": "resources/images/ui/mythics/m_incense.png"
+    },
+    {
+      "id": "mythic_quick_draw_deck",
+      "file": "resources/images/ui/mythics/m_quick_draw_deck.png"
+    },
+    {
+      "id": "mythic_dream_recicler",
+      "file": "resources/images/ui/mythics/m_dream_recicler.png"
+    },
+    {
+      "id": "mythic_uranium_socks",
+      "file": "resources/images/ui/mythics/m_uranium_socks.png"
+    },
+    {
+      "id": "mythic_zoomies_inducer",
+      "file": "resources/images/ui/mythics/m_zoomies_inducer.png"
+    },
+    {
+      "id": "mythic_demonic_scratcher",
+      "file": "resources/images/ui/mythics/m_demonic_scratcher.png"
+    },
+    {
+      "id": "mythic_blood_claw_info",
+      "file": "resources/images/ui/infos/mythic_blood_claw_info.png"
+    },
+    {
+      "id": "mythic_claw_file_info",
+      "file": "resources/images/ui/infos/mythic_claw_file_info.png"
+    },
+    {
+      "id": "mythic_curtain_reaper_info",
+      "file": "resources/images/ui/infos/mythic_curtain_reaper_info.png"
+    },
+    {
+      "id": "mythic_blood_pact_info",
+      "file": "resources/images/ui/infos/mythic_blood_pact_info.png"
+    },
+    {
+      "id": "mythic_incense_info",
+      "file": "resources/images/ui/infos/mythic_incense_info.png"
+    },
+    {
+      "id": "mythic_quick_draw_deck_info",
+      "file": "resources/images/ui/infos/mythic_quick_draw_deck_info.png"
+    },
+    {
+      "id": "mythic_dream_recicler_info",
+      "file": "resources/images/ui/infos/mythic_dream_recicler_info.png"
+    },
+    {
+      "id": "mythic_uranium_socks_info",
+      "file": "resources/images/ui/infos/mythic_uranium_socks_info.png"
+    },
+    {
+      "id": "mythic_zoomies_inducer_info",
+      "file": "resources/images/ui/infos/mythic_zoomies_inducer_info.png"
+    },
+    {
+      "id": "mythic_demonic_scratcher_info",
+      "file": "resources/images/ui/infos/mythic_demonic_scratcher_info.png"
     },
     {
       "id": "meteroid",
       "file": "resources/images/projectiles/meteroid.png"
+    },
+    {
+      "id": "popup_move",
+      "file": "resources/images/ui/tutorial/movimiento.png"
+    },
+    {
+      "id": "popup_attack",
+      "file": "resources/images/ui/tutorial/ataque.png"
+    },
+    {
+      "id": "popup_use_card",
+      "file": "resources/images/ui/tutorial/usar_carta.png"
+    },
+    {
+      "id": "popup_card",
+      "file": "resources/images/ui/tutorial/efecto_unico.png"
+    },
+    {
+      "id": "popup_reload",
+      "file": "resources/images/ui/tutorial/reload.png"
+    },
+    {
+      "id": "pop_up_player_hud",
+      "file": "resources/images/ui/tutorial/player_hud.png"
+    },
+    {
+      "id": "popup_enemy",
+      "file": "resources/images/ui/tutorial/enemy.png"
+    },
+    {
+      "id": "popup_oleada",
+      "file": "resources/images/ui/tutorial/oleada.png"
+    },
+    {
+      "id": "popup_objetos_miticos",
+      "file": "resources/images/ui/tutorial/objetos_miticos.png"
+    },
+    {
+      "id": "popup_recompensa",
+      "file": "resources/images/ui/tutorial/recompensa.png"
+    },
+    {
+      "id": "popup_ganar",
+      "file": "resources/images/ui/tutorial/ganar.png"
+    },
+    {
+      "id": "boton_mainmenu_tutorial",
+      "file": "resources/images/ui/tutorial/boton.png"
+    },
+    {
+      "id": "ready",
+      "file": "resources/images/ui/buttons/ready.png"
+    },
+    {
+      "id": "ready_selected",
+      "file": "resources/images/ui/buttons/ready_selected.png"
+    },
+    {
+      "id": "event_ice_skate",
+      "file": "resources/images/enviroment/icesCATe_event.png"
+    },
+    {
+      "id": "event_star_shower",
+      "file": "resources/images/enviroment/starFall_event.png"
+    },
+    {
+      "id": "event_paw_patrol",
+      "file": "resources/images/enviroment/pawPatrol_event.png"
     }
-
-  ], 
-  "messages" : [
-    { "id" : "start", "text" : "Press space to start", "font" : "ARIAL24", "color" : "0x441155ff"},
-    { "id" : "continue", "text" : "Press space to continue", "font" : "ARIAL24", "color" : "0x112233ff", "bg" : "0xffffffff" },
-    { "id": "gameover", "text": "Game Over", "font": "ARIAL24","color": "0x0000ffff"},
-    { "id": "life", "text": "Health: ", "font": "ARIAL24", "color": "000000ff"},
-    { "id": "choose_weapon", "text": "Choose your weapon", "font": "PROTEST_GUERRILLA100", "color": "0xfcacacff"}
   ],
-  
-  "sounds" : [
-    { "id" : "paddle_hit", "file" : "resources/sound/paddle_hit.wav" },
-    { "id" : "wall_hit", "file" : "resources/sound/wall_hit.wav" }
+  "messages": [
+    {
+      "id": "wave_completed",
+      "text": "WAVE COMPLETED NYA",
+      "font": "PROTEST_GUERRILLA100",
+      "color": "0xff4b0000"
+    }
+  ],
+  "musics": [
+    {
+      "id": "game_bgm",
+      "file": "resources/sound/cpp.mp3"
+    },
+    {
+      "id": "main_menu_bgm",
+      "file": "resources/sound/menu.mp3"
+    }
+  ],
+  "sounds": [
+    {
+      "id": "button_hover",
+      "file": "resources/sound/pointer_over.wav"
+    },
+    {
+      "id": "main_menu_button_pressed",
+      "file": "resources/sound/button_pressed.wav"
+    },
+    {
+      "id": "card_play",
+      "file": "resources/sound/card_play.wav"
+    },
+    {
+      "id": "card_mill",
+      "file": "resources/sound/card_mill.wav"
+    },
+    {
+      "id": "shuffle",
+      "file": "resources/sound/shuffle.wav"
+    },
+    {
+      "id": "round_start",
+      "file": "resources/sound/round_start.wav"
+    },
+    {
+      "id": "round_start_event",
+      "file": "resources/sound/round_start_event.wav"
+    },
+    {
+      "id": "player_shot",
+      "file": "resources/sound/player_shot.wav"
+    },
+    {
+      "id": "enemy_shot",
+      "file": "resources/sound/enemy_shot.wav"
+    },
+    {
+      "id": "squeak",
+      "file": "resources/sound/squeak.wav"
+    },
+    {
+      "id": "reward",
+      "file": "resources/sound/end_wave.wav"
+    },
+    {
+      "id": "game_over",
+      "file": "resources/sound/game_over.mp3"
+    }
   ]
-
 }

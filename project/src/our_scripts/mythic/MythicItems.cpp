@@ -4,7 +4,7 @@
 #include <iostream>
 
 #pragma region BloodClaw
-BloodClaw::BloodClaw() :MythicItem("BloodClaw", "m_blood_claw")
+BloodClaw::BloodClaw() :MythicItem("blood_claw", "mythic_blood_claw")
 {
 	auto manager = Game::Instance()->get_mngr();
 	_health = manager->getComponent<Health>(_player);
@@ -19,26 +19,26 @@ void BloodClaw::apply_effects() {
 #pragma endregion
 
 
-#pragma region ProfaneHotline
-ProfaneHotline::ProfaneHotline() :MythicItem("ProfaneHotline")
+#pragma region DreamRecicler
+DreamRecicler::DreamRecicler() :MythicItem("dream_recicler","mythic_dream_recicler")
 {
 	_mana = Game::Instance()->get_mngr()->getComponent<ManaComponent>(_player);
 	event_system::event_manager::Instance()->suscribe_to_event(event_system::mill, this, &event_system::event_receiver::event_callback0);
 }
 
-ProfaneHotline::~ProfaneHotline()
+DreamRecicler::~DreamRecicler()
 {
 	event_system::event_manager::Instance()->unsuscribe_to_event(event_system::mill, this, &event_system::event_receiver::event_callback0);
 }
 
 void 
-ProfaneHotline::event_callback0(const event_system::event_receiver::Msg& m) {
+DreamRecicler::event_callback0(const event_system::event_receiver::Msg& m) {
 	int newManaCount = _mana->mana_count() + m.int_value;
 	_mana->change_mana(newManaCount);
 }
 
 void 
-ProfaneHotline::apply_effects() {
+DreamRecicler::apply_effects() {
 	int m = _mana->mana_regen();
 	_mana->change_mana_regen(-(m/2));
 }
@@ -46,7 +46,7 @@ ProfaneHotline::apply_effects() {
 #pragma endregion
 
 #pragma region CurtainReaper
-CurtainReaper::CurtainReaper() :MythicItem("CurtainReaper", "m_curtain_reaper")
+CurtainReaper::CurtainReaper() :MythicItem("curtain_reaper", "mythic_curtain_reaper")
 {
 	_health = Game::Instance()->get_mngr()->getComponent<Health>(_player);
 	event_system::event_manager::Instance()->suscribe_to_event(event_system::enemy_dead, this, &event_system::event_receiver::event_callback0);
@@ -72,7 +72,7 @@ CurtainReaper::apply_effects() {
 #pragma endregion
 
 #pragma region Incense
-Incense::Incense() :MythicItem("Incense")
+Incense::Incense() :MythicItem("incense", "mythic_incense")
 {
 	auto manager = Game::Instance()->get_mngr();
 	_mana = manager->getComponent<ManaComponent>(_player);
@@ -89,7 +89,7 @@ Incense::apply_effects() {
 #pragma endregion
 
 #pragma region ArcaneSurge
-ArcaneSurge::ArcaneSurge() :MythicItem("ArcaneSurge"), _set(false)
+QuickDrawDeck::QuickDrawDeck() :MythicItem("quick_draw_deck", "mythic_quick_draw_deck"), _set(false)
 {
 	auto manager = Game::Instance()->get_mngr();
 	_mana = manager->getComponent<ManaComponent>(_player);
@@ -98,11 +98,11 @@ ArcaneSurge::ArcaneSurge() :MythicItem("ArcaneSurge"), _set(false)
 }
 
 void 
-ArcaneSurge::apply_effects() {
+QuickDrawDeck::apply_effects() {
 	_deck->set_reload_time(_deck->reload_time() - 0.5f * _deck->reload_time());
 }
 
-void ArcaneSurge::update(uint32_t dt) {
+void QuickDrawDeck::update(uint32_t dt) {
 	(void)dt;
 	if (_deck->is_reloading()) {
 		if (!_set) {
@@ -123,7 +123,7 @@ void ArcaneSurge::update(uint32_t dt) {
 #pragma endregion
 
 #pragma region BloodPact
-BloodPact::BloodPact() :MythicItem("BloodPact", "m_blood_pact")
+BloodPact::BloodPact() :MythicItem("blood_pact", "mythic_blood_pact")
 {
 	auto manager = Game::Instance()->get_mngr();
 	_mana = manager->getComponent<ManaComponent>(_player);
@@ -140,7 +140,7 @@ BloodPact::apply_effects() {
 #pragma endregion
 
 #pragma region PreternaturalForce
-PreternaturalForce::PreternaturalForce() :MythicItem("PreternaturalForce")
+DemonicScratcher::DemonicScratcher() :MythicItem("demonic_scratcher", "mythic_demonic_scratcher")
 {
 	auto manager = Game::Instance()->get_mngr();
 	_mana = manager->getComponent<ManaComponent>(_player);
@@ -148,7 +148,7 @@ PreternaturalForce::PreternaturalForce() :MythicItem("PreternaturalForce")
 }
 
 void 
-PreternaturalForce::apply_effects() {
+DemonicScratcher::apply_effects() {
 	_mana->change_mana_regen(- (_mana->mana_regen() * 0.5));
 	int damage = _weapon->damage() * 2;
 	_weapon->set_damage(damage);
@@ -157,7 +157,7 @@ PreternaturalForce::apply_effects() {
 
 
 #pragma region ClawFile
-ClawFile::ClawFile() :MythicItem("ClawFile","m_claw_file"), _set(false)
+ClawFile::ClawFile() :MythicItem("claw_file","mythic_claw_file"), _set(false)
 {
 	auto manager = Game::Instance()->get_mngr();
 	_deck = manager->getComponent<Deck>(_player);
@@ -186,7 +186,7 @@ void ClawFile::update(uint32_t dt) {
 #pragma endregion
 
 #pragma region MeowOrNever
-MeowOrNever::MeowOrNever():MythicItem("MeowOrNever")
+UraniumSocks::UraniumSocks():MythicItem("uranium_socks", "mythic_uranium_socks")
 {
 	auto manager = Game::Instance()->get_mngr();
 	_health = manager->getComponent<Health>(_player);
@@ -194,7 +194,7 @@ MeowOrNever::MeowOrNever():MythicItem("MeowOrNever")
 }
 
 void 
-MeowOrNever::apply_effects() {
+UraniumSocks::apply_effects() {
 	int currhealth = _health->getHealth() / 2;
 	_health->takeDamage(currhealth);
 	_mc->set_max_speed(2.0f *_mc->get_max_speed());
@@ -202,7 +202,7 @@ MeowOrNever::apply_effects() {
 #pragma endregion
 
 #pragma region ZoomiesInducer
-ZoomiesInducer::ZoomiesInducer() :MythicItem("ZoomiesInducer"),\
+ZoomiesInducer::ZoomiesInducer() :MythicItem("zoomies_inducer", "mythic_zoomies_inducer"), 
 	_timer(10000), _last_time(0), _distance(3.0f), _duration(1000) 
 {
 	auto manager = Game::Instance()->get_mngr();

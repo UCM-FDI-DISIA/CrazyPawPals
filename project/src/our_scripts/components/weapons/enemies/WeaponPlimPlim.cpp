@@ -24,20 +24,7 @@ WeaponPlimPlim::callback(Vector2D shootPos, Vector2D shootDir) {
 
 	float initialRot = atan2(bp.dir.getY(), bp.dir.getX()) * 180.0f / M_PI;
 
-	//bp.rot = initialRot;
-
-	//Dispara 3 balas
-	//for (int i = 0; i < 3; ++i) {
-	//	float angleOffset = i * 6.0f * (M_PI / 180.0f); // Convertir a radianes
-	//	Vector2D rotatedDir(
-	//		shootDir.getX() * cos(angleOffset) - shootDir.getY() * sin(angleOffset),
-	//		shootDir.getX() * sin(angleOffset) + shootDir.getY() * cos(angleOffset)
-	//	);
-	//	//bp.dir = rotatedDir;
-	//	//bp.rot = atan2(rotatedDir.getY(), rotatedDir.getX()) * 180.0f / M_PI;
-	//	scene->generate_proyectile(bp, ecs::grp::BULLET);
-	//}
-	float totalAngle = 60.0f;
+	float totalAngle = 120.0f;
 
 	patrons::ShotgunPatron(bp, ecs::grp::BULLET, totalAngle, 3);
 

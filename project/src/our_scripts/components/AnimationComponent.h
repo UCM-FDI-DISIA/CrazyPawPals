@@ -3,6 +3,7 @@
 #include <string>
 #include "../../ecs/Component.h"
 #include "rendering/dyn_image_with_frames.hpp"
+#include "../../utils/checkML.h"
 
 struct Animation {
     int ini_frame;

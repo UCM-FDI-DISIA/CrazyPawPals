@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-RampCanon::RampCanon() : Weapon(3, 750.0f, 0.5f, 0.1f, "p_ramp_canon", 1.15f, 1.15f){ 
+RampCanon::RampCanon() : Weapon(6, 750.0f, 0.5f, 0.1f, "p_ramp_canon", 1.15f, 1.15f){  
 	auto player = Game::Instance()->get_mngr()->getHandler(ecs::hdlr::PLAYER);
 	_mana = Game::Instance()->get_mngr()->getComponent<ManaComponent>(player);
 	assert(_mana != nullptr);
@@ -33,7 +33,7 @@ RampCanon::callback(Vector2D shootPos, Vector2D shootDir) {
 		bp.weapon_type = GameStructs::RAMP_CANON;// weapon type for collision
 		bp.collision_filter = GameStructs::collide_with::enemy;
 
-		static_cast<GameScene*>(Game::Instance()->get_currentScene())->generate_proyectile(bp, ecs::grp::BULLET);
+		Game::Instance()->get_currentScene()->create_proyectile(bp, ecs::grp::BULLET);
 	}
 	//else std::cout << "No hay suficiente mana para disparar" << std::endl;
 	

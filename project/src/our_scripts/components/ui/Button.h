@@ -54,7 +54,27 @@ public:
     inline void set_it(Card* q) {
         it = q;
     }
+    inline void set_name(const std::string& q) {
+        name = q;
+    }
     inline Card* It() const { return it; };
+    inline const std::string& Name() const { return name; };
 private:
     Card* it;
+    std::string name;
+};
+
+class MythicButton : public Button {
+public:
+    __CMPID_DECL__(ecs::cmp::BUTTON);
+    MythicButton();
+    virtual ~MythicButton() {};
+    inline void set_it(MythicItem* q) {
+        it = q;
+    }
+    inline MythicItem* It() const { return it; }; 
+    inline const std::string& Name() const { return name; };
+private:
+    MythicItem* it;
+    std::string name;
 };

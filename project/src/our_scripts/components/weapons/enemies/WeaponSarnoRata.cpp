@@ -2,7 +2,7 @@
 #include "../../../../game/Game.h"
 #include "../../../../game/scenes/GameScene.h"
 
-WeaponSarnoRata::WeaponSarnoRata() : Weapon(4, 2000, 20.0f, 0.0f, "p_sarno_rata", 3.0f, 3.0f) { }
+WeaponSarnoRata::WeaponSarnoRata() : Weapon(6, 2500, 20.0f, 0.0f, "p_sarno_rata", 3.0f, 3.0f) { }
 
 WeaponSarnoRata::~WeaponSarnoRata() {}
 
@@ -19,5 +19,5 @@ WeaponSarnoRata::callback(Vector2D shootPos, Vector2D shootDir) {
 	bp.sprite_key = "p_sarno_rata";
 	bp.collision_filter = GameStructs::collide_with::player;
 
-	static_cast<GameScene*>(Game::Instance()->get_currentScene())->generate_proyectile(bp, ecs::grp::BULLET);
+	Game::Instance()->get_currentScene()->create_proyectile(bp, ecs::grp::BULLET);
 }

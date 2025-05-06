@@ -1,5 +1,5 @@
-// This file is part of the course TPV2@UCM - Samir Genaim
 #include "Game.h"
+#include "../utils/checkML.h"
 
 #include "../ecs/Manager.h"
 #include "../sdlutils/InputHandler.h"
@@ -7,18 +7,10 @@
 #include "../utils/Vector2D.h"
 #include "../utils/Collisions.h"
 
-#include "../our_scripts/components/rendering/Image.h"
-#include "../our_scripts/components/movement/Transform.h"
-#include "../our_scripts/components/KeyboardPlayerCtrl.h"
-#include "../our_scripts/components/movement/MovementController.h"
-#include "../our_scripts/components/cards/Mana.h"
-
-#include "../our_scripts/components/cards/Deck.hpp"
-#include "../our_scripts/components/rendering/dyn_image.hpp"
 #include "../our_scripts/components/rendering/camera_component.hpp"
-#include "../our_scripts/components/rendering/rect_component.hpp"
-#include "../our_scripts/components/weapons/player/Revolver.h"
-#include "../our_scripts/components/weapons/player/Rampage.h"
+
+
+
 //Scenes for SceneManager
 #include "scenes/Scene.h"
 #include "scenes/MainMenuScene.h"
@@ -27,6 +19,14 @@
 #include "scenes/GameScene.h"
 #include "scenes/GameOverScene.h"
 #include "scenes/RewardScene.h"
+#include "scenes/TutorialScene.h"
+#include "scenes/VictoryScene.h"
+#include "scenes/MythicScene.h"
+
+
+#ifdef GENERATE_LOG
+#include "../our_scripts/log_writer_to_csv.hpp"
+#endif
 
 
 using namespace std;
@@ -49,6 +49,12 @@ Game::~Game() {
 	// release SLDUtil if the instance was created correctly.
 	if (SDLUtils::HasInstance())
 		SDLUtils::Release();
+
+	if (_mngr != nullptr) delete _mngr;
+#ifdef GENERATE_LOG
+	if (log_writer_to_csv::HasInstance())
+		log_writer_to_csv::Release();
+#endif
 
 }
 
@@ -75,6 +81,13 @@ bool Game::init() {
 			<< std::endl;
 		return false;
 	}
+#ifdef GENERATE_LOG
+	if (!log_writer_to_csv::Init()) {
+		std::cerr << "Something went wrong while initializing log_writer_to_csv"
+			<< std::endl;
+		return false;
+	}
+#endif
 	
 	// enable the cursor visibility
 	SDL_ShowCursor(SDL_ENABLE);
@@ -83,37 +96,44 @@ bool Game::init() {
 	
 	// fullscreen mode
 	// HACK: uncomment this to fullscreen
-	SDL_SetWindowFullscreen(sdlutils().window(), SDL_WINDOW_FULLSCREEN_DESKTOP);
+	SDL_SetWindowFullscreen(sdlutils().window(), SDL_WINDOW_FULLSCREEN_DESKTOP); //0 for non-full screen mode
 	
-	_mngr = new ecs::Manager();
+	initGame();
 
-	// Inicializar el vector de escenas
-	_scenes.resize(NUM_SCENE);
-
-	//_scenes[MAINMENU] = new MainMenuScene();
-	_scenes[GAMESCENE] = new GameScene();
-	_scenes[GAMESCENE]->initScene();
-
-	_scenes[MAINMENU] = new MainMenuScene();
-	_scenes[MAINMENU]->initScene();
-
-	_scenes[CONTROLSSCENE] = new ControlsScene();
-	_scenes[CONTROLSSCENE]->initScene();
-
-	_scenes[SELECTIONMENU] = new SelectionMenuScene();
-	_scenes[SELECTIONMENU]->initScene();
-
-	_scenes[GAMEOVER] = new GameOverScene();
-	_scenes[GAMEOVER]->initScene();
-	
-	_scenes[REWARDSCENE] = new RewardScene();
-	_scenes[REWARDSCENE]->initScene();
-
-	change_Scene(MAINMENU);
 	return true;
 }
 
+void Game::initGame()
+{
+	_mngr = new ecs::Manager();
 
+	// Inicializar el vector de escenas
+	_scenes.resize(NUM_SCENE, nullptr);
+	_scene_inits.resize(NUM_SCENE, false);
+
+	_scenes[GAMESCENE] = new GameScene();
+	_scenes[TUTORIAL] = new TutorialScene();
+	_scenes[MAINMENU] = new MainMenuScene();
+	_scenes[SELECTIONMENU] = new SelectionMenuScene();
+	_scenes[REWARDSCENE] = new RewardScene();
+	_scenes[MYTHICSCENE] = new MythicScene();
+	_scenes[GAMEOVER] = new GameOverScene();
+	_scenes[VICTORY] = new VictoryScene();
+
+	//crear la camara
+	const Scene::rendering::camera_creation_descriptor_flags flags =
+		Scene::rendering::camera_creation_descriptor_options::camera_creation_descriptor_options_set_handler
+		| Scene::rendering::camera_creation_descriptor_options::camera_creation_descriptor_options_clamp;
+	Scene::rendering::create_camera(ecs::scene::MAINMENUSCENE, flags, nullptr);
+
+	//crear player
+	ecs::entity_t player = GameScene::create_player();
+	_mngr->setHandler(ecs::hdlr::PLAYER, player);
+
+	//iniciar el juego en el mainmenu
+	change_Scene(MAINMENU);
+	set_volumes();
+}
 
 void Game::start() {
 
@@ -126,7 +146,7 @@ void Game::start() {
 
 	uint64_t last_frame_start_tick = SDL_GetTicks64();
 	SDL_Delay(target_delta_time_milliseconds);
-
+	sdlutils().virtualTimer().resetTime();
 	while (!exit) {
 		const uint64_t frame_start_tick = SDL_GetTicks64();
 		const uint32_t delta_time_milliseconds = frame_start_tick - last_frame_start_tick;
@@ -144,11 +164,7 @@ void Game::start() {
 		}
 		_scenes[_current_scene_index]->update(delta_time_milliseconds);
 
-		//Transform* tr = Game::Instance()->get_mngr()->getComponent<Transform>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::PLAYER));
-		//std::cout << "PLAYER: " << tr->getPos().getX() << "," << tr->getPos().getY() << std::endl;
-
 		_mngr->refresh();
-
 
 		sdlutils().clearRenderer();
 		_scenes[_current_scene_index]->render();
@@ -187,10 +203,30 @@ void Game::change_Scene(State nextScene){
 		return;
 	}
 
-	if (_current_scene_index != -1) {
+	//Inicializa cuando entra por primera vez a una escena
+	if (!_scene_inits[nextScene] && _scenes[nextScene] != nullptr) {
+		_scenes[nextScene]->initScene();
+		_scene_inits[nextScene] = true;
+		_mngr->refresh();
+	}
+
+	if (_current_scene_index != -1 && _scenes[_current_scene_index] != nullptr) {
 		_scenes[_current_scene_index]->exitScene();
 	}
 
 	_current_scene_index = nextScene;
 	_scenes[_current_scene_index]->enterScene();
+}
+void Game::set_volumes() {
+	sdlutils().soundEffects().at("button_hover").setVolume(20);
+	sdlutils().soundEffects().at("enemy_shot").setVolume(35);
+	sdlutils().soundEffects().at("player_shot").setVolume(35);
+	sdlutils().soundEffects().at("card_mill").setVolume(25);
+	sdlutils().soundEffects().at("card_play").setVolume(35);
+	sdlutils().soundEffects().at("shuffle").setVolume(25);
+	sdlutils().soundEffects().at("round_start").setVolume(45);
+	sdlutils().soundEffects().at("round_start_event").setVolume(45);
+	sdlutils().musics().at("main_menu_bgm").setMusicVolume(30);
+	sdlutils().soundEffects().at("reward").setVolume(40);
+	sdlutils().soundEffects().at("game_over").setVolume(40);
 }

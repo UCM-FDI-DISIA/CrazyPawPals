@@ -21,17 +21,17 @@ public:
 };
 
 /**
- * @class ProfaneHotline
- * @brief ProfaneHotline is a MythicItem that affects the player's mana management.
+ * @class DreamRecicler
+ * @brief DreamRecicler is a MythicItem that affects the player's mana management.
  *
  * When a card is milled, the player gains mana equal to its cost.
  * However, mana regeneration is reduced by 50%.
  */
-class ProfaneHotline :public event_system::event_receiver, public MythicItem {
+class DreamRecicler :public event_system::event_receiver, public MythicItem {
 	ManaComponent* _mana;
 public:
-	ProfaneHotline();
-	~ProfaneHotline();
+	DreamRecicler();
+	~DreamRecicler();
 	void apply_effects() override;
 	void event_callback0(const event_system::event_receiver::Msg& m);
 
@@ -81,14 +81,14 @@ public:
  * While reloading, mana regeneration increases by 50%.
  * However, reload speed is reduced by 50%.
  */
-class ArcaneSurge : public MythicItem {
+class QuickDrawDeck : public MythicItem {
 	ManaComponent* _mana;
 	Deck* _deck;
 
 	bool _set = false;
 	int _ini_mana;
 public:
-	ArcaneSurge();
+	QuickDrawDeck();
 
 	void apply_effects() override;
 	void update(uint32_t dt) override;
@@ -121,11 +121,11 @@ public:
  *
  * This class reduces the player's  mana regeneration by 50% and doubles damage.
  */
-class PreternaturalForce : public MythicItem {
+class DemonicScratcher : public MythicItem {
 	ManaComponent* _mana;
 	Weapon* _weapon;
 public:
-	PreternaturalForce();
+	DemonicScratcher();
 
 	void apply_effects() override;
 
@@ -163,11 +163,11 @@ public:
  * The player’s health is reduced by 50%.
  * However, movement speed is enhanced by 100%.
  */
-class MeowOrNever : public MythicItem {
+class UraniumSocks : public MythicItem {
 	MovementController* _mc;
 	Health* _health;
 public:
-	MeowOrNever();
+	UraniumSocks();
 
 	void apply_effects() override;
 

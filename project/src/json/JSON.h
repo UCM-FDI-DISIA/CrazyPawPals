@@ -31,6 +31,8 @@
 #include <cstring>
 #include <cstdlib>
 #include <cwctype>
+#include "../utils/checkML.h"
+
 
 static inline bool simplejson_isnan(double x) {
 	return x != x;

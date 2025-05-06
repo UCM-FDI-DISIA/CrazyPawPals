@@ -5,75 +5,54 @@
 #include "game/Game.h"
 #include "game/scenes/GameScene.h"
 #include "sdlutils/SDLUtils.h"
+#include "../../utils/checkML.h"
 #include "../components/Fog.h"
 #include "../wave_events/no_event.hpp"
 #include "../wave_events/ice_skating_event.hpp"
 #include "../wave_events/star_shower_event.hpp"
+#include "../log_writer_to_csv.hpp"
+
+#ifdef GENERATE_LOG
+#include "Health.h"
+#include "cards/Mana.h"
+#include "cards/Deck.hpp"
+#include "KeyboardPlayerCtrl.h"
+#include "movement/MovementController.h"
+#endif
 
 // 1 segundo = 1000 ticks (ms)
 WaveManager::WaveManager() :
     _currentWaveTime(0),
     _waveTime(5000), //60000 !!
     _currentWave(0),
-    _waveActive(false),
+    _wave_active(false),
     _enemiesSpawned(0),
     _enemiesKilled(0),
     _numEnemies(0),
-    _current_wave_event(new no_event(this))
+    _current_wave_event(new no_event(this)),
+    _event_pity(0)
 {
     event_system::event_manager::Instance()->suscribe_to_event(event_system::enemy_dead, this, &event_system::event_receiver::event_callback0);
+    event_system::event_manager::Instance()->suscribe_to_event(event_system::player_dead, this, &event_system::event_receiver::event_callback1);
 }
 
 WaveManager::~WaveManager() {
     event_system::event_manager::Instance()->unsuscribe_to_event(event_system::enemy_dead, this, &event_system::event_receiver::event_callback0);
+    event_system::event_manager::Instance()->unsuscribe_to_event(event_system::player_dead, this, &event_system::event_receiver::event_callback1);
 }
 
 void
 WaveManager::initComponent() {
-    //_tdi = Game::Instance()->get_mngr()->getComponent<transformless_dyn_image>(_ent);
-    //assert(_tdi != nullptr);
-    //TODO: cambiar esto por _ent posiblemente
 	fog = Game::Instance()->get_mngr()->getComponent<Fog>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::FOGGROUP));
     assert(fog != nullptr);
 
-    
-    //_currentWaveInitTime = sdlutils().virtualTimer().currRealTime();
-    //choose_new_event();
+	nPlayers = Game::Instance()->get_mngr()->getEntities(ecs::grp::PLAYER).size();
 }
-/*
-void 
-WaveManager::update(uint32_t delta_time) {
-    _currentWaveTime = sdlutils().virtualTimer().currRealTime() - _currentWaveInitTime;
-    
-
-    //if(_current_wave_event != nullptr)
-    _current_wave_event->update(delta_time);
-
-    if (areAllEnemiesDead()) {
-        enterRewardsMenu();
-    }
-
-    if (_waveActive) {
-        // Verificar si ha pasado un minuto de oleada
-        // Esto solo pasa una vez por oleada, pero en todas pasa
-        if (_currentWaveTime > _waveTime) {
-            std::cout << "Se acabo el tiempo"<< std::endl;
-            if (!areAllEnemiesDead()) {
-                activateFog(); // Activar la niebla si no se han eliminado todos los enemigos
-            }
-            _waveActive = false; // Finalizar la oleada, (post oleada, matar enemigos restantes, aparece niebla)
-        }
-    }
-    else if (!_waveActive && fog->getFogActive() == false){
-        // Iniciar una nueva oleada
-        spawnWave();
-    }
-}
-*/
 
 bool WaveManager::can_spawn_next_enemy()
 {
-    return _next_spawn_time > sdlutils().currTime() && tokens_for_this_wave > 0;
+    //std::cout << _next_spawn_time << " - " << sdlutils().virtualTimer().currTime() << std::endl;
+    return _next_spawn_time < sdlutils().virtualTimer().currTime() && tokens_for_this_wave > 0;
 }
 
 bool WaveManager::is_wave_finished()
@@ -83,11 +62,28 @@ bool WaveManager::is_wave_finished()
     return _enemiesKilled >= _numEnemies && _all_enemies_already_spawned;
 }
 
+void WaveManager::erase_all_enemies()
+{
+    auto manager = Game::Instance()->get_mngr();
+    for (auto e : manager->getEntities(ecs::grp::ENEMY))
+        manager->setAlive(e, false);
+}
+
+void WaveManager::erase_all_bullets()
+{
+    auto manager = Game::Instance()->get_mngr();
+    for (auto e : manager->getEntities(ecs::grp::BULLET))
+        manager->setAlive(e, false);
+    for (auto e : manager->getEntities(ecs::grp::PLAYERBULLETS))
+        manager->setAlive(e, false);
+    for (auto e : manager->getEntities(ecs::grp::ENEMYBULLETS))
+        manager->setAlive(e, false);
+}
+
 //Chooses enemies in _enemy_types_for_current_wave
 void WaveManager::initialize_next_wave_params(bool normal_wave)
 {
-    tokens_for_this_wave = _currentWave * spawn_tokens_gained_per_wave + spawn_tokens_at_wave_0;
-
+	tokens_for_this_wave = (_currentWave * spawn_tokens_gained_per_wave) * (nPlayers == 1 ? 1 : nPlayers / 1.3f) + spawn_tokens_at_wave_0;
 
     uint8_t cheaper_enemy;
     for (uint8_t i = 0; i < 3; ++i) {
@@ -95,7 +91,7 @@ void WaveManager::initialize_next_wave_params(bool normal_wave)
         do {
             j = 0;
             //Chooses new random enemy
-            _enemy_types_for_current_wave[i] = sdlutils().rand().nextInt(0, (int)super_michi_mafioso);
+            _enemy_types_for_current_wave[i] = sdlutils().rand().nextInt(0, (int)rata_basurera);
         } while (
             j < i && //This is false for (i==0)
             _enemy_types_for_current_wave[j] != _enemy_types_for_current_wave[i] && //This is false if enemy chosen for index 1 || 2 is alredy taken in index 0
@@ -105,7 +101,7 @@ void WaveManager::initialize_next_wave_params(bool normal_wave)
         cheaper_enemy = std::min(cheaper_enemy,enemy_spawn_data[_enemy_types_for_current_wave[i]].enemies_group_spawn_cost);
     }
     time_max_between_enemy_spawns_on_this_wave = max_spawn_wave_time / (tokens_for_this_wave / cheaper_enemy);
-    _next_spawn_time = sdlutils().currTime() + time_max_between_enemy_spawns_on_this_wave;
+    _next_spawn_time = sdlutils().virtualTimer().currTime();// +time_max_between_enemy_spawns_on_this_wave;
     //Si no es normal wave spawnea tb un bos
 }
 
@@ -117,37 +113,47 @@ void WaveManager::spawn_next_group_of_enemies()
     //tokens can only be -1 at worst at end of the round (cause I know that there will always be at least a 2 cost enemy on the group)
     while ((tokens_for_this_wave - enemy_spawn_data[_enemy_types_for_current_wave[index]].enemies_group_spawn_cost) < -1) {
         index = ++index % 3;
-        std::cout << (tokens_for_this_wave - enemy_spawn_data[_enemy_types_for_current_wave[index]].enemies_group_spawn_cost) << std::endl;
+        //std::cout << (tokens_for_this_wave - enemy_spawn_data[_enemy_types_for_current_wave[index]].enemies_group_spawn_cost) << std::endl;
     }
     tokens_for_this_wave -= enemy_spawn_data[_enemy_types_for_current_wave[index]].enemies_group_spawn_cost;
     //spawn enemies
     enemy_spawn_caller* esc;
-    GameScene* scene = static_cast<GameScene*>(Game::Instance()->get_currentScene());
+    std::string tipoEnemigo;
+    //std::cout << tipoEnemigo << std::endl;
+
     switch ((enemyType)_enemy_types_for_current_wave[index])
     {
         case sarno_rata:
-            esc = new enemy_spawn_caller([scene](Vector2D v) {scene->spawn_sarno_rata(v); });
+            esc = new enemy_spawn_caller([](Vector2D v) {GameScene::spawn_sarno_rata(v); });
+            tipoEnemigo = "sarno rata";
             break;
         case michi_mafioso:
-            esc = new enemy_spawn_caller([scene](Vector2D v) {scene->spawn_michi_mafioso(v); });
+            esc = new enemy_spawn_caller([](Vector2D v) {GameScene::spawn_michi_mafioso(v); });
+            tipoEnemigo = "michi mafioso";
             break;
         case plim_plim:
-            esc = new enemy_spawn_caller([scene](Vector2D v) {scene->spawn_plim_plim(v); });
+            esc = new enemy_spawn_caller([](Vector2D v) {GameScene::spawn_plim_plim(v); });
+            tipoEnemigo = "plim plim";
             break;
         case boom:
-            esc = new enemy_spawn_caller([scene](Vector2D v) {scene->spawn_boom(v); });
+            esc = new enemy_spawn_caller([](Vector2D v) {GameScene::spawn_boom(v); });
+            tipoEnemigo = "boom";
             break;
         case ratatouille:
-            esc = new enemy_spawn_caller([scene](Vector2D v) {scene->spawn_ratatouille(v); });
+            esc = new enemy_spawn_caller([](Vector2D v) {GameScene::spawn_ratatouille(v); });
+            tipoEnemigo = "ratatouille";
             break;
         case catkuza:
-            esc = new enemy_spawn_caller([scene](Vector2D v) {scene->spawn_catkuza(v); });
+            esc = new enemy_spawn_caller([](Vector2D v) {GameScene::spawn_catkuza(v); });
+            tipoEnemigo = "catkuza";
             break;
         case super_michi_mafioso:
-            esc = new enemy_spawn_caller([scene](Vector2D v) {scene->spawn_super_michi_mafioso(v); });
+            esc = new enemy_spawn_caller([](Vector2D v) {GameScene::spawn_super_michi_mafioso(v); });
+            tipoEnemigo = "super michi mafioso";
             break;
         case rata_basurera:
-            esc = new enemy_spawn_caller([scene](Vector2D v) {scene->spawn_rata_basurera(v); });
+            esc = new enemy_spawn_caller([](Vector2D v) {GameScene::spawn_rata_basurera(v); });
+            tipoEnemigo = "rata basurera";
             break;
         default: {
             assert(false && "unreachable");
@@ -158,37 +164,43 @@ void WaveManager::spawn_next_group_of_enemies()
     for (uint8_t i = 0; i < enemy_spawn_data[_enemy_types_for_current_wave[index]].number_of_enemies_simultaneous_spawn; ++i) {
         esc->spawn_callback();
     }
+#ifdef GENERATE_LOG
+    log_writer_to_csv::Instance()->add_new_log("SPAWN ENEMIES", "TIPO", tipoEnemigo, "Numero", std::to_string(enemy_spawn_data[_enemy_types_for_current_wave[index]].number_of_enemies_simultaneous_spawn));
+#endif
+
     delete esc;
     _numEnemies += enemy_spawn_data[_enemy_types_for_current_wave[index]].number_of_enemies_simultaneous_spawn;
     //sets next spawn time
-    _next_spawn_time = sdlutils().currTime() + (uint32_t)(time_max_between_enemy_spawns_on_this_wave * (sdlutils().rand().nextInt(0,100) * 0.3+0.7));
+    float multiplier = ((sdlutils().rand().nextInt(0, 100)*0.001) * 0.3 + 0.7);
+    auto add_to_crono = (uint32_t)(time_max_between_enemy_spawns_on_this_wave * multiplier);
+    _next_spawn_time = sdlutils().virtualTimer().currTime() + add_to_crono;
 
     _all_enemies_already_spawned = tokens_for_this_wave <= 0;
 }
-
-void WaveManager::add_num_enemy()
-{
-    _numEnemies++;
-}
-
 //---------------------------------------------------------------------------------------------------------------------------------
 void WaveManager::update(uint32_t delta_time) {
-    _currentWaveTime = sdlutils().virtualTimer().currRealTime() - _currentWaveInitTime;
 
-    _current_wave_event->update(delta_time);
-    //tries spawning enemies
-    if (can_spawn_next_enemy())
-        spawn_next_group_of_enemies();
+    if (_wave_active) {
+        _currentWaveTime = sdlutils().virtualTimer().currRealTime() - _currentWaveInitTime;
+        _current_wave_event->update(delta_time);
+        //tries spawning enemies
+        if (can_spawn_next_enemy())
+            spawn_next_group_of_enemies();
 
-    if (is_wave_finished())
-        endwave();
-
-    if (_currentWaveTime > 50 * 1000 && !is_wave_finished()) {
-        activateFog();
+        if (is_wave_finished())
+            endwave();
+        else if (_currentWaveTime > 50 * 1000 && !is_wave_finished()) {
+            activateFog();
+        }
+    }else{
+        //RENDER WIN WAVE BUTTON
+        if (change_to_rewards_time < sdlutils().virtualTimer().currRealTime()) {
+            enterRewardsMenu();
+        }
     }
-
-    //spawns fog after 50 secs
-    //when all enemies are killed wave finishes
+#ifdef GENERATE_LOG
+    WaveManager::_ticks_on_wave++;
+#endif
 }
 //---------------------------------------------------------------------------------------------------------------------------------
 
@@ -222,6 +234,10 @@ void WaveManager::start_new_wave()
     _enemiesSpawned = 0;
     _enemiesKilled = 0;
     _numEnemies = 0;
+    _wave_active = true;
+#ifdef GENERATE_LOG
+    WaveManager::_ticks_on_wave = 1;
+#endif
     fog->setFog(false);
 
     auto& mngr = *Game::Instance()->get_mngr();
@@ -236,17 +252,58 @@ void WaveManager::start_new_wave()
 void WaveManager::reset_wave_manager()
 {
     _currentWave = 0;
+    _event_pity = 0;
 }
-
 
 void WaveManager::endwave()
 {
-    //std::cout << "oleada superada con éxito meow" << std::endl;
-    _current_wave_event->end_wave_callback();
-    _currentWave++;
-    _all_enemies_already_spawned = false;
-    fog->setFog(false);
-    enterRewardsMenu();
+#ifdef GENERATE_LOG
+    log_writer_to_csv::Instance()->add_new_log();
+    log_writer_to_csv::Instance()->add_new_log("WAVE", _currentWave, "FINISHED");
+    auto player = Game::Instance()->get_mngr()->getEntities(ecs::grp::PLAYER)[0];
+    auto player_hp = Game::Instance()->get_mngr()->getComponent<Health>(player);
+    auto player_mana = Game::Instance()->get_mngr()->getComponent<ManaComponent>(player);
+    auto player_deck = Game::Instance()->get_mngr()->getComponent<Deck>(player);
+    auto player_keyboard_controller = Game::Instance()->get_mngr()->getComponent<KeyboardPlayerCtrl>(player);
+    auto player_movement_controller = Game::Instance()->get_mngr()->getComponent<MovementController>(player);
+    log_writer_to_csv::Instance()->add_new_log("VIDA PLAYER", "CURRENT", player_hp->getHealth(), "MAX", player_hp->getMaxHealth());
+    log_writer_to_csv::Instance()->add_new_log("ENEMIGOS SPAWNEADOS", _numEnemies);
+    log_writer_to_csv::Instance()->add_new_log("MANA", "MID", player_mana->get_mana_mid(), "MAX", player_mana->get_mana_max());
+    log_writer_to_csv::Instance()->add_new_log("TIMES RELOADED", std::to_string(player_deck->times_reloaded));
+    log_writer_to_csv::Instance()->add_new_log("TIMES M1 USED", player_keyboard_controller->times_m1_used);
+    log_writer_to_csv::Instance()->add_new_log("TIMES M2 USED", player_keyboard_controller->times_m2_used_cards, "TIMES M2 COULDNT USE CARD", player_keyboard_controller->times_m2_failed_to_use_cards);
+    log_writer_to_csv::Instance()->add_new_log("DISTANCIA RECORRIDA", player_movement_controller->total_movement);
+    log_writer_to_csv::Instance()->add_new_log("USOS DE CADA CARTA EN ESTA RONDA");
+    for (auto c : player_keyboard_controller->cards_used_this_round) {
+        log_writer_to_csv::Instance()->add_new_log(c.first,std::to_string(c.second));
+    }
+    log_writer_to_csv::Instance()->add_new_log("DESCARTES DE CADA CARTA ESTA RONDA");
+    for (auto c : player_keyboard_controller->cards_discarded_this_round) {
+        log_writer_to_csv::Instance()->add_new_log(c.first, std::to_string(c.second));
+    }
+    player_mana->reset_mana_mid();
+    player_deck->times_reloaded = 0;
+    player_keyboard_controller->times_m1_used = 0;
+    player_keyboard_controller->times_m2_used_cards = 0;
+    player_keyboard_controller->times_m2_failed_to_use_cards = 0;
+    player_keyboard_controller->cards_used_this_round = player_keyboard_controller->cards_discarded_this_round = std::unordered_map<std::string, uint8_t>();
+    player_movement_controller->total_movement = 0;
+
+#endif
+    if (_currentWave == 9) {
+        Game::Instance()->change_Scene(Game::State::VICTORY);
+    }
+    else {
+        fog->setFog(false);
+        _wave_active = false;
+        change_to_rewards_time = sdlutils().virtualTimer().currTime() + 3000;
+        _current_wave_event->end_wave_callback();
+        _currentWave++;
+        _all_enemies_already_spawned = false;
+        erase_all_bullets();
+        erase_all_enemies();
+        //enterRewardsMenu();
+    }
 
 }
 
@@ -256,13 +313,39 @@ void WaveManager::event_callback0(const Msg& m)
     _enemiesKilled++;
 }
 
-void WaveManager::choose_new_event()
+void WaveManager::event_callback1(const Msg& m)
+{
+    _current_wave_event->end_wave_callback();
+    _current_wave_event = std::make_unique<no_event>(this);
+    fog->setFog(false);
+}
+
+void WaveManager::select_event()
 {
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<int> rnd_gen(NONE,EVENTS_MAX - 1);
+    std::uniform_int_distribution<int> rnd_gen(ICE_SKATE, EVENTS_MAX - 1);
     _current_event = events(rnd_gen(gen));
-    
+    _event_pity = 0;
+}
+void WaveManager::choose_new_event()
+{
+    if (_event_pity == _max_event_pity) {
+        select_event();
+    }
+    else {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<int> has_event(0, 2);
+        if (has_event(gen) == 2) {
+            select_event();
+        }
+        else {
+            _current_event = NONE;
+            _event_pity++;
+        }
+    }
+
     switch(_current_event) {
     case NONE:
         _current_wave_event = (std::unique_ptr<wave_event>)new no_event(this);
@@ -302,12 +385,15 @@ void WaveManager::choose_new_event()
     default: {
         assert(false && "unrachable"); // event_choser_went_wrong
         std::exit(EXIT_FAILURE);
-    }
+        }
     }
 
-    
+    if (_current_event == NONE) sdlutils().soundEffects().at("round_start").play();
+    else sdlutils().soundEffects().at("round_start_event").play();
+
 
     _current_wave_event->start_wave_callback();
+
     //TODO elegir evento y llamar a la función de iniciar
 }
 

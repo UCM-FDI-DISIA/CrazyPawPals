@@ -1,4 +1,3 @@
-// This file is part of the course TPV2@UCM - Samir Genaim
 
 #include "Manager.h"
 #include "../our_scripts/components/rendering/render_ordering.hpp"
@@ -7,6 +6,7 @@
 #include "../our_scripts/components/rendering/camera_component.hpp"
 #include <cstdlib>
 #include <unordered_set>
+#include "../utils/checkML.h"
 
 struct contact_pair {
 	ecs::entity_t body0;
@@ -50,7 +50,7 @@ Manager::~Manager() {
 	//
 	for (auto &ents : _entsByGroup) {
 		for (auto e : ents)
-			delete e;
+			if (e != nullptr && e->get_currCmps_size()) delete e;
 	}
 }
 
@@ -663,6 +663,7 @@ void Manager::refresh()
 	// std::cout << "removed " << to_remove.size() << " entities" << std::endl;
 	for (auto e : to_remove) {
 		delete e;
+		e = nullptr;
 	}
 
 	for (auto e : _pendingEntities) {

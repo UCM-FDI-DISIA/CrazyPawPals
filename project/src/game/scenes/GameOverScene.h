@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <list>
+#include "../../utils/checkML.h"
 
 class GameOverScene : public Scene
 {
@@ -16,4 +17,5 @@ public:
 
 private:
 	void create_enter_button();
+	void create_exit_button();
 };

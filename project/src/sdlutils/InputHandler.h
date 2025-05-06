@@ -1,4 +1,3 @@
-// This file is part of the course TPV2@UCM - Samir Genaim
 
 #pragma once
 
@@ -8,9 +7,12 @@
 #include <cassert>
 #include "../utils/Vector2D.h"
 #include "../utils/Singleton.h"
+#include <bitset>
+#include <string>
 
 // Instead of a Singleton class, we could make it part of
 // SDLUtils as well.
+constexpr uint8_t button_list_size = 16;
 
 class InputHandler: public Singleton<InputHandler> {
 
@@ -26,9 +28,24 @@ public:
 		MOUSE_LEFT_CLICK_DOWN,
 		MOUSE_LEFT_CLICK_UP
 	};
+	enum CONTROLLER_BUTTONS : uint8_t {
+		A = 0,
+		B = 1,
+		Y = 2,
+		X = 3,
+		LT = 4,
+		RT = 5,
+		_aux_LT = 6,
+		_aux_RT = 7
+	};
+	enum LAST_DEVICE_ACTIVE : uint8_t {
+		KEYBOARD,
+		CONTROLLER
+	};
 
 	// clear the state
 	inline void clearState() {
+		_controller_buttons_pressed = std::bitset<button_list_size>(false);
 		_isCloseWindoEvent = false;
 		_isKeyDownEvent = false;
 		_isKeyUpEvent = false;
@@ -40,43 +57,7 @@ public:
 	}
 
 	// update the state with a new event
-	inline void update(const SDL_Event &event) {
-
-		switch (event.type) {
-		case SDL_KEYDOWN:
-			onKeyDown(event);
-			break;
-		case SDL_KEYUP:
-			onKeyUp(event);
-			break;
-		case SDL_MOUSEMOTION:
-			onMouseMotion(event);
-			break;
-		case SDL_MOUSEBUTTONDOWN:
-			onMouseButtonDown(event);
-			break;
-		case SDL_MOUSEBUTTONUP:
-			onMouseButtonUp(event);
-			break;
-		case SDL_WINDOWEVENT:
-			handleWindowEvent(event);
-			break;
-		default:
-			break;
-		}
-
-		//Callback managing
-		//Obtenemos el indice de nuestro enumerado, segun el evento actual
-		//si el evento no est� registrado esto devuelve -1s
-		//int mapIndex = getInputEvent(event);
-
-		//si el evento est� registrado
-		/*if (inputMap.find(mapIndex) != inputMap.end()) {
-			// llama a todas las funciones registradas en un evento especifico
-			for (SDLEventCallback callback : inputMap.at(mapIndex)) {
-				callback();
-		}*/
-	}
+	void update(const SDL_Event& event);
 
 	// refresh
 	inline void refresh() {
@@ -85,6 +66,18 @@ public:
 		clearState();
 		while (SDL_PollEvent(&event))
 			update(event);
+		
+		/*
+		for (uint8_t i = 0; i < _controller_buttons_pressed.size(); ++i) {
+			std::cout << _controller_buttons_pressed[i] << " , ";
+		}
+		std::cout << std::endl;
+		*/
+		
+		//std::cout << "L (" << _lStickPos.getX() << "," << _lStickPos.getY() << ")   -   R (" << _rStickPos.getX() << "," << _rStickPos.getY() << ")" << std::endl;
+	}
+	inline void consume(CONTROLLER_BUTTONS b) {
+		_controller_buttons_pressed[b] = false;
 	}
 
 	// close window event
@@ -115,6 +108,9 @@ public:
 
 	inline bool isKeyUp(SDL_Keycode key) {
 		return isKeyUp(SDL_GetScancodeFromKey(key));
+	}
+	inline bool isControllerButtonDown(CONTROLLER_BUTTONS b) {
+		return _controller_buttons_pressed[b];
 	}
 
 	// mouse
@@ -147,6 +143,16 @@ public:
 		_isCloseWindoEvent = b;
 	}
 
+	inline Vector2D& getLStick() {
+		return _lStickPos;
+	}
+	inline Vector2D& getRStick() {
+		return _rStickPos;
+	}
+	inline LAST_DEVICE_ACTIVE getLastDevice() {
+		return _last_active_device;
+	}
+
 	// TODO add support for Joystick, see Chapter 4 of
 	// the book 'SDL Game Development'
 
@@ -163,6 +169,12 @@ private:
 	inline bool init() {
 		_kbState = SDL_GetKeyboardState(0);
 		assert(_kbState != nullptr);
+
+
+		//SDL_JoystickEventState(SDL_ENABLE);
+		//_joystick = SDL_JoystickOpen(0);
+		//assert(_joystick != nullptr);
+
 		return true;
 	}
 
@@ -232,6 +244,21 @@ private:
 	Vector2D _mousePos;
 	std::array<bool, 3> _mbState;
 	const Uint8 *_kbState;
+	//12, 13 are for triggers	(its press down)
+	//14, 15 are aux for triggers (its real state)
+	std::bitset<button_list_size> _controller_buttons_pressed;
+
+	//Gamepad
+	SDL_Joystick* _joystick[4];
+	Vector2D _lStickPos;
+	Vector2D _rStickPos;
+	LAST_DEVICE_ACTIVE _last_active_device = KEYBOARD;
+
+	int _joystick_dead_zone = 3000;
+
+	int16_t _time_till_next_click_ms = 500;
+	uint16_t _next_RT_click = 0;
+	uint16_t _next_LT_click = 0;
 }
 ;
 

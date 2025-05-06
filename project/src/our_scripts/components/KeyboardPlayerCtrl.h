@@ -1,6 +1,8 @@
 #pragma once
 #include "../../ecs/Component.h" 
 #include <SDL.h>
+#include <unordered_map>
+#include "../../utils/checkML.h"
 
 class Transform;
 class Health;
@@ -10,6 +12,7 @@ class ManaComponent;
 class MovementController;
 class MythicComponent;
 class AnimationComponent;
+class GhostStateComponent;
 
 class KeyboardPlayerCtrl :public ecs::Component
 {
@@ -21,6 +24,16 @@ public:
 	void update(Uint32 delta_time) override;
 
 	bool is_moving_input() const;
+	inline Vector2D get_reticle_position() {
+		return _mouse_pos;
+	}
+#ifdef GENERATE_LOG
+	int times_m2_used_cards = 0;
+	int times_m2_failed_to_use_cards = 0;
+	int times_m1_used = 0;
+	std::unordered_map<std::string, uint8_t> cards_used_this_round;
+	std::unordered_map<std::string, uint8_t> cards_discarded_this_round;
+#endif
 private:
 	SDL_Scancode _left;
 	SDL_Scancode _right;
@@ -34,8 +47,10 @@ private:
 	MovementController* _mc;
 	Weapon* _w;
 	Deck* _dc;
-	MythicComponent* _my;
 	Health* _h;
 	ManaComponent* _m;
 	Transform* _tr;
+
+	GhostStateComponent* _g;
+	MythicComponent* _my;
 };

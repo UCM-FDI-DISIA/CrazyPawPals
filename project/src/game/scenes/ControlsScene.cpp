@@ -1,4 +1,5 @@
 #include "ControlsScene.h"
+#include "../../utils/checkML.h"
 #include "../../our_scripts/components/ui/Button.h"
 #include "../GameStructs.h"
 #include "../../utils/Vector2D.h"
@@ -6,8 +7,22 @@
 #include "../../sdlutils/InputHandler.h"
 #include "../../ecs/Entity.h"
 #include "../../sdlutils/Texture.h"
+#ifdef GENERATE_LOG
+#include "../../our_scripts/log_writer_to_csv.hpp"
+#endif
 
 ControlsScene::ControlsScene() : Scene(ecs::scene::CONTROLSSCENE)
+{
+
+
+}
+
+ControlsScene::~ControlsScene()
+{
+
+}
+
+void ControlsScene::initScene()
 {
     auto* mngr = Game::Instance()->get_mngr();
 
@@ -20,27 +35,23 @@ ControlsScene::ControlsScene() : Scene(ecs::scene::CONTROLSSCENE)
     };
     mainMenuB.sprite_key = "heart";
     create_mainmenu_button(mainMenuB);
-
-}
-
-ControlsScene::~ControlsScene()
-{
-
-}
-
-void ControlsScene::initScene()
-{
-
 }
 
 void ControlsScene::enterScene()
 {
     Game::Instance()->get_mngr()->change_ent_scene(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA), ecs::scene::CONTROLSSCENE);
+#ifdef GENERATE_LOG
+    log_writer_to_csv::Instance()->add_new_log();
+    log_writer_to_csv::Instance()->add_new_log("ENTERED CONTROLS SCENE");
+#endif
 }
 
 void ControlsScene::exitScene()
 {
-
+#ifdef GENERATE_LOG
+    log_writer_to_csv::Instance()->add_new_log("EXIT CONTROLS SCENE");
+    log_writer_to_csv::Instance()->add_new_log();
+#endif
 }
 void ControlsScene::render() {
     _background->render(200, 300);

@@ -6,6 +6,8 @@
 #include "../movement/Transform.h"
 #include "../rendering/camera_component.hpp"
 #include "../MythicComponent.h"
+class KeyboardPlayerCtrl;
+class GamePadPlayerCtrl;
 class PlayerHUD : public ecs::Component {
 private:
 	ManaComponent* _mana;
@@ -14,10 +16,13 @@ private:
 	Transform* _tr;
 	MythicComponent* _mythics;
 	const camera_component* _camera;
+	KeyboardPlayerCtrl* _kpc;
+	GamePadPlayerCtrl* _gpc;
 
 	Texture* _tex_orb;
 	Texture* _tex_orb_empty;
 	Texture* _tex_prime;
+	Texture* _tex_reticle;
 public:
 	__CMPID_DECL__(ecs::cmp::PLAYER_HUD);
 	PlayerHUD();

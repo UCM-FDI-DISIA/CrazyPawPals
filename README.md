@@ -123,13 +123,12 @@ El jugador dispone de un mazo de cartas inicial que podrá modificar a lo largo 
 
 **Anatomía de una carta**  
 - Imagen identificativa.  
-- Coste de maná.  
-- Efecto (visible al pasar el ratón sobre la carta).  
+- Coste de maná y coste de vida.   
 
 **Espacios**  
 - Mano: Carta visible para el jugador.  
 - Mazo: Cartas no usadas.  
-- Descartes: Cartas usadas o descartadas.  
+- Descartes: Cartas usadas o descartadas(no se ve visualmente).  
 
 **Funcionamiento General**
 
@@ -147,6 +146,32 @@ El jugador podrá usar la carta en su mano, consumiendo maná equivalente a su c
 
 El jugador colocará la carta de su mano en descartes sin consumir maná ni ejecutar ninguno de sus efectos. Al hacer esto ejecutará el ataque de arma del que disponga. Esto se puede hacer siempre y cuando el ataque de arma del jugador esté disponible.Tener una velocidad de descartes.
 
+**Nuestras cartas**
+<table style="margin: auto;">
+  <tr>
+    <td><img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/card_catkuza_info.png" alt="Catkuza_card" width="300"></td>
+    <td><img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/card_commune_info.png" alt="Commune_card" width="300"></td>
+    <td><img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/card_eldritch_blast_info.png" alt="Eldritch_Blast_card" width="300"></td>
+   </tr>
+  <tr>
+    <td><img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/card_evoke_info.png" alt="Evoke_card" width="300"></td>
+    <td><img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/card_fireball_info.png" alt="Fireball_card" width="300"></td>
+    <td><img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/card_fulgur_info.png" alt="Fulgur_card" width="300"></td>
+  </tr>
+  <tr>
+    <td><img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/card_kunai_info.png" alt="Kunai_card" width="300"></td>
+    <td><img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/card_lighting_info.png" alt="Lighting_card" width="300"></td>
+    <td><img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/card_recover_info.png" alt="Recover_card" width="300"></td>
+  </tr>
+  <tr>
+    <td><img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/card_minigun_info.png" alt="Minigun_card" width="300"></td>
+    <td><img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/card_quickfeet_info.png" alt="Quickfeet_card" width="300"></td>
+    <td><img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/card_quickfeet_info.png" alt="Quickfeet_card" width="300"></td>
+  </tr>
+  <tr>
+    <td><img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/card_spray_info.png" alt="card_spray_info" width="300"></td></td>
+  </tr>
+</table>
 
 ### 3.5. Armas  
 Cada vez que el jugador realice la acción de descartar una carta ejecutará el ataque del arma escogida antes de entrar en partida.
@@ -160,6 +185,17 @@ Si el arma tiene objetivo este será la retícula del jugador.
 - Duración del ataque.  
 - Dispersión (en grados).  
   
+**Nuestras armas**
+<table>
+  <tr>
+    <td><img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/pump_shotgun_b_info.png" alt="pump_shotgun_b_info" width="300"></td>
+    <td><img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/ramp_canon_b_info.png" alt="ramp_canon_b_info" width="300"></td>
+   </tr>
+    <td><img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/revolver_b_info.png" alt="Evoke_card" width="300"></td>
+    <td><img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/rampage_b_info.png" alt="rampage_b_info" width="300"></td>
+   </td>
+  </tr>
+</table>
 
 ### 3.6. Oleadas  
 El juego dispondrá en total de 10 oleadas. La duración aproximada de cada una es de 1 minuto, y se terminan al eliminar a todos los enemigos aparecidos con esta. 
@@ -215,12 +251,38 @@ Aparecerán 3 recompensas de Boss adicionales con otro color. En este caso podem
 
 ### 3.8. Objetos Míticos
 Los objetos míticos pueden modificar el playstyle del jugador en gran medida
-Los objetos míticos se consiguen como recompensa al eliminar a un Boss en la 5ª oleada [y antes de la decima oleada].
+Los objetos míticos se consiguen como recompensa al eliminar a un Boss.
 Siempre tienen un efecto positivo y uno perjudicial similar a los objetos lunares del RoR 2.
 Algunos ejemplos de objetos míticos podrían ser:
 - Cada vez que millees gana como maná el coste de la carta, a cambio reduce tu regeneración de maná a 1/2 o 1/4
 - Reduce el cd de tu artefacto a la mitad. Cada vez que salga de enfriamiento se recargará manualmente de inmediato usandolo en el proceso
 - Reduce tu vida a la mitad. Cada vez que elimines a un enemigo ganas el 20% de su vida como escudo.
+
+- **Nuestros Objetos Míticos**
+<table>
+  <tr>
+    <td><img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/mythic_blood_claw_info.png" alt="pump_shotgun_b_info" width="300"></td>
+    <td><img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/mythic_blood_pact_info.png" alt="ramp_canon_b_info" width="300"></td>
+   </tr>
+  <tr>
+    <td><img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/mythic_claw_file_info.png" alt="Evoke_card" width="300"></td>
+    <td><img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/mythic_demonic_scratcher_info.png" alt="rampage_b_info" width="300"></td>
+   </td>
+    <tr>
+    <td><img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/mythic_dream_recicler_info.png" alt="Evoke_card" width="300"></td>
+    <td><img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/mythic_incense_info.png" alt="rampage_b_info" width="300"></td>
+   </td>
+    <tr>
+    <td><img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/mythic_quick_draw_deck_info.png" alt="Evoke_card" width="300"></td>
+    <td><img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/mythic_uranium_socks_info.png" alt="rampage_b_info" width="300"></td>
+   </td>
+   <tr>
+    <td><img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/mythic_zoomies_inducer_info.png" alt="Evoke_card" width="300"></td>
+    <td><img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/mythic_curtain_reaper_info.png" alt="rampage_b_info" width="300"></td>
+   </td>
+  </tr>
+</table>
+
 
 ### 3.9. Vida
 El jugador tiene una cantidad finita y determinada de vida. Hay vida máxima y la vida no puede exceder este valor, pero la vida máxima puede cambiar al coger objetos míticos.
@@ -239,31 +301,41 @@ Hay 2 parametros distintos que componen la vida del jugador: El escudo y la salu
 - Elegir recompensa: F / Y / Square.  
 
 ### 4.2. Cámara  
-Tiene fijado al personaje en el centro, pero cuando este se acerque a las esquinas del mapa, la cámara se quedará fija antes de poder ver fuera del mapa. Como si se moviese con el jugador pero tuviese puntos máximos y mínimos hasta los que se puede mover.
+Tiene fijado al personaje en el centro y hace movimientos según el cursor, pero cuando el jugador se acerque a las esquinas del mapa, la cámara se quedará fija antes de poder ver fuera del mapa. Como si se moviese con el jugador pero tuviese puntos máximos y mínimos hasta los que se puede mover.
 
 ### 4.3. HUD  
-![Boceto HUD](https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/bocetoHUD.jpg))
+![Boceto HUD](https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/hud.png)
 
 ### 4.4. Menús  
 - **Menú principal**
     - Jugar (dentro de este menú pulsar arriba o abajo alterna la opción modificada).
+    - Multiplayer.
+    - Comenzar.
+    - Salir.
+![image](https://github.com/user-attachments/assets/d49b5d3e-c00c-4e2d-919e-caf75c9d8f20)
+
+- **Menú de selección**
     - Escoger arma (pulsando izquierda o derecha).
     - Escoger mazo inicial (pulsando izquierda o derecha)/
     - Comenzar.
-    - Salir.
+![Boceto HUD](https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/selection_menu.png)
 
-- **Menú de pausa**
-    - Restaurar.
-    - Salir.
+- **Menú de objetos míticos**
+    - Elegir entre tres objetos.
+    - Continuar.
+![Boceto HUD](https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/mythic_menu.png)
 
 - **Menú de recompensa**
     - Recompensa de cartas.
-    - Recompensa de mejorar carta cuando es una oleada de eventos.
+    - Cambio de cartas.
+    - Previa de mazo actual.
+![Boceto HUD](https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/reward_menu.png)
 
 - **Menú de Fin de Juego**
-    - Volver a jugar.
     - Menú principal.
     - Salir del Juego.
+![Boceto HUD](https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/victory.png)
+![Boceto HUD](https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/game_over_menu.png)
 
 ## 5. Mundo del juego  
 
@@ -273,16 +345,20 @@ Tiene fijado al personaje en el centro, pero cuando este se acerque a las esquin
   <img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/bocetoPersonaje1.png" alt="Boceto personaje1" width="100" />
   <img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/bocetoPersonaje2.png" alt="Boceto personaje2" width="100" />
 
-- **Enemigos:**  
-    - _Tipo 1:_ SarnoRata (ataque en área): Se acerca al jugador y ataca en área circular.
-    - _Tipo 2:_ MichiMafioso (disparo de proyectiles): Se aleja y dispara un proyectil.
-    - _Tipo 3:_ PlimPlim (disparo de proyectiles): Dispara tres proyectiles en arco.
-    - _Tipo 4:_ Boom (ataque en área): Se acerca y explota.
-    - _Tipo 5:_ Ratatouille: Da vueltas alrededor del jugador, causando daño al chocarse.
-    - _Tipo 6:_ Basurero: Genera enemigos, y al explotar, invoca al Rey del Basurero, que lanza bolsas de basura que ralentizan al jugador.
-    
-    - _Miniboss 1:_ Jefe de la CatKuza: Patrones de ataque complejos.
-    - _Miniboss 2:_ SuperMichiMafioso: Patrones de ataque en área y genera Michis Mafiosos.
+- **Enemigos:**
+
+| Nombre | Imagen | Descripción |
+|--------|--------|-------------|
+| **SarnoRata**  | <img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/sarno_rata.png" alt="sarno_rata" width="100" /> |Se acerca al jugador y ataca en área circular.|
+| **MichiMafioso**  | <img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/michi_mafioso.png" alt="michi_mafioso.png" width="100" /> | Se aleja y dispara un proyectil.|
+| **PlimPlim**  | <img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/sarno_rata.png" alt="sarno_rata" width="100" /> | Dispara tres proyectiles en arco. |
+| **Boom**  | <img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/boom.png" alt="Boom" width="100" /> | Se acerca y explota. |
+| **Ratatouille**  | <img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/ratatouille.png" alt="ratatouille" width="100" /> | Da vueltas alrededor del jugador, causando daño al chocarse.|
+| **Basurero**  | <img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/basurero.png" alt="basurero" width="100" /> | Genera enemigos, y al explotar, invoca al Rey del Basurero. |
+| **Rey del Basurero**  |<img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/rey_basurero.png" alt="rey_basurero" width="100" /> | Lanza bolsas de basura que ralentizan al jugador. |
+| **Jefe de la CatKuza**  | <img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/catkuza.png" alt="catkuza" width="100" /> |  Patrones de ataque complejos.|
+| **SuperMichiMafioso**  | <img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/super_michi_mafioso.png" alt="super_michi_mafioso" width="100" /> | Patrones de ataque en área y genera Michis Mafiosos.|
+
 
 ### 5.2. Niveles  
 Un único nivel con un mapa de tamaño 1.5-2 veces lo visible en pantalla. Cuyo único elemento son los bordes del escenario que no permiten al jugador avanzar más allá de estos.
@@ -298,12 +374,12 @@ Buscamos dinámicas de roguelike, de disparos en visión cenital, de deckbuildin
 
 El juego comienza en el **menú principal**, donde el jugador puede:
 - Iniciar una nueva partida.
-- Ajustar configuraciones.
+- Iniciar una nueva partica multiplayer.
+- Tutorial.
 - Salir del juego.
 
 Al seleccionar **"Jugar"**, se abre una pantalla donde el jugador elige su **arma** y **mazo inicial**. Una vez elegidos, el jugador pulsa **"Comenzar"** para iniciar la partida.
 
-La música se intensifica y comenzamos a ver enemigos acercarse por los bordes de la pantalla.
 
 *Inicio de la Partida*
 
@@ -311,45 +387,40 @@ El personaje del jugador aparece en el **campo de batalla** sin nada a su alrede
 - **Carta en mano**: La primera carta del mazo, lista para ser usada.
 - **Contador de maná**: Un indicador numérico y una barra de progreso que muestra el maná disponible.
 - **Barra de vida**: Representa la salud del jugador.
-- **Temporizador de oleada**: Un contador regresivo que indica **"Tiempo hasta la siguiente oleada: 10 segundos"**.
+- **Temporizador de oleada**: Un contador regresivo que indica **10 segundos"**.
 
-La música cambia a un tono más intenso, señalando el inicio de la acción. Los enemigos comienzan a aparecer en los bordes del mapa y se acercan al jugador.
+La música cambia a un tono más intenso, señalando el inicio de la acción. Hay efectos sonidos para señalar si son oleadas normales o de eventos. Los enemigos comienzan a aparecer en los bordes del mapa y se acercan al jugador.
 
 *Acciones del Jugador*
 
 - **Disparar con clic izquierdo**: Usa el arma equipada para atacar a los enemigos. Cada disparo consume un breve tiempo de enfriamiento.
 - **Usar cartas con clic derecho**: Activa la carta actual en la mano, consumiendo maná. Si no hay suficiente maná, la carta se muestra en colores apagados y se reproduce un sonido de error.
-- **Recargar manualmente**: Activa el artefacto que posee el jugador si no está en cooldown.
+- **Recargar manualmente**: Se recarga el mazo con la barra espaciadora.
 
 Después de usar o descartar una carta, el mazo avanza, mostrando una nueva carta en la mano. El maná se regenera pasivamente con el tiempo, permitiendo al jugador usar cartas más poderosas más adelante.
 
 *Combate y Estrategia*
 
-Al atacar a los enemigos, estos cambian de color (por ejemplo, se ponen rojos) para indicar que han recibido daño. Después de varios impactos, los enemigos son eliminados y desaparecen del campo de batalla. El jugador debe:
+Al atacar a los enemigos, estos cambian de color (se ponen rojos) para indicar que han recibido daño. Después de varios impactos, los enemigos son eliminados y desaparecen del campo de batalla. El jugador debe:
 - Moverse constantemente para evitar los ataques enemigos.
 - Gestionar su maná para usar las cartas de manera efectiva.
 
 *Fin de la Oleada*
 
 Una vez que todos los enemigos son derrotados, aparecen un **menú de recompensas**. El jugador puede:
-- Seleccionar una recompensa presionando la tecla **F**.
+- Seleccionar una recompensa presionando en la imagen de la recompensa.
 
-Al elegir una recompensa, las demás desaparecen, y la selección se aplica inmediatamente (por ejemplo, una nueva carta se añade al mazo, se mejora una estadística o se recupera salud).
+Al elegir una recompensa, las demás son desabilitadas, y la selección se aplica inmediatamente (por ejemplo, una nueva carta se añade al mazo o se recupera salud).
 
 *Eventos Especiales*
 
-En algunas oleadas, puede ocurrir un **evento especial** (por ejemplo, una oleada de jefe o un modificador de dificultad). Estos eventos se anuncian con un mensaje y un icono en pantalla, y ofrecen recompensas más poderosas al completarse.
+En algunas oleadas, puede ocurrir un **evento especial** (por ejemplo, una oleada de jefe o un modificador de dificultad). Estos eventos se anuncian con un mensaje y un sonido de sirena, y ofrecen recompensas más poderosas al completarse.
 
 *Derrota y Menú de Fin de Juego*
 
-Si el jugador pierde toda su salud, aparece un **menú de derrota** que muestra:
-- **Puntuación**: Basada en el progreso y las oleadas completadas.
-- **Cartas del mazo**: Un resumen de las cartas que se usaron durante la partida.
-- **Mejoras obtenidas**: Lista de mejoras o recompensas adquiridas.
-
-El jugador puede elegir entre:
-- **Volver a jugar**: Reinicia la partida con la misma configuración inicial.
-- **Menú principal**: Regresa al menú inicial para ajustar opciones o seleccionar un nuevo mazo y arma.
+Si el jugador pierde toda su salud, aparece un **menú de derrota** que tiene dos botones:
+- **Menú principal**: Regresa al menú inicial para seleccionar un nuevo mazo y arma.
+- **Salir**: Se cierra la aplicación.
 
 
 ## 7. Estética y contenido  
