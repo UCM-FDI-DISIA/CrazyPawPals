@@ -50,7 +50,8 @@
 	TRIGGER_MANIFOLD, \
 	WEAPON, \
 	WAVEMANAGER, \
-	DAMAGE_POPUP
+	DAMAGE_POPUP, \
+	ERASE_TEXTURE
 
 // Groups list - must have at least one element
 //

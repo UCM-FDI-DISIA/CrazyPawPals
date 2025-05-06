@@ -62,6 +62,10 @@ Deck::~Deck()
 	if(_hand!=nullptr)
 		delete _hand;
 	//_draw_pile y _discard_pile llamar�n a su destructor cuando esto se destruya al salir de �mbito
+	for (auto& c : _draw_pile.card_list())
+		delete c;
+	for (auto& c : _discard_pile.card_list())
+		delete c;
 }
 
 bool Deck::use_card(const Vector2D* target_pos) noexcept
