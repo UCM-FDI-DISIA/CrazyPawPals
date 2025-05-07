@@ -69,7 +69,7 @@ void bullet_collision_component::apply_weapon_effect(GameStructs::WeaponType typ
     switch (type) {
     case GameStructs::WeaponType::RAMP_CANON: {
         auto player = manager.getHandler(ecs::hdlr::PLAYER);
-        manager.getComponent<ManaComponent>(player)->change_mana(1);
+        manager.getComponent<ManaComponent>(player)->change_mana(1.5);
         break;
     }
     case GameStructs::WeaponType::CATKUZA_WEAPON: {

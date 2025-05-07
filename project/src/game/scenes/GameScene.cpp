@@ -361,6 +361,7 @@ void GameScene::spawn_super_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene)
 
 	Transform *tr = manager.getComponent<Transform>(e);
 	MovementController *mc = manager.getComponent<MovementController>(e);
+	mc->set_max_speed(0.06);
 	StateMachine *state = manager.getComponent<StateMachine>(e);
 
 	Follow *fll = manager.getComponent<Follow>(e);
@@ -500,7 +501,7 @@ void GameScene::spawn_catkuza(Vector2D posVec, ecs::sceneId_t scene)
 		"catkuza", 
 		posVec, 
 		GameStructs::DEFAULT, 
-		25, 
+		30, 
 		1.8f, 
 		2.5f, 
 		GameStructs::CLOSEST, 
@@ -515,6 +516,7 @@ void GameScene::spawn_catkuza(Vector2D posVec, ecs::sceneId_t scene)
 
 	Transform *tr = manager.getComponent<Transform>(e);
 	MovementController *mc = manager.getComponent<MovementController>(e);
+	mc->set_max_speed(0.04);
 	StateMachine *state = manager.getComponent<StateMachine>(e);
 
 	Follow *fll = manager.getComponent<Follow>(e);
@@ -722,6 +724,7 @@ void GameScene::spawn_sarno_rata(Vector2D posVec, ecs::sceneId_t scene)
 
 	Transform *tr = manager.getComponent<Transform>(e);
 	MovementController *mc = manager.getComponent<MovementController>(e);
+	mc->set_max_speed(0.09);
 	StateMachine *state = manager.getComponent<StateMachine>(e);
 
 	Follow *fll = manager.getComponent<Follow>(e);
@@ -769,6 +772,7 @@ void GameScene::spawn_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene)
 
 	Transform *tr = manager.getComponent<Transform>(e);
 	MovementController *mc = manager.getComponent<MovementController>(e);
+	mc->set_max_speed(0.05);
 	StateMachine *state = manager.getComponent<StateMachine>(e);
 	auto state_cm = state->getConditionManager();
 
@@ -783,8 +787,8 @@ void GameScene::spawn_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene)
 	state->add_state("Attacking", attackingState);
 	state->add_state("Backing", backingState);
 
-	float dist_to_attack = 3.0f;
-	float dist_to_fallback = 2.5f;
+	float dist_to_attack = 5.0f;
+	float dist_to_fallback = 4.5f;
 
 	state->add_transition("Walking", "Attacking", [state_cm, fll, tr, dist_to_attack]()
 						  { return state_cm->is_player_near(fll->get_act_follow(), tr, dist_to_attack); });
@@ -833,6 +837,7 @@ void GameScene::spawn_plim_plim(Vector2D posVec, ecs::sceneId_t scene)
 
 	Transform *tr = manager.getComponent<Transform>(e);
 	MovementController *mc = manager.getComponent<MovementController>(e);
+	mc->set_max_speed(0.06);
 	StateMachine *state = manager.getComponent<StateMachine>(e);
 	auto state_cm = state->getConditionManager();
 
@@ -866,7 +871,7 @@ void GameScene::spawn_boom(Vector2D posVec, ecs::sceneId_t scene)
 			"boom",				  // sprite_key
 			posVec,				  // start_pos
 			GameStructs::DEFAULT, // enemy_type
-			14,					  // health
+			28,					  // health
 			1.8f,				  // width
 			1.8f,				  // height
 			GameStructs::CLOSEST, // target_strategy
@@ -879,6 +884,7 @@ void GameScene::spawn_boom(Vector2D posVec, ecs::sceneId_t scene)
 
 	Transform *tr = manager.getComponent<Transform>(e);
 	MovementController *mc = manager.getComponent<MovementController>(e);
+	mc->set_max_speed(0.03f);
 	StateMachine *state = manager.getComponent<StateMachine>(e);
 	auto state_cm = state->getConditionManager();
 	Health *health = manager.getComponent<Health>(e);
@@ -928,7 +934,7 @@ void GameScene::spawn_ratatouille(Vector2D posVec, ecs::sceneId_t scene)
 	auto &&tr_a = *new Transform(ec.start_pos, ec.dir, ec.r, ec.s * randSize);
 	auto &&fll = *new Follow(ec.follow);
 	auto &&col = *new collisionable{tr_a, rigidbody, rect, collisionable_option_trigger};
-	auto &&mc = *new MovementController(ec.max_speed, ec.acceleration, ec.decceleration * deccel_spawned_creatures_multi);
+	auto &&mc = *new MovementController(ec.max_speed*1.4, ec.acceleration, ec.decceleration * deccel_spawned_creatures_multi);
 	auto &&state = *new StateMachine();
 
 	auto e = create_entity(
@@ -991,7 +997,7 @@ void GameScene::spawn_rata_basurera(Vector2D posVec, ecs::sceneId_t scene)
 			"basurero",	  // sprite_key
 			posVec,				  // start_pos
 			GameStructs::DEFAULT, // enemy_type
-			8,					  // health
+			16,					  // health
 			2.0f,				  // width
 			2.2f,				  // height
 			GameStructs::CLOSEST, // target_strategy
@@ -1048,7 +1054,7 @@ void GameScene::spawn_rey_basurero(Vector2D posVec, ecs::sceneId_t scene)
 			"rey_basurero",		  // sprite_key
 			posVec,				  // start_pos
 			GameStructs::DEFAULT, // enemy_type
-			7,					  // health
+			14,					  // health
 			2.0f,				  // width
 			2.0f,				  // height
 			GameStructs::CLOSEST, // target_strategy

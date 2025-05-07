@@ -3,23 +3,39 @@
 #include "../../../../game/Game.h"
 #include "../../../../game/scenes/GameScene.h"
 
-WeaponMichiMafioso::WeaponMichiMafioso() : Weapon(5, 3000, 20.0f, 0.2f, "p_michi_mafioso", 1.0f, 1.0f) { }
+WeaponMichiMafioso::WeaponMichiMafioso() : Weapon(5, 3000, 20.0f, 0.13f, "p_michi_mafioso", 1.0f, 1.0f) 
+{
+	_bp.speed = _speed;
+	_bp.damage = _damage;
+	_bp.life_time = 2;
+	_bp.width = _attack_width;
+	_bp.sprite_key = "p_michi_mafioso";
+	_bp.height = _attack_height;
+	_bp.collision_filter = GameStructs::collide_with::player;
+}
 
-WeaponMichiMafioso::~WeaponMichiMafioso() {}
+WeaponMichiMafioso::~WeaponMichiMafioso() 
+{
+
+}
+
+void WeaponMichiMafioso::update(uint32_t delta_time)
+{
+	if (_shooting && _time_to_shoot < sdlutils().virtualTimer().currTime()) {
+		delayed_shoot();
+		_shooting = false;
+	}
+}
 
 void 
 WeaponMichiMafioso::callback(Vector2D shootPos, Vector2D shootDir) {
-	GameStructs::BulletProperties bp = GameStructs::BulletProperties();
-	bp.dir = shootDir;
-	bp.init_pos = shootPos;
-	bp.speed =_speed;
-	bp.damage = _damage;
-	bp.life_time = 2;
-	bp.width = _attack_width;
-	bp.sprite_key = "p_michi_mafioso";
-	bp.height = _attack_height;
-	bp.collision_filter = GameStructs::collide_with::player;
-	//bp.rot = atan2(bp.dir.getY(), bp.dir.getX()) * 180.0f / M_PI;
+	_bp.dir = shootDir;
+	_bp.init_pos = shootPos;
+	_shooting = true;
+	_time_to_shoot = sdlutils().virtualTimer().currTime() + 1000;
+}
 
-	Game::Instance()->get_currentScene()->create_proyectile(bp, ecs::grp::BULLET);
+void WeaponMichiMafioso::delayed_shoot()
+{
+	Game::Instance()->get_currentScene()->create_proyectile(_bp, ecs::grp::BULLET);
 }
