@@ -108,14 +108,11 @@ void WaveManager::initialize_next_wave_params(bool normal_wave)
 void WaveManager::_spawn_boss()
 {
     enemy_spawn_caller* esc;
-    switch (sdlutils().rand().nextInt(0, 3)) {
+    switch (sdlutils().rand().nextInt(0, 2)) {
     case 0:
-        esc = new enemy_spawn_caller([](Vector2D v) {GameScene::spawn_rey_basurero(v); });
-        break;
-    case 1:
         esc = new enemy_spawn_caller([](Vector2D v) {GameScene::spawn_catkuza(v); });
         break;
-    case 2:
+    case 1:
         esc = new enemy_spawn_caller([](Vector2D v) {GameScene::spawn_super_michi_mafioso(v); });
         break;
     default:
