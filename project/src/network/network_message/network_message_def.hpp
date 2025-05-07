@@ -110,25 +110,25 @@ struct NetworkWaveEvent
 
 NetworkWaveEvent network_message_wave_event_create(events event_type);
 
+#pragma region network_bullets
 // Struct de BulletProperties que se envia por la red
 struct NetworkBulletProperties
 {
-    int init_pos[2];
-    int dir[2];
-    int speed = 0.0f;
-    int damage = 0;
-    int pierce_number = 0;
-    float life_time = 1.0f;
-    float width = 40;
-    float height = 40;
+    uint32_t init_pos[2];
+    uint32_t dir[2];
+    uint32_t speed = 0.0f;
+    uint32_t damage = 0;
+    uint32_t pierce_number = 0;
+    uint32_t life_time = 1.0f;
+    uint32_t width = 40;
+    uint32_t height = 40;
     GameStructs::WeaponType weapon_type = GameStructs::DEFAULT;
     GameStructs::collide_with collision_filter;
     uint8_t sprite_key_length;
     char sprite_key[32];
 };
-
-// Constructor del struct de NetworkBulletProperties
-inline NetworkBulletProperties network_message_bulletProperties_create(GameStructs::BulletProperties bp)
+//Transformador de struct: BulletProperties -> NetworkBulletProperties
+inline NetworkBulletProperties network_message_bulletProperties_create(const GameStructs::BulletProperties &bp)
 {
     NetworkBulletProperties n_bp;
 
@@ -164,7 +164,40 @@ inline NetworkBulletProperties network_message_bulletProperties_create(GameStruc
 
     return n_bp;
 }
+//Transformador de struct: NetworkBulletProperties -> BulletProperties
+GameStructs::BulletProperties network_message_bulletProperties_receive(NetworkBulletProperties n_bp)
+{
+    GameStructs::BulletProperties bp;
+    
+    //Vector2D init_pos
+    bp.init_pos.setX(SDLNet_Read32(&n_bp.init_pos[0]) / fact_float_int);
+    bp.init_pos.setY(SDLNet_Read32(&n_bp.init_pos[1]) / fact_float_int);
 
+    //Vector2D dir
+    bp.dir.setX(SDLNet_Read32(&n_bp.dir[0]) / fact_float_int);
+    bp.dir.setY(SDLNet_Read32(&n_bp.dir[1]) / fact_float_int);
+
+    //ints
+    bp.speed = SDLNet_Read32(&n_bp.speed) / fact_float_int;
+    bp.damage = SDLNet_Read32(&n_bp.damage);
+    bp.pierce_number = SDLNet_Read32(&n_bp.pierce_number);
+
+    //floats
+    bp.life_time = SDLNet_Read32(&n_bp.life_time) / fact_float_int;
+    bp.width = SDLNet_Read32(&n_bp.width) / fact_float_int;
+    bp.height = SDLNet_Read32(&n_bp.height) / fact_float_int;
+
+    //ints
+    bp.weapon_type = (GameStructs::WeaponType)(int)SDLNet_Read32(&n_bp.weapon_type);
+    bp.collision_filter = (GameStructs::collide_with)(int)SDLNet_Read32(&n_bp.collision_filter);
+
+    //strings
+    n_bp.sprite_key[n_bp.sprite_key_length] = '\0';
+    bp.sprite_key = std::string{n_bp.sprite_key};
+
+    return bp;
+}
+#pragma endregion
 
 //si esta preparado para empezar el juego (si ha eleigo mazo y arma)
 struct network_message_player_ready {
@@ -181,7 +214,7 @@ inline network_message_player_ready create_player_ready_message (uint32_t id, bo
 
 //mensaje sin contenido
 struct network_message_payload_empty {
-    //vac¨ªa
+    //vacï¿½ï¿½a
 };
 
 inline network_message_payload_empty create_payload_empty_create_message() {

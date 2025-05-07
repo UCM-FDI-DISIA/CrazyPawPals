@@ -1341,7 +1341,29 @@ ecs::entity_t GameScene::generate_proyectile(const GameStructs::BulletProperties
 }
 ecs::entity_t GameScene::create_proyectile(const GameStructs::BulletProperties &bp, ecs::grpId_t gid)
 {
-	return generate_proyectile(bp, gid);
+	auto network = Game::Instance()->get_network();
+	switch (network.profile_status){
+		case network_context_profile_status_none:
+			//Create normal bullet as usual
+			return generate_proyectile(bp, gid);
+			break;
+		case network_context_profile_status_client:
+			//Create NetworkBulletProperties
+			NetworkBulletProperties n_bp = network_message_bulletProperties_create<NetworkBulletProperties>(bp);
+			//Send 
+			network_message_pack_send(network.profile.client.socket_to_host,
+				network_message_pack_create(network_message_type_summon_true_bullet, n_bp));
+			break;
+		case network_context_profile_status_host:
+			//Create NetworkBulletProperties
+			NetworkBulletProperties n_bp = network_message_bulletProperties_create<NetworkBulletProperties>(bp);
+			//Send 
+			network_message_pack_send(network.profile.client.socket_to_host, 
+				network_message_pack_create(network_message_type_summon_dummy_bullet, n_bp));
+			//Summon true bullet
+			return generate_proyectile(bp, gid);
+			break;
+	}
 }
 #pragma endregion
 
@@ -1407,6 +1429,24 @@ void GameScene::host_handle_menssage(network_context& ctx)
 					}
 					break;
 				}
+				case network_message_type_summon_true_bullet:
+					//Receives NetworkBulletProperties
+					auto msg = network_message_pack_receive<NetworkBulletProperties>(connection);
+					auto&& payload = msg.payload.content;
+					//Creates BulletProperties from NetworkBulletProperties and generates the proyectile
+					generate_proyectile(
+						network_message_bulletProperties_receive(payload),
+						ecs::grp::BULLET);
+					//Sends "network_message_type_summon_dummy_bullet" to all clients
+					for (network_connection_size i = 0; i < ctx.profile.host.sockets_to_clients.connection_count; ++i) {
+						TCPsocket& client = ctx.profile.host.sockets_to_clients.connections[i];
+						if (client != connection) {
+							network_message_pack_send(
+								client,
+								network_message_pack_create(network_message_type_summon_dummy_bullet, payload));
+						}
+					}
+					break;
 				default: {
 					break;
 				}
@@ -1444,6 +1484,15 @@ void GameScene::client_handle_menssage(network_context& ctx)
 
 			break;
 		}
+		case network_message_type_summon_dummy_bullet:
+			//Receives NetworkBulletProperties
+			auto msg = network_message_pack_receive<NetworkBulletProperties>(ctx.profile.client.socket_to_host);
+			auto&& payload = msg.payload.content;
+			//Creates BulletProperties from NetworkBulletProperties and generates the proyectile
+			generate_proyectile(
+				network_message_bulletProperties_receive(payload),
+				ecs::grp::BULLET);
+			break;
 		default: {
 			break;
 		}
