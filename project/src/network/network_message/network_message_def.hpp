@@ -3,6 +3,7 @@
 
 #include "SDL_net.h"
 #include "../network_utility.hpp"
+#include "../network_state.hpp"
 #include <cassert>
 #include <type_traits>
 #include <string_view>

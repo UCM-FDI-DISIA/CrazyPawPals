@@ -156,8 +156,7 @@ static void multiplayer_menu_host_loop(network_context &ctx) {
                 const uint16_t type_n{dyn_message->header.type_n};
                 const uint16_t type_h{SDLNet_Read16(&type_n)};
                 switch (type_h) {
-                case network_message_type::network_message_type_dbg_print: [[fallthrough]];
-                case network_message_type::network_message_type_dbg_print_two_byte_test: {
+                case network_message_type::network_message_type_dbg_print: {
                     // std::unique_ptr<network_message_pack<network_message_payload_dbg_print<64>>, typename network_message_pack<network_message_payload_dbg_print<64>>::deleter> m;
                     auto message =
                         network_message_dynamic_pack_into<network_message_payload_dbg_print<64>>(std::move(dyn_message));
