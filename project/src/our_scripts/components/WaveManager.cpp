@@ -190,7 +190,7 @@ void WaveManager::spawn_next_group_of_enemies()
 #endif
 
     delete esc;
-    _numEnemies += enemy_spawn_data[_enemy_types_for_current_wave[index]].number_of_enemies_simultaneous_spawn;
+    //_numEnemies += enemy_spawn_data[_enemy_types_for_current_wave[index]].number_of_enemies_simultaneous_spawn;
     //sets next spawn time
     float multiplier = ((sdlutils().rand().nextInt(0, 100)*0.001) * 0.3 + 0.7);
     auto add_to_crono = (uint32_t)(time_max_between_enemy_spawns_on_this_wave * multiplier);

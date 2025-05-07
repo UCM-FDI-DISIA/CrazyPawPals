@@ -333,6 +333,8 @@ ecs::entity_t GameScene::create_enemy(GameStructs::EnemyProperties &&ec, ecs::sc
 		&state,
 		&fll);
 
+	Game::Instance()->get_mngr()->getComponent<WaveManager>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::WAVE))->newEnemy();
+
 	return e;
 }
 #pragma endregion
@@ -983,6 +985,10 @@ void GameScene::spawn_ratatouille(Vector2D posVec, ecs::sceneId_t scene)
 						  { return !state_cm->is_player_near(fll.get_act_follow(), tr, dist_to_rotate * 1.8f); });
 
 	state.set_initial_state("Walking");
+
+	Game::Instance()->get_mngr()->getComponent<WaveManager>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::WAVE))->newEnemy();
+
+	//Game::Instance()->get_mngr()->getHandler()
 }
 #pragma endregion
 

@@ -24,20 +24,20 @@ WeaponRataBasurera::callback(Vector2D shootPos, Vector2D shootDir) {
 	//Genera SarnoRata si _randomNum est� entre 0-4 (50% chance)
 	if (_randomNum < 5) {
 		GameScene::spawn_sarno_rata(spawnPos);
-		Game::Instance()->get_mngr()->getComponent<WaveManager>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::WAVE))->newEnemy();
+		//Game::Instance()->get_mngr()->getComponent<WaveManager>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::WAVE))->newEnemy();
 		std::cout << "SarnoRata" << std::endl;
 	}
 	//Genera PlimPlim si _randomNum est� entre 5-7 (30% chance)
 	else if (_randomNum < 8) {
 		GameScene::spawn_plim_plim(spawnPos);
-		Game::Instance()->get_mngr()->getComponent<WaveManager>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::WAVE))->newEnemy();
+		//Game::Instance()->get_mngr()->getComponent<WaveManager>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::WAVE))->newEnemy();
 		std::cout << "spawn_plim_plim" << std::endl;
 
 	}
 	//Genera Ratatouille si _randomNum est� entre 8-9 (20% chance)
 	else {
 		GameScene::spawn_ratatouille(spawnPos);
-		Game::Instance()->get_mngr()->getComponent<WaveManager>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::WAVE))->newEnemy();
+		//Game::Instance()->get_mngr()->getComponent<WaveManager>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::WAVE))->newEnemy();
 		std::cout << "spawn_ratatouille" << std::endl;
 
 	}
