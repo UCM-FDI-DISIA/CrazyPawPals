@@ -726,7 +726,7 @@ void GameScene::spawn_sarno_rata(Vector2D posVec, ecs::sceneId_t scene)
 
 	Transform *tr = manager.getComponent<Transform>(e);
 	MovementController *mc = manager.getComponent<MovementController>(e);
-	mc->set_max_speed(0.09);
+	mc->set_max_speed(0.08);
 	StateMachine *state = manager.getComponent<StateMachine>(e);
 
 	Follow *fll = manager.getComponent<Follow>(e);

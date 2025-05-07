@@ -13,6 +13,5 @@ protected:
 public:
 	__CMPID_DECL__(ecs::cmp::WEAPON);
 	WeaponMichiMafioso();
-	virtual ~WeaponMichiMafioso();
 	void update(uint32_t delta_time) override;
 };
