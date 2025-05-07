@@ -1,3 +1,4 @@
+
 #include "bullet_collision_component.hpp"
 #include "rigidbody_component.hpp"
 #include "collision_triggerers.hpp"
@@ -6,7 +7,6 @@
 #include "../../game/GameStructs.h"
 #include "Health.h"
 #include "movement/MovementController.h"
-#include "../../utils/checkML.h"
 #include "collision_registration_by_id.h"
 #include "id_component.h"
 #include "cards/Mana.h"
@@ -69,7 +69,7 @@ void bullet_collision_component::apply_weapon_effect(GameStructs::WeaponType typ
     switch (type) {
     case GameStructs::WeaponType::RAMP_CANON: {
         auto player = manager.getHandler(ecs::hdlr::PLAYER);
-        manager.getComponent<ManaComponent>(player)->change_mana(1);
+        manager.getComponent<ManaComponent>(player)->change_mana(1.5);
         break;
     }
     case GameStructs::WeaponType::CATKUZA_WEAPON: {

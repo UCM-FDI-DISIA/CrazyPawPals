@@ -1,4 +1,5 @@
 #pragma once
+
 #include "offset_dyn_image.hpp"
 
 class Transform;

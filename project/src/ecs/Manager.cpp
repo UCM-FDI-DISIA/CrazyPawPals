@@ -6,7 +6,6 @@
 #include "../our_scripts/components/rendering/camera_component.hpp"
 #include <cstdlib>
 #include <unordered_set>
-#include "../utils/checkML.h"
 
 struct contact_pair {
 	ecs::entity_t body0;

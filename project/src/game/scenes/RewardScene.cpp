@@ -1,3 +1,4 @@
+
 #include "RewardScene.h"
 
 #include "../../our_scripts/components/ui/Button.h"
@@ -6,7 +7,6 @@
 #include "../../sdlutils/SDLUtils.h"
 #include "../../sdlutils/InputHandler.h"
 #include "../../ecs/Entity.h"
-#include "../../utils/checkML.h"
 
 #include "../../our_scripts/card_system/Card.hpp"
 #include "../../our_scripts/card_system/CardList.h" 

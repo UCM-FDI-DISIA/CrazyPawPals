@@ -1,5 +1,6 @@
 #pragma once
 
+
 #include <unordered_map>
 #include <forward_list>
 
@@ -56,28 +57,28 @@ namespace event_system {
 
 	class event_triggerer {
 	private:
-		std::forward_list<std::pair<event_receiver*, ev_rec_func>>* suscribers_vec;
+		std::forward_list<std::pair<event_receiver*, ev_rec_func>> suscribers_vec;
 	public:
 		event_triggerer() 
-			: suscribers_vec(new std::forward_list<std::pair<event_receiver*,ev_rec_func>>) {}
+			: suscribers_vec() {}
 		//not tested
 		~event_triggerer() {
-			suscribers_vec->clear();
-			delete suscribers_vec;
+			//suscribers_vec->clear();
+			//delete suscribers_vec;
 		}
 		inline void suscribe(event_receiver* e, ev_rec_func event_receiver_function) {
-			suscribers_vec->push_front(std::make_pair(e,event_receiver_function));
+			suscribers_vec.push_front(std::make_pair(e,event_receiver_function));
 		}
 		//not tested
 		inline void unsuscribe(event_receiver* e, ev_rec_func event_receiver_function) {
 			//std::find(suscribers_vec->begin(), suscribers_vec->end(), std::make_pair(e, event_receiver_function));
-			suscribers_vec->remove(std::make_pair(e, event_receiver_function));
+			suscribers_vec.remove(std::make_pair(e, event_receiver_function));
 		}
 		inline void unsuscribe_all() {
-			suscribers_vec->clear();
+			suscribers_vec.clear();
 		}
 		inline void trigger_event(const event_receiver::Msg& m) {
-			for (std::pair<event_receiver*, ev_rec_func>& e : *suscribers_vec) {
+			for (std::pair<event_receiver*, ev_rec_func>& e : suscribers_vec) {
 				(e.first->*(e.second))(m);
 			}
 		}

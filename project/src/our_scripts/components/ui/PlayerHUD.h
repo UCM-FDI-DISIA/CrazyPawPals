@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../../../ecs/Component.h"
 #include "../cards/Mana.h"
 #include "../Health.h"

@@ -1,3 +1,4 @@
+
 #include <vector>
 #include <random>
 #include "WaveManager.h"
@@ -5,7 +6,6 @@
 #include "game/Game.h"
 #include "game/scenes/GameScene.h"
 #include "sdlutils/SDLUtils.h"
-#include "../../utils/checkML.h"
 #include "../components/Fog.h"
 #include "../wave_events/no_event.hpp"
 #include "../wave_events/ice_skating_event.hpp"
@@ -91,7 +91,7 @@ void WaveManager::initialize_next_wave_params(bool normal_wave)
         do {
             j = 0;
             //Chooses new random enemy
-            _enemy_types_for_current_wave[i] = sdlutils().rand().nextInt(0, (int)rata_basurera);
+            _enemy_types_for_current_wave[i] = sdlutils().rand().nextInt(0, (int)rata_basurera+1);
         } while (
             j < i && //This is false for (i==0)
             _enemy_types_for_current_wave[j] != _enemy_types_for_current_wave[i] && //This is false if enemy chosen for index 1 || 2 is alredy taken in index 0
@@ -100,9 +100,30 @@ void WaveManager::initialize_next_wave_params(bool normal_wave)
         );
         cheaper_enemy = std::min(cheaper_enemy,enemy_spawn_data[_enemy_types_for_current_wave[i]].enemies_group_spawn_cost);
     }
-    time_max_between_enemy_spawns_on_this_wave = max_spawn_wave_time / (tokens_for_this_wave / cheaper_enemy);
+    time_max_between_enemy_spawns_on_this_wave = std::min(max_spawn_wave_time / (tokens_for_this_wave / cheaper_enemy),5000);
     _next_spawn_time = sdlutils().virtualTimer().currTime();// +time_max_between_enemy_spawns_on_this_wave;
     //Si no es normal wave spawnea tb un bos
+}
+
+void WaveManager::_spawn_boss()
+{
+    enemy_spawn_caller* esc;
+    switch (sdlutils().rand().nextInt(0, 2)) {
+    case 0:
+        esc = new enemy_spawn_caller([](Vector2D v) {GameScene::spawn_catkuza(v); });
+        break;
+    case 1:
+        esc = new enemy_spawn_caller([](Vector2D v) {GameScene::spawn_super_michi_mafioso(v); });
+        break;
+    default:
+        assert(false && "unreachable");
+        exit(EXIT_FAILURE);
+        break;
+    }
+    _numEnemies++;
+    esc->spawn_callback();
+    delete esc;
+    tokens_for_this_wave -= 3;
 }
 
 void WaveManager::spawn_next_group_of_enemies()
@@ -169,7 +190,7 @@ void WaveManager::spawn_next_group_of_enemies()
 #endif
 
     delete esc;
-    _numEnemies += enemy_spawn_data[_enemy_types_for_current_wave[index]].number_of_enemies_simultaneous_spawn;
+    //_numEnemies += enemy_spawn_data[_enemy_types_for_current_wave[index]].number_of_enemies_simultaneous_spawn;
     //sets next spawn time
     float multiplier = ((sdlutils().rand().nextInt(0, 100)*0.001) * 0.3 + 0.7);
     auto add_to_crono = (uint32_t)(time_max_between_enemy_spawns_on_this_wave * multiplier);
@@ -201,6 +222,8 @@ void WaveManager::update(uint32_t delta_time) {
 #ifdef GENERATE_LOG
     WaveManager::_ticks_on_wave++;
 #endif
+
+    std::cout << _numEnemies << " vs " << _enemiesKilled << std::endl;
 }
 //---------------------------------------------------------------------------------------------------------------------------------
 
@@ -247,6 +270,9 @@ void WaveManager::start_new_wave()
     }
 
     choose_new_event();
+
+    if ((_currentWave + 1) % 5 == 0)
+        _spawn_boss();
 }
 
 void WaveManager::reset_wave_manager()

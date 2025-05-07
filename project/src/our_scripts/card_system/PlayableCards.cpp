@@ -1,3 +1,4 @@
+
 #include "PlayableCards.hpp"
 #include "CardUpgrade.hpp"
 #include "../components/movement/MovementController.h"
@@ -5,7 +6,6 @@
 #include "../../game/scenes/GameScene.h"
 #include "ShootPatrons.hpp"
 #include "../components/Health.h"
-#include "../../utils/checkML.h"
 #define PI 3.14159265358979323846
 
 #pragma region fireball
@@ -179,7 +179,7 @@ void EldritchBlast::on_play(Deck& d, const Vector2D* player_position, const Vect
 	bp.width = 2.3;
 	bp.life_time = 0.13;
 	bp.sprite_key = "p_eldritch_blast";
-	bp.damage = 2;
+	bp.damage = 4;
 	bp.collision_filter = GameStructs::collide_with::enemy;
 
 	patrons::ShotgunPatron(bp, ecs::grp::BULLET, _amplitude * (_shot_count - 1), _shot_count);

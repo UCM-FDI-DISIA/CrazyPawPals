@@ -1,5 +1,5 @@
+
 #include "Game.h"
-#include "../utils/checkML.h"
 
 #include "../ecs/Manager.h"
 #include "../sdlutils/InputHandler.h"
@@ -46,11 +46,15 @@ Game::~Game() {
 	if (InputHandler::HasInstance())
 		InputHandler::Release();
 
-	// release SLDUtil if the instance was created correctly.
+	// release SDLUtils if the instance was created correctly.
 	if (SDLUtils::HasInstance())
 		SDLUtils::Release();
 
 	if (_mngr != nullptr) delete _mngr;
+
+	// release event_manager if the instance was created correctly.
+	if (event_system::event_manager::HasInstance())
+		event_system::event_manager::Release();
 #ifdef GENERATE_LOG
 	if (log_writer_to_csv::HasInstance())
 		log_writer_to_csv::Release();

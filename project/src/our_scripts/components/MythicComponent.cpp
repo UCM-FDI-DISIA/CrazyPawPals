@@ -1,9 +1,9 @@
+
 #include "MythicComponent.h"
 #include "../../game/Game.h"
 #include "../../ecs/Manager.h"
 #include "../mythic/MythicItem.h"
 #include "../mythic/MythicItems.h"
-#include "../../utils/checkML.h"
 
 MythicComponent::MythicComponent() {
 }

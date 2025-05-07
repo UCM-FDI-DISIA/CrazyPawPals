@@ -1,9 +1,9 @@
+
 #include "Fog.h"
 
 #include "../../ecs/Manager.h"
 #include "../../game/Game.h"
 
-#include "../../utils/checkML.h"
 #include "movement/Transform.h"
 #include "../../our_scripts/components/rendering/dyn_image.hpp"
 #include "../../our_scripts/components/rendering/rect_component.hpp"

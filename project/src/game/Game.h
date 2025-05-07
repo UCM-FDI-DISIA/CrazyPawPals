@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../utils/Singleton.h"
 #include "../utils/Vector2D.h"
 #include "../ecs/ecs.h"

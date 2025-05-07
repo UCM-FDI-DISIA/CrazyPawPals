@@ -1,6 +1,7 @@
 #ifndef CAMERA_HPP
 #define CAMERA_HPP
 
+
 #include <SDL.h>
 #include "rect.hpp"
 

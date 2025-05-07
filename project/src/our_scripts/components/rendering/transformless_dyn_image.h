@@ -1,5 +1,6 @@
 #pragma once
 
+
 #include "../../../ecs/Component.h"
 #include "../../../rendering/rect.hpp"
 #include "../../../sdlutils/Texture.h"
