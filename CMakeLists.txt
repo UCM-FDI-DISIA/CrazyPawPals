@@ -1,34 +1,44 @@
-cmake_minimum_required(VERSION 3.15..3.30)
-
-enable_language(CXX)
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
- add_definitions(-D_CRTDBG_MAP_ALLOC)
- endif()
-
-if (MSVC)
-    add_compile_options(
-        /W4
-        /Zi
-
-        /nologo
-        #-D DBG_COLLISIONS=true
-    )
-else()
-    add_compile_options(
-        -Wall
-        -Wextra
-        -Wpedantic
-        -Werror
-    )
-endif()
+cmake_minimum_required(VERSION 3.6)
 
 
+project(CrazyPawPals C CXX)
+    set(CMAKE_CXX_STANDARD 20)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
+    set(CMAKE_CXX_EXTENSIONS OFF)
 
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        add_definitions(-D_CRTDBG_MAP_ALLOC)
+    endif()
 
-project(CrazyPawPals)
+    set(USER_MSVC ((MSVC OR MSVC_IDE) AND (NOT (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"))))
+    if (${USER_MSVC})
+        message(STATUS "MSVC detected")
+        add_compile_options(
+            /W4
+            /Zi
+
+            /nologo
+            #-D DBG_COLLISIONS=true
+        )
+    else()
+        message(STATUS "GCC/Clang detected")
+        add_compile_options(
+            -Wall
+            -Wextra
+            -Wpedantic
+            # -Werror
+
+            -Wno-c++98-compat
+            -Wno-c++98-compat-pedantic
+            -Wno-reserved-identifier
+
+            -Wno-shadow-field
+            -Wno-shadow-field-in-constructor
+
+            -Wno-c++20-extensions
+        )
+    endif()
+
     set(
         CrazyPawPals_PROJECT_DIRECTORY
         ${CMAKE_CURRENT_SOURCE_DIR}/project
@@ -71,17 +81,42 @@ project(CrazyPawPals)
         ${CrazyPawPals_LIB_DIRECTORY}/SDL2-2.30.11
     )
 
+    if (CMAKE_BUILD_TYPE STREQUAL "Release")
+        if (${USER_MSVC})
+            set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
+        else()
+            set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mwindows -Wl,--subsystem,windows")
+        endif()
+    endif()
     add_executable(
         ${PROJECT_NAME}
+        WIN32
         ${CrazyPawPals_SRC_DIRECTORY}/main.cpp
         ${CrazyPawPals_SOURCES}
-     "project/src/our_scripts/components/ui/HUD.cpp" "project/src/our_scripts/components/ui/HUD.h" "project/src/our_scripts/components/ui/DamagePopup.h" "project/src/our_scripts/components/ui/DamagePopup.cpp")
+    )
+    
+
+    if (NOT $ENV{DBG_NETWORK})
+        set(DBG_NETWORK false)
+        set(DBG_NETWORK_HOST false)
+        set(DBG_NETWORK_CLIENT false)
+    else()
+        set(DBG_NETWORK $ENV{DBG_NETWORK})
+        set(DBG_NETWORK_HOST $ENV{DBG_NETWORK_HOST})
+        set(DBG_NETWORK_CLIENT $ENV{DBG_NETWORK_CLIENT})
+    endif()
     target_compile_options(
         ${PROJECT_NAME}
         PRIVATE
         -D RIGIDBODY_COMPONENT_DEGEN_RESTITUTION_OFF
         -DDBG_COLLISIONS=false
         #-DGENERATE_LOG
+        -DDBG_NETWORK=${DBG_NETWORK}
+        -DDBG_NETWORK_HOST=${DBG_NETWORK_HOST}
+        -DDBG_NETWORK_CLIENT=${DBG_NETWORK_CLIENT}
+        
+        -DDBG_NETWORK_HOST_IP="localhost"
+        -DDBG_NETWORK_HOST_PORT=1234
     )
     
     target_include_directories(
@@ -91,6 +126,7 @@ project(CrazyPawPals)
     )
     target_include_directories(
         ${PROJECT_NAME}
+        SYSTEM
         PUBLIC
         ${SDL2_DIRECTORY}/include
         ${SDL2_IMAGE_DIRECTORY}/include
