@@ -4,7 +4,7 @@
 #include "../../../../game/scenes/GameScene.h"
 #include "../../../card_system/ShootPatrons.hpp"
 
-WeaponPlimPlim::WeaponPlimPlim() : Weapon(4, 5000, 1.0f, 0.6f, "p_plimplim", 1.0f, 1.0f) { }
+WeaponPlimPlim::WeaponPlimPlim() : Weapon(4, 5000, 1.0f, 0.06f, "p_plimplim", 1.0f, 1.0f) { }
 
 WeaponPlimPlim::~WeaponPlimPlim() {}
 

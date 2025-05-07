@@ -34,11 +34,11 @@ WeaponRataBasurera::callback(Vector2D shootPos, Vector2D shootDir) {
 		std::cout << "spawn_plim_plim" << std::endl;
 
 	}
-	//Genera Boom si _randomNum est� entre 8-9 (20% chance)
+	//Genera Ratatouille si _randomNum est� entre 8-9 (20% chance)
 	else {
-		GameScene::spawn_boom(spawnPos);
+		GameScene::spawn_ratatouille(spawnPos);
 		Game::Instance()->get_mngr()->getComponent<WaveManager>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::WAVE))->newEnemy();
-		std::cout << "spawn_boom" << std::endl;
+		std::cout << "spawn_ratatouille" << std::endl;
 
 	}
 }
