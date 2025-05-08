@@ -333,7 +333,7 @@ ecs::entity_t GameScene::create_enemy(GameStructs::EnemyProperties &&ec, ecs::sc
 		&state,
 		&fll);
 
-	Game::Instance()->get_mngr()->getComponent<WaveManager>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::WAVE))->newEnemy();
+	if (scene == ecs::scene::GAMESCENE)Game::Instance()->get_mngr()->getComponent<WaveManager>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::WAVE))->newEnemy();
 
 	return e;
 }

@@ -24,7 +24,7 @@
 WaveManager::WaveManager() :
     _currentWaveTime(0),
     _waveTime(5000), //60000 !!
-    _currentWave(0),
+    _currentWave(-1),
     _wave_active(false),
     _enemiesSpawned(0),
     _enemiesKilled(0),
@@ -248,6 +248,7 @@ WaveManager::enterRewardsMenu() {
 
 void WaveManager::start_new_wave()
 {
+    _currentWave++;
     _currentWaveInitTime = sdlutils().virtualTimer().currRealTime();
     //Si es oleada de boss es true
     initialize_next_wave_params(_currentWave%5==0);
@@ -324,7 +325,6 @@ void WaveManager::endwave()
         _wave_active = false;
         change_to_rewards_time = sdlutils().virtualTimer().currTime() + 3000;
         _current_wave_event->end_wave_callback();
-        _currentWave++;
         _all_enemies_already_spawned = false;
         erase_all_bullets();
         erase_all_enemies();
