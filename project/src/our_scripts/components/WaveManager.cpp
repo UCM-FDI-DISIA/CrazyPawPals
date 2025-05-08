@@ -120,7 +120,6 @@ void WaveManager::_spawn_boss()
         exit(EXIT_FAILURE);
         break;
     }
-    _numEnemies++;
     esc->spawn_callback();
     delete esc;
     tokens_for_this_wave -= 3;
