@@ -94,7 +94,7 @@ void bullet_collision_component::apply_weapon_effect(GameStructs::WeaponType typ
 
         GameStructs::BulletProperties bp;
         bp.collision_filter = GameStructs::collide_with::enemy;
-        bp.damage = my_damage/2;
+        bp.damage = my_damage/2.0f;
         bp.dir = tr->getDir();
         bp.height = 1.25 + bp.damage * 0.25; //tr->getWidth() / 2.0f;
         bp.width = 0.75 + bp.damage * 0.25;//bp.height;
