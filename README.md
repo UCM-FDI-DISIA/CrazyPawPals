@@ -250,7 +250,7 @@ Aparecerán 3 recompensas de Boss adicionales con otro color. En este caso podem
 
 ### 3.8. Objetos Míticos
 Los objetos míticos pueden modificar el playstyle del jugador en gran medida
-Los objetos míticos se consiguen como recompensa al eliminar a un Boss.
+Los objetos míticos se consiguen al superar una oleada especial con eventos o bosses.
 Siempre tienen un efecto positivo y uno perjudicial similar a los objetos lunares del RoR 2.
 Algunos ejemplos de objetos míticos podrían ser:
 - Cada vez que millees gana como maná el coste de la carta, a cambio reduce tu regeneración de maná a 1/2 o 1/4
