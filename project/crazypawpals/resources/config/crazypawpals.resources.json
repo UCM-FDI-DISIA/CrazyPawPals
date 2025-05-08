@@ -187,7 +187,7 @@
       "file": "resources/images/cards/card_fulgur.png"
     },
     {
-      "id": "card_placeholder",
+      "id": "default",
       "file": "resources/images/cards/carta.png"
     },
     {
@@ -391,6 +391,10 @@
       "file": "resources/images/ui/infos/initial_info.png"
     },
     {
+      "id": "default_info",
+      "file": "resources/images/ui/infos/initial_info.png"
+    },
+    {
       "id": "card_kunai_info",
       "file": "resources/images/ui/infos/card_kunai_info.png"
     },
@@ -413,6 +417,10 @@
     {
       "id": "p_minigun",
       "file": "resources/images/projectiles/p_minigun.png"
+    },
+    {
+      "id": "p_tremor",
+      "file": "resources/images/projectiles/p_tremor.png"
     },
     {
       "id": "card_cardSpray_info",

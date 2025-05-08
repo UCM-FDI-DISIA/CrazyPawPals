@@ -131,6 +131,19 @@ private:
 	int _effect_duration = 1000;
 	MovementController* _ctrl;
 };
+class Tremor : public Card {
+public:
+	Tremor();
+	void on_play(Deck& d, const Vector2D* player_position, const Vector2D* target_position) override;
+	void update(uint32_t) override;
+private:
+	Deck* _d;
+	const Vector2D* _pl_vec;
+	bool _playing;
+	int _time_since_proc;
+	int _effect_delay = 1000;
+	void Trigger();
+};
 
 // The following cards exist for testing purposes and may not be playable in the finished product. These are subject to change.
 #pragma region TestCards

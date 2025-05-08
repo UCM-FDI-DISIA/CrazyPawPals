@@ -309,7 +309,7 @@ void SelectionMenuScene::create_deck_button(GameStructs::DeckType dt, const Game
             cl = { new CardSpray(), new Lighting(), new Minigun(), new Kunai()};
             break;
         case GameStructs::FOUR:
-            cl = { new Kunai(), new EldritchBlast(), new QuickFeet (), new Kunai()};
+            cl = { new Kunai(), new EldritchBlast(), new Primordia (), new Tremor()};
             break;
         default:
             break;

@@ -375,6 +375,52 @@ void QuickFeet::update(uint32_t dt)
 	}
 }
 #pragma endregion
+#pragma region Tremor
+Tremor::Tremor():Card("default",Resources(1))
+{
+}
+void Tremor::on_play(Deck& d, const Vector2D* player_position, const Vector2D* target_position)
+{
+	Card::on_play(d, player_position, target_position);
+	_d = &d;
+	_pl_vec = player_position;
+	_playing = true;
+	_time_since_proc = 0;
+	Trigger();
+}
+void Tremor::update(uint32_t dt)
+{
+	if (_playing) {
+		_time_since_proc += dt;
+
+		if (_time_since_proc >= _effect_delay) {
+			_time_since_proc = 0;
+
+			std::pair<bool, Card*> milled_card = _d->mill();
+			_playing = milled_card.first;
+			if (_playing) {
+				Trigger();
+			}
+		}
+	}
+}
+void Tremor::Trigger()
+{
+	GameStructs::BulletProperties bp = GameStructs::BulletProperties();
+	bp.dir = Vector2D(0, 1);
+	bp.init_pos = *_pl_vec;
+	bp.speed = 0;
+	bp.height = 10;
+	bp.width = 10;
+	bp.life_time = 0.3;
+	bp.collision_filter = GameStructs::collide_with::enemy;
+	bp.sprite_key = "p_tremor";
+	bp.damage = 3;
+	bp.pierce_number = INT_MAX;
+	Game::Instance()->get_currentScene()->create_proyectile(bp, ecs::grp::BULLET);
+}
+#pragma endregion
+
 #pragma region CatKuzaCard
 CatKuzaCard::CatKuzaCard() : Card("card_catkuza", Resources(2)), _times_since_played(0)
 {
