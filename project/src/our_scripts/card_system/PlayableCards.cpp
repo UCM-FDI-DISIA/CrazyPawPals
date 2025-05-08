@@ -19,12 +19,13 @@ void Fireball::on_play(Deck& d, const Vector2D* player_position, const Vector2D*
 	bp.dir = ((*target_position) - (*player_position)).normalize();
 	bp.init_pos = *player_position;
 	bp.speed = 0.08f;
-	bp.height = 2.3;
+	bp.height = 3;
 	bp.width = 2.3;
 	bp.life_time = 2;
 	bp.sprite_key = "p_fireball";
-	bp.damage = 7;
+	bp.damage = 8;
 	bp.collision_filter = GameStructs::collide_with::enemy;
+	bp.weapon_type = GameStructs::WeaponType::FIREBALL_EFFECT;
 	
 	Game::Instance()->get_currentScene()->create_proyectile(bp, ecs::grp::BULLET);
 }

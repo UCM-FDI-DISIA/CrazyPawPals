@@ -1192,8 +1192,12 @@ void GameScene::generate_proyectile(const GameStructs::BulletProperties &bp, ecs
 		&player_rigidbody,
 		&player_collisionable,
 		new bullet_collision_component(bp));
+
+	//if (bp.bitset != nullptr)
+		//manager->addComponent<collision_registration_by_id>(e, bp.bitset);
+	//else 
 	if (bp.collision_filter == GameStructs::collide_with::enemy || bp.collision_filter == GameStructs::collide_with::all)
-		manager->addComponent<collision_registration_by_id>(e);
+	manager->addComponent<collision_registration_by_id>(e, bp.bitset);
 }
 void GameScene::create_proyectile(const GameStructs::BulletProperties &bp, ecs::grpId_t gid)
 {
