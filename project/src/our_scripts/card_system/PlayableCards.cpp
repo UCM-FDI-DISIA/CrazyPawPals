@@ -59,18 +59,6 @@ void Minigun::on_play(Deck& d, const Vector2D* player_position, const Vector2D* 
 	_aim_vec = target_position;
 	_pl_vec = player_position;
 	_number_of_bullets_shot = 0;
-	if (d.get_primed()) {
-		d.set_primed(false);
-		_im_primed = true;
-		_number_of_shots = 30;
-		_shooting_duration = 1000;
-	}
-	else {
-		d.set_primed(true);
-		_im_primed = false;
-		_shooting_duration = 1500;
-		_number_of_shots = 10;
-	}
 }
 
 void Minigun::update(uint32_t dt)
@@ -80,12 +68,8 @@ void Minigun::update(uint32_t dt)
 		if (_time_since_played >= _number_of_bullets_shot * (_shooting_duration / (_number_of_shots - 1))) {
 			_bullets_properties.dir = ((*_aim_vec) - (*_pl_vec)).normalize();
 			_bullets_properties.init_pos = *_pl_vec;
-			if (!_im_primed) {
-				Game::Instance()->get_currentScene()->create_proyectile(_bullets_properties, ecs::grp::BULLET);
-			}
-			else {
-				patrons::ShotgunPatron(_bullets_properties, ecs::grp::BULLET, 324, 5);
-			}
+			
+			Game::Instance()->get_currentScene()->create_proyectile(_bullets_properties, ecs::grp::BULLET);
 			++_number_of_bullets_shot;
 			if (_number_of_bullets_shot == _number_of_shots)
 				_playing = false;
@@ -344,8 +328,6 @@ void Fulgur::on_play(Deck& d, const Vector2D* player_position, const Vector2D* t
 		_aim_vec = Vector2D(target_position->getX(), target_position->getY()),
 			_number_of_bullets_shot = 0;
 	}
-	else
-		d.set_primed(true);
 }
 void Fulgur::update(uint32_t dt)
 {
