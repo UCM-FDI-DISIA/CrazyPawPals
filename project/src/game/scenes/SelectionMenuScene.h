@@ -16,6 +16,7 @@ public:
 	void initScene() override;
 	void enterScene() override;
 	void exitScene() override;
+	void render() override;
 	void update(uint32_t delta_time) override;
 
 private:
@@ -47,8 +48,6 @@ private:
 	//net
 	std::vector<bool> _player_ready;
 	bool _is_ready = false;
-	ecs::entity_t _waiting_text = nullptr;
-	void showWaitingText(bool show);
 	void checkAllPlayersReady();
 
 

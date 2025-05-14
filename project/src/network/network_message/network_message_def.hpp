@@ -23,6 +23,7 @@ enum network_message_type
     network_message_type_player_update,
     network_message_type_client_id,
     network_message_type_new_player,
+    network_message_type_host_has_pressed_play,
     network_message_type_player_ready,
     network_message_type_start_game,
 };
@@ -184,7 +185,7 @@ struct network_message_payload_empty {
     //vac¨ªa
 };
 
-inline network_message_payload_empty create_payload_empty_create_message() {
+inline network_message_payload_empty create_payload_empty_message() {
     return network_message_payload_empty{};
 }
 
@@ -232,6 +233,10 @@ inline network_message_player_connect create_player_connect_message(uint32_t id,
 //Struct sincronizar player
 struct network_message_player_update {
     uint32_t player_id_n;
+    uint32_t sprite_key_length;
+    char sprite_key[32];
+    uint32_t anim_key_length;
+    char anim_key[32];
     int16_t pos_n[2];
     uint16_t health_n;
     uint16_t is_ghost_n;
@@ -242,6 +247,24 @@ inline network_message_player_update create_player_update_message(const GameStru
 
     //uint32_t player id
     SDLNet_Write32(player.id, &player_connet.player_id_n);
+
+    //textura
+    const size_t sizeTex = player.sprite_key.size();
+    assert(sizeTex < sizeof(player_connet.sprite_key) && "error: string size exceeds sprite_key capacity");
+
+    SDLNet_Write32(static_cast<uint32_t>(sizeTex), &player_connet.sprite_key_length);
+
+    std::copy_n(player.sprite_key.begin(), sizeTex, player_connet.sprite_key);
+    player_connet.sprite_key[sizeTex] = '\0';
+
+    //animacion
+    const size_t sizeAnim = player.current_anim.size();
+    assert(sizeAnim < sizeof(player_connet.anim_key) && "error: string size exceeds sprite_key capacity");
+
+    SDLNet_Write32(static_cast<uint32_t>(sizeAnim), &player_connet.anim_key_length);
+
+    std::copy_n(player.current_anim.begin(), sizeAnim, player_connet.anim_key);
+    player_connet.anim_key[sizeAnim] = '\0';
 
     //Vector2D pos
     SDLNet_Write16(player.pos.getX() * fact_float_int, &player_connet.pos_n[0]);

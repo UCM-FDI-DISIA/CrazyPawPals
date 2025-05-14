@@ -180,6 +180,27 @@ void SelectionMenuScene::exitScene()
 
 }
 
+void SelectionMenuScene::render()
+{
+    Scene::render();
+    if (showing_message) {
+        auto camera = Game::Instance()->get_mngr()->getComponent<camera_component>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA));
+        rect_f32 message_rect = rect_f32_screen_rect_from_viewport(rect_f32({ { 0.4,0.7 }, { 0.2,0.05 } }), camera->cam.screen);
+        SDL_Rect message_true{
+            int(message_rect.position.x),
+            int(message_rect.position.y),
+            int(message_rect.size.x),
+            int(message_rect.size.y)
+        };
+        Texture message_tex{
+        sdlutils().renderer(),
+        message,
+        sdlutils().fonts().at("RUBIK_MONO"),
+        SDL_Color({128, 0, 32, 255}) };
+        message_tex.render(message_true);
+    }
+}
+
 
 void SelectionMenuScene::create_weapon_button(GameStructs::WeaponType wt, const GameStructs::ButtonProperties& bp) {
     auto* mngr = Game::Instance()->get_mngr();
@@ -430,7 +451,7 @@ void SelectionMenuScene::create_enter_button() {
                             create_player_ready_message(id,true))
                     );
                 }
-                showWaitingText(true);
+                show_message("Esperando a los otros michis...");
             }
             else {
                 imgComp->_filter = false;
@@ -512,11 +533,6 @@ void SelectionMenuScene::update(uint32_t delta_time) {
     }
 }
 
-void SelectionMenuScene::showWaitingText(bool show)
-{
-
-}
-
 void SelectionMenuScene::checkAllPlayersReady()
 {
     if (!Game::Instance()->is_host() || !_is_ready) return;
@@ -537,7 +553,7 @@ void SelectionMenuScene::checkAllPlayersReady()
                 network_message_pack_send(
                     client,
                     network_message_pack_create(network_message_type_start_game, 
-                        create_payload_empty_create_message())
+                        create_payload_empty_message())
                 );
             }
         }

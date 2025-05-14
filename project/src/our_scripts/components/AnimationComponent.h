@@ -30,6 +30,8 @@ public:
 
     void play_animation(const std::string& name);
 
+    std::string get_current_Anim() { return _currentAnim; };
+
 private:
     dyn_image_with_frames* _dy;
     std::string _currentAnim;

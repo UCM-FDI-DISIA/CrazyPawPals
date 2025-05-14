@@ -95,3 +95,10 @@ void Scene::render()
 {
     Game::Instance()->get_mngr()->render(_scene_ID);
 }
+
+void Scene::show_message(const std::string& text, uint32_t time)
+{
+    message = text;
+    message_time = sdlutils().currRealTime() + time;
+    showing_message = true;
+}

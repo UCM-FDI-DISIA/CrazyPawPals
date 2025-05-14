@@ -160,5 +160,6 @@ namespace GameStructs
 		int health;
 		bool is_ghost;
 		std::string sprite_key;
+		std::string current_anim;
 	};
 }

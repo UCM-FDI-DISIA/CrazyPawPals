@@ -22,8 +22,6 @@ class GameScene : public event_system::event_receiver, public Scene
 	void host_handle_menssage(network_context& ctx);
 	void client_handle_menssage(network_context& ctx);
 
-	bool change_player_tex(uint32_t playerId, const std::string& key_name);
-
 public:
 	GameScene();
 	~GameScene();
@@ -36,6 +34,7 @@ public:
 	//Statics
 	static ecs::entity_t create_player(ecs::sceneId_t scene = ecs::scene::GAMESCENE);
 	static bool change_player_tex(const std::string& key_name);
+	static bool change_player_tex(uint32_t playerId, const std::string& key_name);
 	void reset_player();
 
 	static void spawn_sarno_rata(Vector2D posVec, ecs::sceneId_t scene = ecs::scene::GAMESCENE);

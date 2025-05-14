@@ -3,6 +3,7 @@
 
 class Transform;
 class Health;
+class AnimationComponent;
 class PlayerSynchronize :public ecs::Component
 {
 public:
@@ -18,6 +19,7 @@ protected:
 	uint32_t _player_id;
 	Transform* _tr;
 	Health* _health;
+	AnimationComponent* _anim;
 	std::string _tex_name;
 	bool _is_ghost;
 

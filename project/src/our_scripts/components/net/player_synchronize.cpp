@@ -2,12 +2,15 @@
 #include "../../../sdlutils/SDLUtils.h"
 #include "../../../ecs/Manager.h"
 #include "../../../game/Game.h"
+#include "../../../game/scenes/GameScene.h"
 #include <algorithm>
-#include "../movement/Transform.h"
-#include "../Health.h"
-#include "GhostStateComponent.h"
 #include "../rendering/dyn_image_with_frames.hpp"
 #include "../../../network/network_message.hpp"
+#include "../movement/Transform.h"
+#include "../Health.h"
+#include "../AnimationComponent.h"
+#include "GhostStateComponent.h"
+
 
 PlayerSynchronize::PlayerSynchronize(uint32_t _player_id)
     : _player_id(_player_id), _tr(nullptr), _health(nullptr), _is_ghost(false) {};
@@ -21,6 +24,9 @@ void PlayerSynchronize::initComponent() {
 
     _health = mngr->getComponent<Health>(_ent);
     assert(_health != nullptr);
+
+    _anim = mngr->getComponent<AnimationComponent>(_ent);
+    assert(_anim != nullptr);
 
     if (mngr->hasComponent<dyn_image_with_frames>(_ent)) {
         _tex_name = mngr->getComponent<dyn_image_with_frames>(_ent)->texture_name;
@@ -40,16 +46,16 @@ void PlayerSynchronize::sendPlayerUpdate()
 {
     auto& network = Game::Instance()->get_network();
 
-    GameStructs::NetPlayerData playerData{
-        .id = _player_id,
-        .pos = _tr->getPos(),
-        .health = _health->getHealth(),
-        .is_ghost = _is_ghost,
-        .sprite_key = _tex_name
-    };
+    GameStructs::NetPlayerData playerData;
+    playerData.id = _player_id;
+    playerData.pos = _tr->getPos();
+    playerData.health = _health->getHealth();
+    playerData.is_ghost = _is_ghost;
+    playerData.sprite_key = _tex_name;
+    playerData.current_anim = _anim->get_current_Anim();
+    
 
     auto msg = create_player_update_message(playerData);
-    
     network_message_pack_send(
        network.profile.client.socket_to_host,
        network_message_pack_create(network_message_type_player_update,msg)
@@ -57,7 +63,10 @@ void PlayerSynchronize::sendPlayerUpdate()
 }
 
 void PlayerSynchronize::updatePlayer(GameStructs::NetPlayerData& data) {
+    if (data.sprite_key != _tex_name) GameScene::change_player_tex(_player_id, data.sprite_key);
     _tr->setPos(data.pos);
     _health->setHeatlh(data.health);
+    if (data.current_anim != _anim->get_current_Anim())_anim->play_animation(data.current_anim);
     _is_ghost = data.is_ghost;
+    
 }

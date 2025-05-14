@@ -1384,6 +1384,13 @@ void GameScene::host_handle_menssage(network_context& ctx)
 
 					GameStructs::NetPlayerData playerData;
 					playerData.id = SDLNet_Read32(&payload.player_id_n);
+
+					uint32_t  key_length = SDLNet_Read32(&payload.sprite_key_length);
+					playerData.sprite_key.assign(payload.sprite_key, key_length);
+
+					key_length = SDLNet_Read32(&payload.anim_key_length);
+					playerData.current_anim.assign(payload.anim_key, key_length);
+
 					playerData.health = SDLNet_Read16(&payload.health_n);
 					playerData.is_ghost = SDLNet_Read16(&payload.is_ghost_n);
 					playerData.pos.setX(static_cast<int16_t>(SDLNet_Read16(&payload.pos_n[0])) / static_cast<float>(fact_float_int));
@@ -1391,8 +1398,6 @@ void GameScene::host_handle_menssage(network_context& ctx)
 
 					auto player = Game::Instance()->get_network_player(playerData.id);
 					Game::Instance()->get_mngr()->getComponent<PlayerSynchronize>(player)->updatePlayer(playerData);
-
-					std::cout << "Player con id " << std::to_string(playerData.id) << "actualizado con isGhost" << std::to_string(playerData.is_ghost) << std::endl;
 
 					auto player_update_msg = create_player_update_message(playerData);
 
@@ -1430,18 +1435,22 @@ void GameScene::client_handle_menssage(network_context& ctx)
 			auto message = network_message_dynamic_pack_into<network_message_player_update>(std::move(dyn_message));
 			auto&& payload = message->payload.content;
 
-			//GameStructs::NetPlayerData playerData;
-			//playerData.id = SDLNet_Read32(&payload.player_id_n);
-			//playerData.health = SDLNet_Read16(&payload.health_n);
-			//playerData.is_ghost = SDLNet_Read16(&payload.is_ghost_n);
-			//playerData.pos.setX(SDLNet_Read16(&payload.pos_n[0]));
-			//playerData.pos.setY(SDLNet_Read16(&payload.pos_n[1]));
+			GameStructs::NetPlayerData playerData;
+			playerData.id = SDLNet_Read32(&payload.player_id_n);
 
-			//auto player = Game::Instance()->get_network_player(playerData.id);
-			//Game::Instance()->get_mngr()->getComponent<PlayerSynchronize>(player)->updatePlayer(playerData);
+			uint32_t  key_length = SDLNet_Read32(&payload.sprite_key_length);
+			playerData.sprite_key.assign(payload.sprite_key, key_length);
 
-			//std::cout << "Player con id " << std::to_string(playerData.id) << "actualizado con isGhost" << std::to_string(playerData.is_ghost) << std::endl;
+			key_length = SDLNet_Read32(&payload.anim_key_length);
+			playerData.current_anim.assign(payload.anim_key, key_length);
 
+			playerData.health = SDLNet_Read16(&payload.health_n);
+			playerData.is_ghost = SDLNet_Read16(&payload.is_ghost_n);
+			playerData.pos.setX(static_cast<int16_t>(SDLNet_Read16(&payload.pos_n[0])) / static_cast<float>(fact_float_int));
+			playerData.pos.setY(static_cast<int16_t>(SDLNet_Read16(&payload.pos_n[1])) / static_cast<float>(fact_float_int));
+
+			auto player = Game::Instance()->get_network_player(playerData.id);
+			Game::Instance()->get_mngr()->getComponent<PlayerSynchronize>(player)->updatePlayer(playerData);
 			break;
 		}
 		default: {
@@ -1481,9 +1490,13 @@ ecs::entity_t  GameScene::create_dumb_player(ecs::sceneId_t scene, uint32_t play
 			sdlutils().images().at(tex_name),
 			player_transform, tex_name),
 		new render_ordering{1},
-		new Health(100, true),
-		new PlayerSynchronize(playerId));
+		new Health(100, true));
 
+	auto* anim = manager.addComponent<AnimationComponent>(player);
+	anim->add_animation("andar", 1, 5, 100);
+	anim->add_animation("idle", 0, 0, 100);
+
+	manager.addComponent<PlayerSynchronize>(player, playerId);
 
 	Game::Instance()->add_network_player(playerId, player);
 	return player;
