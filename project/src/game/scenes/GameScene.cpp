@@ -374,7 +374,8 @@ ecs::entity_t GameScene::create_enemy(GameStructs::EnemyProperties &ec, ecs::sce
 	);
 
 	if (scene == ecs::scene::GAMESCENE)Game::Instance()->get_mngr()->getComponent<WaveManager>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::WAVE))->newEnemy();
-
+	// Si es online, agregar el componente de sincronizacion
+	online_enemy(e);
 	return e;
 }
 void GameScene::select_create_dumb_enemy(GameStructs::DumbEnemyProperties &ec)
@@ -419,7 +420,6 @@ ecs::entity_t GameScene::dumb_enemy(GameStructs::EnemyProperties &ec, ecs::scene
 	float randSize = float(sdlutils().rand().nextInt(6, 10)) / 10.0f;
 	auto &&tr = *new Transform(ec.start_pos, ec.dir, ec.r, ec.s * randSize);
 	auto &&rect = *new rect_component{0, 0, ec.width * randSize, ec.height * randSize};
-	auto &&syn = *new EnemySynchronize();
 	auto &&rigidbody = *new rigidbody_component{rect_f32{{0.0f, -0.15f}, {0.5f, 0.6f}}, mass_f32{3.0f}, 0.05f};
 	auto &&col = *new collisionable{tr, rigidbody, rect, collisionable_option_none};
 
@@ -428,7 +428,6 @@ ecs::entity_t GameScene::dumb_enemy(GameStructs::EnemyProperties &ec, ecs::scene
 		scene,
 		&tr,
 		&rect,
-		&syn,
 		new dyn_image(
 			rect_f32{{0, 0}, {1, 1}},
 			rect,
@@ -441,6 +440,7 @@ ecs::entity_t GameScene::dumb_enemy(GameStructs::EnemyProperties &ec, ecs::scene
 		&col
 		);
 
+	// Agregar el componente de sincronizacion
 	online_enemy(e);
 	return e;
 }
@@ -449,13 +449,13 @@ void GameScene::online_enemy(ecs::entity_t ec)
 	if (Game::Instance()->is_host() || Game::Instance()->is_client())
 	{
 		auto &&manager = *Game::Instance()->get_mngr();
-		// manager.addComponent<EnemySynchronize>(ec);
+		manager.addComponent<EnemySynchronize>(ec);
 	}
 }
 #pragma endregion
 
 #pragma region Super Michi Mafioso
-uint8_t GameScene::spawn_super_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene, uint32_t _id)
+uint8_t GameScene::spawn_super_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene, uint8_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
 	GameStructs::EnemyProperties ec = GameStructs::EnemyProperties{
@@ -620,7 +620,7 @@ uint8_t GameScene::spawn_super_michi_mafioso(Vector2D posVec, ecs::sceneId_t sce
 #pragma endregion
 
 #pragma region Catkuza
-uint8_t GameScene::spawn_catkuza(Vector2D posVec, ecs::sceneId_t scene, uint32_t _id)
+uint8_t GameScene::spawn_catkuza(Vector2D posVec, ecs::sceneId_t scene, uint8_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
 	auto&& weapon = *new WeaponCatKuza();
@@ -836,7 +836,7 @@ uint8_t GameScene::spawn_catkuza(Vector2D posVec, ecs::sceneId_t scene, uint32_t
 #pragma endregion
 
 #pragma region Sarno Rata
-uint8_t GameScene::spawn_sarno_rata(Vector2D posVec, ecs::sceneId_t scene, uint32_t _id)
+uint8_t GameScene::spawn_sarno_rata(Vector2D posVec, ecs::sceneId_t scene, uint8_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
 
@@ -900,7 +900,7 @@ uint8_t GameScene::spawn_sarno_rata(Vector2D posVec, ecs::sceneId_t scene, uint3
 #pragma endregion
 
 #pragma region Michi Mafioso
-uint8_t GameScene::spawn_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene, uint32_t _id)
+uint8_t GameScene::spawn_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene, uint8_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
 	GameStructs::EnemyProperties ec =
@@ -978,7 +978,7 @@ uint8_t GameScene::spawn_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene, ui
 #pragma endregion
 
 #pragma region Plim Plim
-uint8_t GameScene::spawn_plim_plim(Vector2D posVec, ecs::sceneId_t scene, uint32_t _id)
+uint8_t GameScene::spawn_plim_plim(Vector2D posVec, ecs::sceneId_t scene, uint8_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
 
@@ -1038,7 +1038,7 @@ uint8_t GameScene::spawn_plim_plim(Vector2D posVec, ecs::sceneId_t scene, uint32
 #pragma endregion
 
 #pragma region Boom
-uint8_t GameScene::spawn_boom(Vector2D posVec, ecs::sceneId_t scene, uint32_t _id)
+uint8_t GameScene::spawn_boom(Vector2D posVec, ecs::sceneId_t scene, uint8_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
 	GameStructs::EnemyProperties ec =
@@ -1097,7 +1097,7 @@ uint8_t GameScene::spawn_boom(Vector2D posVec, ecs::sceneId_t scene, uint32_t _i
 #pragma endregion
 
 #pragma region Ratatouille
-uint8_t GameScene::spawn_ratatouille(Vector2D posVec, ecs::sceneId_t scene, uint32_t _id)
+uint8_t GameScene::spawn_ratatouille(Vector2D posVec, ecs::sceneId_t scene, uint8_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
 
@@ -1187,7 +1187,7 @@ uint8_t GameScene::spawn_ratatouille(Vector2D posVec, ecs::sceneId_t scene, uint
 #pragma endregion
 
 #pragma region Rata Basurera
-uint8_t GameScene::spawn_rata_basurera(Vector2D posVec, ecs::sceneId_t scene, uint32_t _id)
+uint8_t GameScene::spawn_rata_basurera(Vector2D posVec, ecs::sceneId_t scene, uint8_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
 
@@ -1257,7 +1257,7 @@ uint8_t GameScene::spawn_rata_basurera(Vector2D posVec, ecs::sceneId_t scene, ui
 #pragma endregion
 
 #pragma region Rey Basurero
-uint8_t GameScene::spawn_rey_basurero(Vector2D posVec, ecs::sceneId_t scene, uint32_t _id)
+uint8_t GameScene::spawn_rey_basurero(Vector2D posVec, ecs::sceneId_t scene, uint8_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
 
@@ -1547,6 +1547,21 @@ void GameScene::client_handle_menssage(network_context& ctx)
 			_enemy_properties._pos.setY(static_cast<int16_t>(SDLNet_Read16(&payload._pos[1])) / static_cast<float>(fact_float_int));
 
 			select_create_dumb_enemy(_enemy_properties);
+			break;
+		}
+		case network_message_type_enemy_update: {
+			auto message = network_message_dynamic_pack_into<network_message_player_update>(std::move(dyn_message));
+			auto&& payload = message->payload.content;
+
+			GameStructs::DumbEnemyProperties _enemy_properties;
+			_enemy_properties._id = SDLNet_Read16(&payload.player_id_n);
+			_enemy_properties._health = SDLNet_Read16(&payload.health_n);
+			_enemy_properties._pos.setX(static_cast<int16_t>(SDLNet_Read16(&payload.pos_n[0])) / static_cast<float>(fact_float_int));
+			_enemy_properties._pos.setY(static_cast<int16_t>(SDLNet_Read16(&payload.pos_n[1])) / static_cast<float>(fact_float_int));
+
+			auto enemy = Game::Instance()->get_network_enemy(_enemy_properties._id);
+			Game::Instance()->get_mngr()->getComponent<EnemySynchronize>(enemy)->update_enemy(_enemy_properties);
+
 			break;
 		}
 		default: {

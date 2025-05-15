@@ -21,6 +21,7 @@ enum network_message_type
     network_message_type_summon_dummy_bullet,
     network_message_type_player_connect,
     network_message_type_player_update,
+    network_message_type_enemy_update,
     network_message_type_client_id,
     network_message_type_new_player,
     network_message_type_create_enemy,
@@ -295,14 +296,14 @@ struct network_message_enemy_create
 {
     int16_t _pos[2];
     uint16_t _type;
-    uint32_t _enemy_id;
+    uint16_t _enemy_id;
 };
 
 inline network_message_enemy_create create_enemy(GameStructs::DumbEnemyProperties &ep)
 {
     network_message_enemy_create n_ep;
 
-    SDLNet_Write32(ep._id, &n_ep._enemy_id);
+    SDLNet_Write16(ep._id, &n_ep._enemy_id);
     SDLNet_Write16(ep._type, &n_ep._type);
 
     // Vector2D init_pos
@@ -317,14 +318,14 @@ struct network_message_enemy_update
 {
     int16_t _pos[2];
     uint16_t _health_n;
-    uint32_t _enemy_id;
+    uint16_t _enemy_id;
 };
 
-inline network_message_enemy_update update_enemy(GameStructs::DumbEnemyProperties &ep)
+inline network_message_enemy_update create_update_enemy_message(GameStructs::DumbEnemyProperties &ep)
 {
     network_message_enemy_update n_ep;
 
-    SDLNet_Write32(ep._id, &n_ep._enemy_id);
+    SDLNet_Write16(ep._id, &n_ep._enemy_id);
 
     // Vector2D init_pos
     SDLNet_Write16(ep._pos.getX() * fact_float_int, &n_ep._pos[0]);

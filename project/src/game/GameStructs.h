@@ -76,7 +76,7 @@ namespace GameStructs
 	{
 		// Sprite
 		std::string sprite_key;
-		uint32_t _id;
+		uint8_t _id;
 
 		Vector2D start_pos;
 
