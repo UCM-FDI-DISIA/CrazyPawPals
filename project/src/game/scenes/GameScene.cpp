@@ -420,6 +420,8 @@ ecs::entity_t GameScene::dumb_enemy(GameStructs::EnemyProperties &ec, ecs::scene
 	auto &&tr = *new Transform(ec.start_pos, ec.dir, ec.r, ec.s * randSize);
 	auto &&rect = *new rect_component{0, 0, ec.width * randSize, ec.height * randSize};
 	auto &&syn = *new EnemySynchronize();
+	auto &&rigidbody = *new rigidbody_component{rect_f32{{0.0f, -0.15f}, {0.5f, 0.6f}}, mass_f32{3.0f}, 0.05f};
+	auto &&col = *new collisionable{tr, rigidbody, rect, collisionable_option_none};
 
 	auto e = create_entity(
 		ecs::grp::ENEMY,
@@ -434,7 +436,9 @@ ecs::entity_t GameScene::dumb_enemy(GameStructs::EnemyProperties &ec, ecs::scene
 			sdlutils().images().at(ec.sprite_key),
 			tr),
 		new Health(ec.health),
-		new id_component(ec._id)
+		new id_component(ec._id),
+		&rigidbody,
+		&col
 		);
 
 	online_enemy(e);
