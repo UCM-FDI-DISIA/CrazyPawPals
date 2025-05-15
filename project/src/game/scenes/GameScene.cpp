@@ -451,7 +451,7 @@ void GameScene::online_enemy(ecs::entity_t ec)
 #pragma endregion
 
 #pragma region Super Michi Mafioso
-void GameScene::spawn_super_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene, uint32_t _id)
+uint8_t GameScene::spawn_super_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene, uint32_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
 	GameStructs::EnemyProperties ec = GameStructs::EnemyProperties{
@@ -605,16 +605,18 @@ void GameScene::spawn_super_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene,
 
 		// Estado inicial
 		state->set_initial_state("Walking");
+		return Game::Instance()->get_mngr()->getComponent<id_component>(e)->getId();
 	}
 	else
 	{
 		dumb_enemy(ec, scene);
 	}
+	return 0;
 }
 #pragma endregion
 
 #pragma region Catkuza
-void GameScene::spawn_catkuza(Vector2D posVec, ecs::sceneId_t scene, uint32_t _id)
+uint8_t GameScene::spawn_catkuza(Vector2D posVec, ecs::sceneId_t scene, uint32_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
 	auto&& weapon = *new WeaponCatKuza();
@@ -820,16 +822,17 @@ void GameScene::spawn_catkuza(Vector2D posVec, ecs::sceneId_t scene, uint32_t _i
 
 		// Estado inicial
 		state->set_initial_state("Walking");
+		return Game::Instance()->get_mngr()->getComponent<id_component>(e)->getId();
 	}
 	else
 	{
 		dumb_enemy(ec, scene);
-	}
+	}return 0;
 }
 #pragma endregion
 
 #pragma region Sarno Rata
-void GameScene::spawn_sarno_rata(Vector2D posVec, ecs::sceneId_t scene, uint32_t _id)
+uint8_t GameScene::spawn_sarno_rata(Vector2D posVec, ecs::sceneId_t scene, uint32_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
 
@@ -882,16 +885,18 @@ void GameScene::spawn_sarno_rata(Vector2D posVec, ecs::sceneId_t scene, uint32_t
 		state->set_initial_state("Walking");
 
 		online_enemy(e);
+		return Game::Instance()->get_mngr()->getComponent<id_component>(e)->getId();
 	}
 	else
 	{
 		dumb_enemy(ec, scene);
 	}
+	return 0;
 }
 #pragma endregion
 
 #pragma region Michi Mafioso
-void GameScene::spawn_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene, uint32_t _id)
+uint8_t GameScene::spawn_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene, uint32_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
 	GameStructs::EnemyProperties ec =
@@ -958,16 +963,18 @@ void GameScene::spawn_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene, uint3
 							  { return !state_cm->is_player_near(fll->get_act_follow(), tr, dist_to_fallback); });
 
 		state->set_initial_state("Walking");
+		return Game::Instance()->get_mngr()->getComponent<id_component>(e)->getId();
 	}
 	else
 	{
 		dumb_enemy(ec, scene);
 	}
+	return 0;
 }
 #pragma endregion
 
 #pragma region Plim Plim
-void GameScene::spawn_plim_plim(Vector2D posVec, ecs::sceneId_t scene, uint32_t _id)
+uint8_t GameScene::spawn_plim_plim(Vector2D posVec, ecs::sceneId_t scene, uint32_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
 
@@ -1016,16 +1023,18 @@ void GameScene::spawn_plim_plim(Vector2D posVec, ecs::sceneId_t scene, uint32_t 
 							  { return !state_cm->is_player_near(fll->get_act_follow(), tr, 6.0f); });
 
 		state->set_initial_state("Walking");
+		return Game::Instance()->get_mngr()->getComponent<id_component>(e)->getId();
 	}
 	else
 	{
 		dumb_enemy(ec, scene);
 	}
+	return 0;
 }
 #pragma endregion
 
 #pragma region Boom
-void GameScene::spawn_boom(Vector2D posVec, ecs::sceneId_t scene, uint32_t _id)
+uint8_t GameScene::spawn_boom(Vector2D posVec, ecs::sceneId_t scene, uint32_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
 	GameStructs::EnemyProperties ec =
@@ -1045,45 +1054,46 @@ void GameScene::spawn_boom(Vector2D posVec, ecs::sceneId_t scene, uint32_t _id)
 
 	if (Game::Instance()->is_host() || Game::Instance()->is_network_none())
 	{
-		auto &&weapon = *new WeaponBoom();
+		auto&& weapon = *new WeaponBoom();
 
 		auto e = create_enemy(
 			ec,
 			scene,
-			static_cast<Weapon *>(&weapon));
+			static_cast<Weapon*>(&weapon));
 
-		Transform *tr = manager.getComponent<Transform>(e);
-		MovementController *mc = manager.getComponent<MovementController>(e);
+		Transform* tr = manager.getComponent<Transform>(e);
+		MovementController* mc = manager.getComponent<MovementController>(e);
 		mc->set_max_speed(0.03f);
-		StateMachine *state = manager.getComponent<StateMachine>(e);
+		StateMachine* state = manager.getComponent<StateMachine>(e);
 		auto state_cm = state->getConditionManager();
-		Health *health = manager.getComponent<Health>(e);
+		Health* health = manager.getComponent<Health>(e);
 
-		Follow *fll = manager.getComponent<Follow>(e);
+		Follow* fll = manager.getComponent<Follow>(e);
 
 		auto walkingState = std::make_shared<WalkingState>(tr, mc, fll);
 		auto attackingState = std::make_shared<AttackingState>(tr, fll, &weapon, false,
-															   std::function<bool()>([health]() -> bool
-																					 { health->takeDamage(health->getMaxHealth());
-														     return true; }));
+			std::function<bool()>([health]() -> bool
+				{ health->takeDamage(health->getMaxHealth());
+		return true; }));
 
 		state->add_state("Walking", walkingState);
 		state->add_state("Attacking", attackingState);
 
 		state->add_transition("Walking", "Attacking", [state_cm, fll, tr]()
-							  { return state_cm->is_player_near(fll->get_act_follow(), tr, 1.0f); });
+			{ return state_cm->is_player_near(fll->get_act_follow(), tr, 1.0f); });
 
 		state->set_initial_state("Walking");
+		return Game::Instance()->get_mngr()->getComponent<id_component>(e)->getId();
 	}
 	else
 	{
 		dumb_enemy(ec, scene);
-	}
+	}return 0;
 }
 #pragma endregion
 
 #pragma region Ratatouille
-void GameScene::spawn_ratatouille(Vector2D posVec, ecs::sceneId_t scene, uint32_t _id)
+uint8_t GameScene::spawn_ratatouille(Vector2D posVec, ecs::sceneId_t scene, uint32_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
 
@@ -1160,6 +1170,7 @@ void GameScene::spawn_ratatouille(Vector2D posVec, ecs::sceneId_t scene, uint32_
 							 { return !state_cm->is_player_near(fll.get_act_follow(), tr, dist_to_rotate * 1.8f); });
 
 		state.set_initial_state("Walking");
+		return Game::Instance()->get_mngr()->getComponent<id_component>(e)->getId();
 	}
 	else
 	{
@@ -1167,13 +1178,12 @@ void GameScene::spawn_ratatouille(Vector2D posVec, ecs::sceneId_t scene, uint32_
 	}
 
 	Game::Instance()->get_mngr()->getComponent<WaveManager>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::WAVE))->newEnemy();
-
-	//Game::Instance()->get_mngr()->getHandler()
+	return 0;
 }
 #pragma endregion
 
 #pragma region Rata Basurera
-void GameScene::spawn_rata_basurera(Vector2D posVec, ecs::sceneId_t scene, uint32_t _id)
+uint8_t GameScene::spawn_rata_basurera(Vector2D posVec, ecs::sceneId_t scene, uint32_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
 
@@ -1232,16 +1242,18 @@ void GameScene::spawn_rata_basurera(Vector2D posVec, ecs::sceneId_t scene, uint3
 							  { return state_cm->is_player_near(fll->get_act_follow(), tr, 50.0f); });
 
 		state->set_initial_state("Walking");
+		return Game::Instance()->get_mngr()->getComponent<id_component>(e)->getId();
 	}
 	else
 	{
 		dumb_enemy(ec, scene);
+		return 0;
 	}
 }
 #pragma endregion
 
 #pragma region Rey Basurero
-void GameScene::spawn_rey_basurero(Vector2D posVec, ecs::sceneId_t scene, uint32_t _id)
+uint8_t GameScene::spawn_rey_basurero(Vector2D posVec, ecs::sceneId_t scene, uint32_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
 
@@ -1308,11 +1320,13 @@ void GameScene::spawn_rey_basurero(Vector2D posVec, ecs::sceneId_t scene, uint32
 							  { return !state_cm->is_player_near(fll->get_act_follow(), tr, dist_to_fallback); });
 
 		state->set_initial_state("Walking");
+		return Game::Instance()->get_mngr()->getComponent<id_component>(e)->getId();
 	}
 	else
 	{
 		dumb_enemy(ec, scene);
 	}
+	return 0;
 }
 #pragma endregion
 
@@ -1522,7 +1536,7 @@ void GameScene::client_handle_menssage(network_context& ctx)
 			auto&& payload = message->payload.content;
 
 			GameStructs::DumbEnemyProperties _enemy_properties;
-			_enemy_properties._id = SDLNet_Read32(&payload._enemy_id);
+			_enemy_properties._id = SDLNet_Read16(&payload._enemy_id);
 			_enemy_properties._type = SDLNet_Read16(&payload._type);
 
 			_enemy_properties._pos.setX(static_cast<int16_t>(SDLNet_Read16(&payload._pos[0])) / static_cast<float>(fact_float_int));

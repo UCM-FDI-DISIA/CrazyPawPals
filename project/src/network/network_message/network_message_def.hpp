@@ -51,6 +51,7 @@ inline bool network_message_header_in_network_endian(const network_message_heade
 }
 
 #include <iostream>
+#include <string_view>
 inline network_message_header network_message_header_create(
     const network_message_type_option type,
     const network_message_header_size payload_size_h)

@@ -12,7 +12,7 @@ public:
 		ocuppied_ids.reset();
 		last_given_bit = 0;
 	}
-	id_component() : _id(get_next_free_id()) {}
+	id_component() : _id(get_next_free_id()) { ocuppied_ids[_id] = true; }
 	id_component(uint8_t _new_id) : _id(_new_id) {}
 	~id_component() {
 		ocuppied_ids[_id] = false;

@@ -15,7 +15,7 @@ enum events {
     EVENTS_MAX
 };
 
-enum enemyType {
+enum enemyType : uint16_t {
     sarno_rata = 0,
     michi_mafioso = 1,
     plim_plim = 2,
@@ -42,10 +42,10 @@ constexpr enemy_spawn_definition enemy_spawn_data[8] = {
     {1,3}  //7
 };
 class enemy_spawn_caller {
-    std::function<void(Vector2D)> spawn_call;
+    std::function<uint8_t(Vector2D)> spawn_call;
 public:
-    enemy_spawn_caller(std::function<void(Vector2D)> c): spawn_call(c) {}
-    void spawn_callback();
+    enemy_spawn_caller(std::function<uint8_t(Vector2D)> c): spawn_call(c) {}
+    std::pair<Vector2D, uint8_t> spawn_callback();
 };
 
 class Fog;

@@ -67,9 +67,9 @@ namespace GameStructs
 	struct DumbEnemyProperties
 	{
 		Vector2D _pos;
-		uint32_t _type;
+		uint16_t _type;
 		int _health;
-		uint32_t _id;
+		uint16_t _id;
 	};
 
 	struct EnemyProperties
