@@ -9,6 +9,7 @@
 #include "../../utils/Vector2D.h"
 #include "../../game/GameStructs.h"
 #include "../src/our_scripts/components/WaveManager.h"
+#include "../network_state.hpp"
 
 static int const fact_float_int = 1024;
 enum network_message_type
@@ -18,6 +19,10 @@ enum network_message_type
     network_message_type_dbg_print,
     network_message_type_summon_true_bullet,
     network_message_type_summon_dummy_bullet,
+
+    network_message_type_new_connection_sync_request,
+    network_message_type_new_connection_sync_response,
+
     network_message_type_player_connect,
     network_message_type_player_update,
     network_message_type_client_id,
@@ -179,23 +184,70 @@ inline network_message_player_ready create_player_ready_message (uint32_t id, bo
     return msg;
 };
 
-<<<<<<< Updated upstream
 //mensaje sin contenido
-struct network_message_payload_empty {
-    //vac��a
-};
-
-inline network_message_payload_empty create_payload_empty_message() {
-=======
-
 struct network_message_payload_empty {
     constexpr static const network_message_type type{
         network_message_type::network_message_type_none
     };
 };
-inline network_message_payload_empty create_payload_empty_create_message() {
->>>>>>> Stashed changes
+inline network_message_payload_empty create_payload_empty_message() {
     return network_message_payload_empty{};
+}
+
+
+constexpr static const uint8_t network_user_sprite_key_maximum_buffer_size{32};
+constexpr static const uint8_t network_user_sprite_key_maximum_key_length{
+    network_user_sprite_key_maximum_buffer_size - 1
+};
+template <uint8_t MaxKeyBufferSize>
+struct network_user_sprite_key {
+    std::array<char, MaxKeyBufferSize> sprite_key;
+    uint8_t sprite_key_length;
+};
+template <uint8_t MaxKeyBufferSize>
+network_user_sprite_key<MaxKeyBufferSize> network_user_sprite_key_create(
+    const std::string_view sprite_key
+) {
+    static_assert(
+        MaxKeyBufferSize <= std::numeric_limits<uint8_t>::max(),
+        "static error: sprite key length exceeds uint8_t max"
+    );
+    assert(
+        sprite_key.size() <= MaxKeyBufferSize && "error: sprite key size exceeds capacity"
+    );
+    network_user_sprite_key<MaxKeyBufferSize> payload;
+    payload.sprite_key_length = uint8_t(sprite_key.size());
+    std::copy_n(sprite_key.begin(), sprite_key.size(), payload.sprite_key.begin());
+    return payload;
+}
+
+struct network_message_payload_new_connection_sync_request {
+    network_user_sprite_key<network_user_sprite_key_maximum_buffer_size> sprite_key;
+};
+network_message_payload_new_connection_sync_request network_message_payload_new_connection_sync_create(
+    const std::string_view sprite_key
+);
+
+
+template <size_t MaximumConnections>
+struct network_message_payload_new_connection_sync_response {
+    std::array<network_user_sprite_key<network_user_sprite_key_maximum_buffer_size>, MaximumConnections> sprite_keys;
+    network_connections connections;
+};
+template <size_t MaximumConnections>
+network_message_payload_new_connection_sync_response<MaximumConnections> network_message_payload_new_connection_sync_response_create(
+    const network_connections connections,
+    const std::vector<std::string_view> &sprite_keys
+) {
+    network_message_payload_new_connection_sync_response<MaximumConnections> payload;
+    payload.connections = connections;
+    assert(
+        sprite_keys.size() <= MaximumConnections && "error: sprite keys size exceeds maximum connections"
+    );
+    for (size_t i = 0; i < sprite_keys.size(); ++i) {
+        payload.sprite_keys[i] = network_user_sprite_key_create<network_user_sprite_key_maximum_buffer_size>(sprite_keys[i]);
+    }
+    return payload;
 }
 
 
