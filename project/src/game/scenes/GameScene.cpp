@@ -860,7 +860,7 @@ uint8_t GameScene::spawn_catkuza(Vector2D posVec, ecs::sceneId_t scene, uint8_t 
 uint8_t GameScene::spawn_sarno_rata(Vector2D posVec, ecs::sceneId_t scene, uint8_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
-
+	std::cout << "sarno rata id " << _id << std::endl;
 	GameStructs::EnemyProperties ec =
 		GameStructs::EnemyProperties{
 			"sarno_rata", // sprite_key
@@ -1586,17 +1586,18 @@ void GameScene::client_handle_menssage(network_context &ctx)
 		}
 		case network_message_type_enemy_update:
 		{
-			auto message = network_message_dynamic_pack_into<network_message_player_update>(std::move(dyn_message));
+			auto message = network_message_dynamic_pack_into<network_message_enemy_update>(std::move(dyn_message));
 			auto &&payload = message->payload.content;
 
 			GameStructs::DumbEnemyProperties _enemy_properties;
-			_enemy_properties._id = SDLNet_Read16(&payload.player_id_n);
-			_enemy_properties._health = SDLNet_Read16(&payload.health_n);
-			_enemy_properties._pos.setX(static_cast<int16_t>(SDLNet_Read16(&payload.pos_n[0])) / static_cast<float>(fact_float_int));
-			_enemy_properties._pos.setY(static_cast<int16_t>(SDLNet_Read16(&payload.pos_n[1])) / static_cast<float>(fact_float_int));
+			_enemy_properties._id = SDLNet_Read16(&payload._enemy_id);
+			_enemy_properties._health = SDLNet_Read16(&payload._health_n);
+			_enemy_properties._pos.setX(static_cast<int16_t>(SDLNet_Read16(&payload._pos[0])) / static_cast<float>(fact_float_int));
+			_enemy_properties._pos.setY(static_cast<int16_t>(SDLNet_Read16(&payload._pos[1])) / static_cast<float>(fact_float_int));
 
 			auto enemy = get_network_enemy(_enemy_properties._id);
-			Game::Instance()->get_mngr()->getComponent<EnemySynchronize>(enemy)->update_enemy(_enemy_properties);
+			if(enemy != nullptr)
+				Game::Instance()->get_mngr()->getComponent<EnemySynchronize>(enemy)->update_enemy(_enemy_properties);
 			break;
 		}
 		default:

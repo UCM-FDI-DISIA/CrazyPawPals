@@ -24,7 +24,7 @@ void EnemySynchronize::initComponent()
     assert(_ht != nullptr);
 	auto id_comp = mngr->getComponent<id_component>(_ent);
 	_enemy_id = id_comp->getId();
-	std::cout << "Enemy ID: " << (int)_enemy_id << std::endl;
+	std::cout << "Enemy ID: " << _enemy_id << std::endl;
 	//assert(_enemy_id != -1);
 }
 
