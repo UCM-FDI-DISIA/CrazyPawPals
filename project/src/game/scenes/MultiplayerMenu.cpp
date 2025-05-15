@@ -130,7 +130,7 @@ void MultiplayerMenu::exitScene()
 #endif
 }
 
-void MultiplayerMenu:: multiplayer_menu_host_loop(network_context &ctx) {
+static void multiplayer_menu_host_loop(network_context &ctx) {
     if (SDLNet_CheckSockets(ctx.profile.host.clients_host_set, 0) > 0) {
         if (SDLNet_SocketReady(ctx.profile.host.host_socket)) {
             network_connection_size connection_index;
@@ -157,9 +157,7 @@ void MultiplayerMenu:: multiplayer_menu_host_loop(network_context &ctx) {
                 const uint16_t type_n{dyn_message->header.type_n};
                 const uint16_t type_h{SDLNet_Read16(&type_n)};
                 switch (type_h) {
-                case network_message_type::network_message_type_dbg_print: [[fallthrough]];
-                case network_message_type::network_message_type_dbg_print_two_byte_test: {
-                    // std::unique_ptr<network_message_pack<network_message_payload_dbg_print<64>>, typename network_message_pack<network_message_payload_dbg_print<64>>::deleter> m;
+                case network_message_type::network_message_type_dbg_print: {
                     auto message =
                         network_message_dynamic_pack_into<network_message_payload_dbg_print<64>>(std::move(dyn_message));
                     auto&& payload = message->payload.content;
@@ -195,10 +193,11 @@ void MultiplayerMenu:: multiplayer_menu_host_loop(network_context &ctx) {
                     network_message_pack_send(connection, id_msg);
 
                     //mandarle al cliente nuevo los clientes ya conectados
-                    for (auto player : Game::Instance()->get_network_players()) {
-                        uint32_t id = player.first;
+                    const Game::network_users_state &state = Game::Instance()->get_network_state();
+                    for (size_t j = 0; j < state.connections.connected_users; ++j) {
+                        uint32_t id = j;
                         if (id != new_id) {
-                            ecs::entity_t player_entity = player.second;
+                            const ecs::entity_t player_entity = state.game_state.user_players.at(id);
                             auto* dyn_img = Game::Instance()->get_mngr()->getComponent<dyn_image_with_frames>(player_entity);
                            
                             if (dyn_img) {
@@ -239,7 +238,7 @@ void MultiplayerMenu:: multiplayer_menu_host_loop(network_context &ctx) {
     }
 }
 
-void MultiplayerMenu::multiplayer_menu_client_loop(network_context& ctx) {
+static void multiplayer_menu_client_loop(network_context& ctx) {
     int active_sockets = SDLNet_CheckSockets(ctx.profile.client.client_set, 0);
     if (active_sockets > 0 && SDLNet_SocketReady(ctx.profile.client.socket_to_host)) {
 
@@ -253,8 +252,13 @@ void MultiplayerMenu::multiplayer_menu_client_loop(network_context& ctx) {
 
             uint32_t id = SDLNet_Read32(&payload.client_id);
 
-            Game::Instance()->set_local_player_id(id);
-            Game::Instance()->add_network_player(id, Game::Instance()->get_mngr()->getHandler(ecs::hdlr::PLAYER));
+            Game::network_users_state &state = Game::Instance()->get_network_state();
+            assert(id <= state.connections.connected_users && "error: id must be less than or equal to the number of connected users");
+            state.connections.local_user_index = id;
+            ecs::entity_t &local_player_slot = state.game_state.user_players.at(id);
+            assert(local_player_slot == nullptr && "error: local player slot must be empty before assigning");
+
+            local_player_slot = Game::Instance()->get_mngr()->getHandler(ecs::hdlr::PLAYER);
             std::cout << "player id:" << std::to_string(id) << std::endl;
 
             break;
@@ -593,10 +597,13 @@ void MultiplayerMenu::create_host_button(const GameStructs::ButtonProperties& bp
         network_context_host_connect_alloc(network.profile.host);
         std::cout << "Host at port: " << Game::default_port << std::endl;
 
-        Game::Instance()->set_local_player_id(0);
         auto player = Game::Instance()->get_mngr()->getHandler(ecs::hdlr::PLAYER);
-        Game::Instance()->add_network_player(0, player);
-
+        Game &game = *Game::Instance();
+        network_state_add_user(
+            game.get_network_state(),
+            player,
+            std::string{game.get_mngr()->getComponent<dyn_image_with_frames>(player)->texture_name}
+        );
     });
 
     buttonComp->connectHover([buttonComp, imgComp]() {

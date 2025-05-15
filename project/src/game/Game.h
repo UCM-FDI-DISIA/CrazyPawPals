@@ -58,10 +58,6 @@ private:
 	network_users_state network_state;
 	void set_volumes();
 
-
-	std::unordered_map<uint32_t, ecs::entity_t> _network_players;
-	uint32_t _player_id;
-
 public:
 	constexpr static const uint16_t default_port = 52224; //49152-65535
 	//Network

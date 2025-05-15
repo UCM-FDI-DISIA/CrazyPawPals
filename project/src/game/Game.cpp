@@ -277,7 +277,7 @@ static void game_start_network_dbg(network_context &ctx) {
 		network_message_pack_send(
 			ctx.profile.client.socket_to_host,
 			network_message_pack_create(
-				network_message_type_dbg_print_two_byte_test,
+				network_message_type_dbg_print,
 				network_message_payload_dbg_print_create<256>(
 					"Hello from client!"
 				)
@@ -390,9 +390,4 @@ void Game::set_volumes() {
 	sdlutils().musics().at("main_menu_bgm").setMusicVolume(30);
 	sdlutils().soundEffects().at("reward").setVolume(40);
 	sdlutils().soundEffects().at("game_over").setVolume(40);
-}
-
-void Game::add_network_player(uint32_t id, ecs::entity_t entity)
-{
-	_network_players[id] = entity;
 }
