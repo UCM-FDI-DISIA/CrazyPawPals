@@ -1,3 +1,4 @@
+
 #include "TutorialScene.h"
 
 #include "../../our_scripts/components/ui/Button.h"
@@ -224,7 +225,7 @@ void TutorialScene::render()
 	Scene::render();
 	if (_show_tutorial_hud) {
 		auto camera = Game::Instance()->get_mngr()->getComponent<camera_component>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA));
-		rect_f32 num = rect_f32_screen_rect_from_viewport(rect_f32({ 0.85,0.1 }, { 0.07,0.05 }), camera->cam.screen);
+		rect_f32 num = rect_f32_screen_rect_from_viewport(rect_f32({ { 0.85,0.1 }, { 0.07,0.05 } }), camera->cam.screen);
 		SDL_Rect numtrue{
 			int(num.position.x),
 			int(num.position.y),
@@ -235,10 +236,10 @@ void TutorialScene::render()
 			sdlutils().renderer(),
 			"01/10",
 			sdlutils().fonts().at("ARIAL16"),
-			SDL_Color(50,50,50,255) };
+			SDL_Color({50,50,50,255}) };
 		numtex.render(numtrue);
 
-		rect_f32 timer = rect_f32_screen_rect_from_viewport(rect_f32({ 0.45,0.05 }, { 0.1,0.14 }), camera->cam.screen);
+		rect_f32 timer = rect_f32_screen_rect_from_viewport(rect_f32({ { 0.45,0.05 }, { 0.1,0.14 } }), camera->cam.screen);
 		SDL_Rect timertrue{
 			int(timer.position.x),
 			int(timer.position.y),
@@ -249,7 +250,7 @@ void TutorialScene::render()
 			sdlutils().renderer(),
 			"60",
 			sdlutils().fonts().at("ARIAL16"),
-			SDL_Color(50,50,50,255) };
+			SDL_Color({50,50,50,255}) };
 		timertex.render(timertrue);
 	}
 

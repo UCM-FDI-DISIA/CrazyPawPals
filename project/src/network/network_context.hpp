@@ -38,7 +38,7 @@ network_context_host_accept_connection_status_flags network_context_host_accept_
 
 
 struct network_context_client {
-    TCPsocket socket_to_master;
+    TCPsocket socket_to_host;
     SDLNet_SocketSet client_set;
     IPaddress ip_host;
 };
@@ -46,7 +46,7 @@ inline bool network_context_client_resolved(const network_context_client &client
     return client.ip_host.host != INADDR_NONE;
 }
 inline bool network_context_client_connected(const network_context_client &client) {
-    return client.socket_to_master != nullptr;
+    return client.socket_to_host != nullptr;
 }
 
 bool network_context_client_can_resolve(const char *const host, const uint16_t port);

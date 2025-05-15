@@ -1,3 +1,4 @@
+
 #include "Game.h"
 
 #include "../ecs/Manager.h"
@@ -80,11 +81,15 @@ Game::~Game() {
 	if (InputHandler::HasInstance())
 		InputHandler::Release();
 
-	// release SLDUtil if the instance was created correctly.
+	// release SDLUtils if the instance was created correctly.
 	if (SDLUtils::HasInstance())
 		SDLUtils::Release();
 
 	if (_mngr != nullptr) delete _mngr;
+
+	// release event_manager if the instance was created correctly.
+	if (event_system::event_manager::HasInstance())
+		event_system::event_manager::Release();
 #ifdef GENERATE_LOG
 	if (log_writer_to_csv::HasInstance())
 		log_writer_to_csv::Release();
@@ -158,7 +163,7 @@ bool Game::init() {
 	
 	// fullscreen mode
 	// HACK: uncomment this to fullscreen
-	SDL_SetWindowFullscreen(sdlutils().window(), 0);//SDL_WINDOW_FULLSCREEN_DESKTOP);
+	SDL_SetWindowFullscreen(sdlutils().window(),0 ); //0 for non-full screen mode SDL_WINDOW_FULLSCREEN_DESKTOP
 	
 	initGame();
 
@@ -189,9 +194,10 @@ void Game::initGame()
 		| Scene::rendering::camera_creation_descriptor_options::camera_creation_descriptor_options_clamp;
 	Scene::rendering::create_camera(ecs::scene::MAINMENUSCENE, flags, nullptr);
 
+	GameScene::create_environment();
 	//crear player
 	ecs::entity_t player = GameScene::create_player();
-	Game::Instance()->get_mngr()->setHandler(ecs::hdlr::PLAYER, player);
+	_mngr->setHandler(ecs::hdlr::PLAYER, player);
 
 	//iniciar el juego en el mainmenu
 	change_Scene(MAINMENU);
@@ -263,7 +269,7 @@ static void game_start_network_dbg(network_context &ctx) {
 		}
 
 		network_message_pack_send(
-			ctx.profile.client.socket_to_master,
+			ctx.profile.client.socket_to_host,
 			network_message_pack_create(
 				network_message_type_dbg_print_two_byte_test,
 				network_message_payload_dbg_print_create<256>(
@@ -328,21 +334,6 @@ void Game::start() {
 
 }
 
-void Game::startAsHost()
-{
-
-}
-
-void Game::startAsClient(const std::string& ip)
-{
-
-}
-
-std::string Game::getLocalIP() const
-{
-	return std::string();
-}
-
 ecs::Manager* Game::get_mngr() {
 	return _mngr;
 }
@@ -393,4 +384,9 @@ void Game::set_volumes() {
 	sdlutils().musics().at("main_menu_bgm").setMusicVolume(30);
 	sdlutils().soundEffects().at("reward").setVolume(40);
 	sdlutils().soundEffects().at("game_over").setVolume(40);
+}
+
+void Game::add_network_player(uint32_t id, ecs::entity_t entity)
+{
+	_network_players[id] = entity;
 }

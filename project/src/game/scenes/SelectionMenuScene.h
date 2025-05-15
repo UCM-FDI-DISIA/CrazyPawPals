@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Scene.h"
 #include <vector>
 #include <string>
@@ -15,6 +16,7 @@ public:
 	void initScene() override;
 	void enterScene() override;
 	void exitScene() override;
+	void render() override;
 	void update(uint32_t delta_time) override;
 
 private:
@@ -42,4 +44,12 @@ private:
 	bool _activate_play_button;
 
 	void reset();
+
+	//net
+	std::vector<bool> _player_ready;
+	bool _is_ready = false;
+	void checkAllPlayersReady();
+
+
+
 };

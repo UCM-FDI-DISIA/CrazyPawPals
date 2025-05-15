@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../Weapon.h"
 
 class WeaponCatKuza : public Weapon {

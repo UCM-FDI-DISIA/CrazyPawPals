@@ -1,9 +1,9 @@
+
 #include "KeyboardPlayerCtrl.h"
 #include "../../sdlutils/InputHandler.h"
 #include "../../game/Game.h"
 #include "../../ecs/Manager.h"
 #include "../components/rendering/camera_component.hpp"
-
 #include "cards/Deck.hpp"
 #include "movement/Transform.h"
 #include "weapons/Weapon.h"
@@ -12,7 +12,6 @@
 #include "MythicComponent.h"
 #include "../mythic/MythicItems.h"
 #include "AnimationComponent.h"
-#include "GhostStateComponent.h"
 #ifdef GENERATE_LOG
 #include "../log_writer_to_csv.hpp"
 #endif

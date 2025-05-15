@@ -189,7 +189,7 @@ network_context_client network_context_client_create(const char *host, const uin
     }
 
     const network_context_client client = network_context_client{
-        .socket_to_master = nullptr,
+        .socket_to_host = nullptr,
         .client_set = nullptr,
         .ip_host = host_ip,
     };
@@ -201,10 +201,10 @@ void network_context_client_destroy(network_context_client &client) {
     assert(network_context_client_connected(client) && "error: client context must be connected before destroying");
     
     SDLNet_CheckSockets(client.client_set, 0);
-    network_utility_sdlnet_drain_and_close(client.socket_to_master);
+    network_utility_sdlnet_drain_and_close(client.socket_to_host);
     
     SDLNet_FreeSocketSet(client.client_set);
-    client.socket_to_master = nullptr;
+    client.socket_to_host = nullptr;
     client.client_set = nullptr;
     client.ip_host.host = INADDR_NONE;
     assert(!network_context_client_connected(client) && "fatal error: network_context_client_destroy invalid");
@@ -247,13 +247,13 @@ network_context_client_connect_status_flags network_context_client_connect_alloc
         assert(false && "fatal error: network_message_connection_client_from_host invalid");
         std::exit(EXIT_FAILURE);
     } else if (network_message_connection_client_from_host_accepted(message)) {
-        client.socket_to_master = socket_to_master;
+        client.socket_to_host = socket_to_master;
         client.client_set = SDLNet_AllocSocketSet(1);
         if (client.client_set == nullptr) {
             assert(false && "fatal error: SDLNet_AllocSocketSet failed");
             std::exit(EXIT_FAILURE);
         }
-        const int add_socket_result = SDLNet_TCP_AddSocket(client.client_set, client.socket_to_master);
+        const int add_socket_result = SDLNet_TCP_AddSocket(client.client_set, client.socket_to_host);
         if (add_socket_result == network_utility_sdl_net_failure) {
             assert(false && "fatal error: SDLNet_TCP_AddSocket failed");
             std::exit(EXIT_FAILURE);

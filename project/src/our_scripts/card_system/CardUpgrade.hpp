@@ -1,3 +1,4 @@
+
 #include "Card.hpp"
 #include "../components/cards/Deck.hpp"
 
@@ -16,6 +17,10 @@ public:
 		//Resources& res = get_costs();
 		//res = res + res_mod;
 		//my_card = this;
+	}
+	virtual ~BaseCardUpgrade() {
+		if (_card != nullptr)
+			delete _card;
 	}
 
 	void on_play (Deck& d, const Vector2D* player_position, const Vector2D* target_position) override {

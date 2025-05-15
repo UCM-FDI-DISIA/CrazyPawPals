@@ -1,3 +1,4 @@
+
 #include "camera.hpp"
 
 const rect_f32 rect_f32_full_subrect = {

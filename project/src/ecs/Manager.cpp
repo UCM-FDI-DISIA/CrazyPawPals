@@ -1,4 +1,3 @@
-// This file is part of the course TPV2@UCM - Samir Genaim
 
 #include "Manager.h"
 #include "../our_scripts/components/rendering/render_ordering.hpp"

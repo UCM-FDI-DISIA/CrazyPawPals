@@ -1,3 +1,4 @@
+
 #include "MythicDataComponent.h"
 
 MythicDataComponent::MythicDataComponent() : _mt(GameStructs::LAST_MYTHIC), _data("") {}

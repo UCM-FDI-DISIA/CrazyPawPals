@@ -1,14 +1,16 @@
-﻿#include "Health.h"
+﻿
+#include "Health.h"
 #include "../../sdlutils/SDLUtils.h"
 #include "../../ecs/Manager.h"
 #include "../../game/Game.h"
+#include "EraseTextureComponent.h"
 #include "rendering/dyn_image.hpp"
 #include "rendering/dyn_image_with_frames.hpp"
 #include <algorithm>
 #include "ui/DamagePopup.h"
 #include "movement/Transform.h"
 #include "rendering/camera_component.hpp"
-#include "GhostStateComponent.h"
+#include "net/GhostStateComponent.h"
 #ifdef GENERATE_LOG
 #include "../../our_scripts/log_writer_to_csv.hpp"
 #endif
@@ -45,20 +47,23 @@ Health::takeDamage(int damage)
 
 	// damage popup
 	auto tr = new Transform(_tr->getPos(), { 0.0f,0.0f },0.0f,0.0f);
+	auto rect = new rect_component(0, 0, damage >= 10 ? 1.0 : 0.5, 0.9);
+	auto text = new Texture(
+		sdlutils().renderer(),
+		std::to_string(damage),
+		sdlutils().fonts().at("PROTEST_GUERRILLA100"),
+		SDL_Color(255, 50, 20, 255)
+	);
+	//auto text = 
 	auto img = new dyn_image(
 		rect_f32{ {0, 0}, {1, 1} },
-		*new rect_component( 0, 0, damage >= 10 ? 1.0 : 0.5, 0.9),
+		*rect,
 		Game::Instance()->get_mngr()->getComponent<camera_component>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA))->cam,
-		*new Texture(
-			sdlutils().renderer(),
-			std::to_string(damage),
-			sdlutils().fonts().at("PROTEST_GUERRILLA100"),
-			SDL_Color(255, 50, 20, 255)
-		),
+		*text,
 		*tr);
 	auto popup = new DamagePopup();
 	auto ent = Game::Instance()->get_mngr()->addEntity(ecs::scene::GAMESCENE, ecs::grp::DEFAULT);
-	Game::Instance()->get_mngr()->addExistingComponent(ent, tr, img, popup);
+	Game::Instance()->get_mngr()->addExistingComponent(ent, tr, img, popup,rect, new EraseTextureComponent(text));
 	
 	if (_shield <= damage) {
 		damage -= _shield;
@@ -88,12 +93,20 @@ void
 Health::setMaxHeatlh(int maxHeatlh) {
 	if (maxHeatlh > 0) _maxHealth = maxHeatlh;
 }
+void Health::setHeatlh(int h)
+{
+	if (h > 0 && h < _maxHealth) _currentHealth = h;
+}
 void Health::resetCurrentHeatlh()
 {
 	_currentHealth = _maxHealth;
 }
 int
 Health::getHealth() const { return _currentHealth; }
+int Health::getShield() const
+{
+	return _shield;
+}
 void 
 Health::takeShield(int shield) {
 	_shield = shield;

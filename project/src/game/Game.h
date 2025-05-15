@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../utils/Singleton.h"
 #include "../utils/Vector2D.h"
 #include "../ecs/ecs.h"
@@ -31,10 +32,6 @@ public:
 	void initGame();
 	void start();
 
-	void startAsHost();
-	void startAsClient(const std::string& ip);
-	std::string getLocalIP() const;
-
 	ecs::Manager* get_mngr();
 	event_system::event_manager* get_event_mngr();
 	
@@ -52,12 +49,15 @@ private:
 	int _current_scene_index = -1;
 	std::vector<Scene*> _scenes;
 	std::vector<bool> _scene_inits;
-	std::pair<int, int> _screen_size = std::make_pair(960,540);
+	std::pair<int, int> _screen_size = std::make_pair(960, 540);
 	Game();
 	ecs::Manager* _mngr;
 	network_context network;
 	void set_volumes();
-	void create_camera();
+
+
+	std::unordered_map<uint32_t, ecs::entity_t> _network_players;
+	uint32_t _player_id;
 
 public:
 	constexpr static const uint16_t default_port = 52224; //49152-65535
@@ -81,4 +81,14 @@ public:
 	inline bool is_client() const {
 		return network_profile_status() == network_context_profile_status_client;
 	}
+
+
+	inline const std::unordered_map<uint32_t, ecs::entity_t>& get_network_players() const { return _network_players; };
+	inline const int get_network_players_num() const { return _network_players.size(); };
+	inline const ecs::entity_t get_network_player(uint32_t id) { return _network_players[id]; };
+	void add_network_player(uint32_t id, ecs::entity_t entity);
+	
+
+	inline uint32_t get_local_player_id() const { return _player_id; };
+	inline void set_local_player_id(uint32_t id) { _player_id = id; };
 };

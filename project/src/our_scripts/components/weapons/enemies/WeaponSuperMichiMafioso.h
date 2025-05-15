@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../Weapon.h"
 #include "../../movement/Follow.h"
 class Transform;

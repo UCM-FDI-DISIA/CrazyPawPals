@@ -1,10 +1,11 @@
+
 #include "Rampage.h"
 #include "../../../../game/Game.h"
 #include "../../../../game/scenes/GameScene.h"
 #include "our_scripts/card_system/ShootPatrons.hpp"
 
 
-Rampage::Rampage() : Weapon(1, 550.0f, 0.7f, 0.06f, "p_rampage", 1.0f, 1.0f) { }
+Rampage::Rampage() : Weapon(1, 550.0f, 0.4f, 0.15f, "p_rampage", 1.0f, 1.0f) { }
 
 Rampage::~Rampage() {}
 

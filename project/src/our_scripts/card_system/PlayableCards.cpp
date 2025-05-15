@@ -1,3 +1,4 @@
+
 #include "PlayableCards.hpp"
 #include "CardUpgrade.hpp"
 #include "../components/movement/MovementController.h"
@@ -18,12 +19,13 @@ void Fireball::on_play(Deck& d, const Vector2D* player_position, const Vector2D*
 	bp.dir = ((*target_position) - (*player_position)).normalize();
 	bp.init_pos = *player_position;
 	bp.speed = 0.08f;
-	bp.height = 2.3;
+	bp.height = 3;
 	bp.width = 2.3;
 	bp.life_time = 2;
 	bp.sprite_key = "p_fireball";
-	bp.damage = 7;
+	bp.damage = 8;
 	bp.collision_filter = GameStructs::collide_with::enemy;
+	bp.weapon_type = GameStructs::WeaponType::FIREBALL_EFFECT;
 	
 	Game::Instance()->get_currentScene()->create_proyectile(bp, ecs::grp::BULLET);
 }
@@ -57,6 +59,18 @@ void Minigun::on_play(Deck& d, const Vector2D* player_position, const Vector2D* 
 	_aim_vec = target_position;
 	_pl_vec = player_position;
 	_number_of_bullets_shot = 0;
+	if (d.get_primed()) {
+		d.set_primed(false);
+		_im_primed = true;
+		_number_of_shots = 30;
+		_shooting_duration = 1000;
+	}
+	else {
+		d.set_primed(true);
+		_im_primed = false;
+		_shooting_duration = 1500;
+		_number_of_shots = 10;
+	}
 }
 
 void Minigun::update(uint32_t dt)
@@ -66,8 +80,12 @@ void Minigun::update(uint32_t dt)
 		if (_time_since_played >= _number_of_bullets_shot * (_shooting_duration / (_number_of_shots - 1))) {
 			_bullets_properties.dir = ((*_aim_vec) - (*_pl_vec)).normalize();
 			_bullets_properties.init_pos = *_pl_vec;
-			
-			Game::Instance()->get_currentScene()->create_proyectile(_bullets_properties, ecs::grp::BULLET);
+			if (!_im_primed) {
+				Game::Instance()->get_currentScene()->create_proyectile(_bullets_properties, ecs::grp::BULLET);
+			}
+			else {
+				patrons::ShotgunPatron(_bullets_properties, ecs::grp::BULLET, 324, 5);
+			}
 			++_number_of_bullets_shot;
 			if (_number_of_bullets_shot == _number_of_shots)
 				_playing = false;
@@ -119,7 +137,7 @@ void Kunai::on_play(Deck& d, const Vector2D* player_position, const Vector2D* ta
 	bp.width = 2.3;
 	bp.life_time = 2;
 	bp.sprite_key = "p_kunai";
-	bp.damage = 2;
+	bp.damage = 5;
 	bp.pierce_number = INT_MAX;
 	bp.collision_filter = GameStructs::collide_with::enemy;
 	
@@ -178,7 +196,7 @@ void EldritchBlast::on_play(Deck& d, const Vector2D* player_position, const Vect
 	bp.width = 2.3;
 	bp.life_time = 0.13;
 	bp.sprite_key = "p_eldritch_blast";
-	bp.damage = 2;
+	bp.damage = 4;
 	bp.collision_filter = GameStructs::collide_with::enemy;
 
 	patrons::ShotgunPatron(bp, ecs::grp::BULLET, _amplitude * (_shot_count - 1), _shot_count);
@@ -326,6 +344,8 @@ void Fulgur::on_play(Deck& d, const Vector2D* player_position, const Vector2D* t
 		_aim_vec = Vector2D(target_position->getX(), target_position->getY()),
 			_number_of_bullets_shot = 0;
 	}
+	else
+		d.set_primed(true);
 }
 void Fulgur::update(uint32_t dt)
 {

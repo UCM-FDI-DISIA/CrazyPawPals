@@ -1,11 +1,13 @@
 #ifdef GENERATE_LOG
 #pragma once
 
+
 #include "utils/Singleton.h"
 #include <chrono>
 #include <ctime>
 #include <fstream>
 #include <iostream>
+
 
 #define file_name "log_"
 

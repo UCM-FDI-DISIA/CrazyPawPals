@@ -1,11 +1,15 @@
 #pragma once
 
+
+
 #include "Scene.h"
 #include <functional>
+#include "../../network/network_message.hpp"
 class Weapon;
 class Transform;
 class StateMachine;
 struct EnemyProperties;
+struct filter;
 
 class GameScene : public event_system::event_receiver, public Scene
 {
@@ -15,6 +19,10 @@ class GameScene : public event_system::event_receiver, public Scene
 	static ecs::entity_t dumb_enemy(GameStructs::EnemyProperties& ec, ecs::sceneId_t scene);
 	static void online_enemy(ecs::entity_t ec);
 
+
+	void host_handle_menssage(network_context& ctx);
+	void client_handle_menssage(network_context& ctx);
+
 public:
 	GameScene();
 	~GameScene();
@@ -22,10 +30,13 @@ public:
 	void enterScene() override;
 	void exitScene() override;
 
+	void update(uint32_t delta_time) override;
 	//Methods of entities to spawn
 	//Statics
 	static ecs::entity_t create_player(ecs::sceneId_t scene = ecs::scene::GAMESCENE);
 	static bool change_player_tex(const std::string& key_name);
+	static bool change_player_tex(uint32_t playerId, const std::string& key_name);
+	static bool change_player_filter(uint32_t playerId, filter filter);
 	void reset_player();
 
 	static void spawn_sarno_rata(Vector2D posVec, ecs::sceneId_t scene = ecs::scene::GAMESCENE);
@@ -51,6 +62,10 @@ public:
 	void spawn_fog();
 	void event_callback0(const event_system::event_receiver::Msg& m) override;
 	void event_callback1(const event_system::event_receiver::Msg& m) override;
+
+
+	static ecs::entity_t create_dumb_player(ecs::sceneId_t scene, uint32_t playerId, std::string tex_name);
 protected:
+
 	static float deccel_spawned_creatures_multi;
 };

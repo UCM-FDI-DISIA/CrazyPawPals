@@ -1,4 +1,3 @@
-// This file is part of the course TPV2@UCM - Samir Genaim
 
 #pragma once
 
@@ -20,7 +19,7 @@
 	DYN_IMAGE_WITH_FRAMES, \
 	ENEMYSTATEMACHINE, \
 	ENEMY_TRIGGERER, \
-	ENEMY_SYNCHRONIZE, \
+	SYNCHRONIZE, \
 	FLIPXCONTROLLER, \
 	FOG, \
 	FOG_COLLISION_COMPONENT, \
@@ -53,7 +52,8 @@
 	TRIGGER_MANIFOLD, \
 	WEAPON, \
 	WAVEMANAGER, \
-	DAMAGE_POPUP
+	DAMAGE_POPUP, \
+	ERASE_TEXTURE
 
 // Groups list - must have at least one element
 //

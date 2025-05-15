@@ -1,39 +1,43 @@
-cmake_minimum_required(VERSION 3.15..3.30)
+cmake_minimum_required(VERSION 3.6)
 
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
- add_definitions(-D_CRTDBG_MAP_ALLOC)
- endif()
-
-if (true)
-    add_compile_options(
-        /W4
-        /Zi
-
-        /nologo
-        #-D DBG_COLLISIONS=true
-    )
-else()
-    add_compile_options(
-        -Wall
-        -Wextra
-        -Wpedantic
-        # -Werror
-
-        -Wno-c++98-compat
-        -Wno-c++98-compat-pedantic
-        -Wno-reserved-identifier
-
-        -Wno-shadow-field
-        -Wno-shadow-field-in-constructor
-
-        -Wno-c++20-extensions
-    )
-endif()
 
 project(CrazyPawPals C CXX)
     set(CMAKE_CXX_STANDARD 20)
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
     set(CMAKE_CXX_EXTENSIONS OFF)
+
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        add_definitions(-D_CRTDBG_MAP_ALLOC)
+    endif()
+
+    set(USER_MSVC ((MSVC OR MSVC_IDE) AND (NOT (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"))))
+    if (${USER_MSVC})
+        message(STATUS "MSVC detected")
+        add_compile_options(
+            /W4
+            /Zi
+
+            /nologo
+            #-D DBG_COLLISIONS=true
+        )
+    else()
+        message(STATUS "GCC/Clang detected")
+        add_compile_options(
+            -Wall
+            -Wextra
+            -Wpedantic
+            # -Werror
+
+            -Wno-c++98-compat
+            -Wno-c++98-compat-pedantic
+            -Wno-reserved-identifier
+
+            -Wno-shadow-field
+            -Wno-shadow-field-in-constructor
+
+            -Wno-c++20-extensions
+        )
+    endif()
 
     set(
         CrazyPawPals_PROJECT_DIRECTORY
@@ -77,12 +81,21 @@ project(CrazyPawPals C CXX)
         ${CrazyPawPals_LIB_DIRECTORY}/SDL2-2.30.11
     )
 
+    if (CMAKE_BUILD_TYPE STREQUAL "Release")
+        if (${USER_MSVC})
+            set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
+        else()
+            set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mwindows -Wl,--subsystem,windows")
+        endif()
+    endif()
     add_executable(
         ${PROJECT_NAME}
+        WIN32
         ${CrazyPawPals_SRC_DIRECTORY}/main.cpp
         ${CrazyPawPals_SOURCES}
-     "project/src/our_scripts/components/ui/HUD.cpp" "project/src/our_scripts/components/ui/HUD.h")
+    )
     
+
     if (NOT $ENV{DBG_NETWORK})
         set(DBG_NETWORK false)
         set(DBG_NETWORK_HOST false)

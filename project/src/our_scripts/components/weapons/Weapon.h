@@ -1,4 +1,5 @@
 #pragma once
+
 //this is the abstract class of player's weapons
 #include "../../../ecs/Component.h"
 #include <vector>
