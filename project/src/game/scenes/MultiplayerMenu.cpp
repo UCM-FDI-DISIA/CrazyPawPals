@@ -244,6 +244,7 @@ static void multiplayer_menu_host_loop(network_context &ctx) {
                         payload.sprite_key.sprite_key.data(),
                         sprite_key_length
                     };
+                    std::cout << "message: new connection sync request. Sprite key: " << sprite_key << ". With length: " << uint16_t(sprite_key_length) << std::endl;
                     const size_t network_user_index{network_state_next_user_index(state)}; 
                     const ecs::entity_t player_entity{GameScene::create_dumb_player(ecs::scene::GAMESCENE, network_user_index, std::string{sprite_key})};
 
