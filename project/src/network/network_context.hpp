@@ -38,7 +38,9 @@ network_context_host_accept_connection_status_flags network_context_host_accept_
     network_context_host &host,
     network_connection_size &out_connection_index 
 );
-
+network_context_host_accept_connection_status_flags network_context_host_reject_connection(
+    network_context_host &host
+);
 
 struct network_context_client {
     TCPsocket socket_to_host;

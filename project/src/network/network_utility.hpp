@@ -7,12 +7,17 @@
 #include <cstdlib>
 #include <array>
 #include <string>
+#include <type_traits>
 
 #define NETWORK_UTILITY_SDL_NET_FAILURE (-1)
 constexpr const int network_utility_sdl_net_failure = NETWORK_UTILITY_SDL_NET_FAILURE;
 
 #define NETWORK_UTILITY_SDL_NET_SUCCESS (0)
 constexpr const int network_utility_sdl_net_success = NETWORK_UTILITY_SDL_NET_SUCCESS;
+
+#define NETWORK_UTILITY_SDL_NET_CONNECTION_CLOSED_BYTES (0)
+constexpr const int network_utility_sdl_net_connection_closed_bytes =
+    NETWORK_UTILITY_SDL_NET_CONNECTION_CLOSED_BYTES;
 
 
 #ifndef NETWORK_UTILITY_SDL_NET_DRAIN_AND_CLOSE_BUFFER_CHUNK_SIZE
@@ -64,6 +69,33 @@ inline bool network_utility_in_network_endian_u32(const uint32_t value_n) {
            & (value_h1 == *(reinterpret_cast<const uint8_t *>(&value_n) + sizeof(uint32_t) - 2))
            & (value_h2 == *(reinterpret_cast<const uint8_t *>(&value_n) + sizeof(uint32_t) - 3))
            & (value_h3 == *(reinterpret_cast<const uint8_t *>(&value_n) + sizeof(uint32_t) - 4));
+}
+
+template <
+    typename T,
+    typename = std::enable_if_t<
+        std::conjunction_v<
+            std::is_integral<T>,
+            std::disjunction<
+                std::bool_constant<sizeof(T) == sizeof(uint8_t)>,
+                std::bool_constant<sizeof(T) == sizeof(uint16_t)>,
+                std::bool_constant<sizeof(T) == sizeof(uint32_t)>
+            >
+        >
+    >
+>
+inline bool network_utility_is_same_in_network_endian(auto value) {
+    if constexpr (sizeof(value) == sizeof(uint8_t)) {
+        return true;
+    } else if constexpr (sizeof(value) == sizeof(uint16_t)) {
+        return network_utility_in_network_endian_u16(value);
+    } else if constexpr (sizeof(value) == sizeof(uint32_t)) {
+        return network_utility_in_network_endian_u32(value);
+    } else {
+        assert(false && "unreachable: value is not an 8, 16, or 32 bit integral type");
+        std::exit(EXIT_FAILURE);
+        return false;
+    }
 }
 
 constexpr static const size_t network_utility_write_canonical_ip_buffer_size = 3 * 4 + 3 + 1;

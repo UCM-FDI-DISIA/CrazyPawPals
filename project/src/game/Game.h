@@ -6,6 +6,7 @@
 #include "../utils/EventsSystem.hpp"
 #include <vector>
 #include "../network/network_context.hpp"
+#include "../network/network_state.hpp"
 
 namespace ecs {
 class Manager;
@@ -26,6 +27,7 @@ public:
 		MULTIPLAYERMENU,
 		NUM_SCENE,
 	};
+	using network_users_state = network_state<network_context_maximum_connections>;
 	friend Singleton<Game>;
 	virtual ~Game() override;
 	bool init();
@@ -53,6 +55,7 @@ private:
 	Game();
 	ecs::Manager* _mngr;
 	network_context network;
+	network_users_state network_state;
 	void set_volumes();
 
 
@@ -82,13 +85,22 @@ public:
 		return network_profile_status() == network_context_profile_status_client;
 	}
 
+	inline const network_users_state &get_network_state() const {
+		assert(
+			!is_network_none()
+			&& "error: network state is not available when network context is none"
+		);
+		return network_state;
+	}
+	inline network_users_state &get_network_state() {
+		assert(
+			!is_network_none()
+			&& "error: network state is not available when network context is none"
+		);
+		return network_state;
+	}
 
-	inline const std::unordered_map<uint32_t, ecs::entity_t>& get_network_players() const { return _network_players; };
-	inline const int get_network_players_num() const { return _network_players.size(); };
-	inline const ecs::entity_t get_network_player(uint32_t id) { return _network_players[id]; };
-	void add_network_player(uint32_t id, ecs::entity_t entity);
-	
-
-	inline uint32_t get_local_player_id() const { return _player_id; };
-	inline void set_local_player_id(uint32_t id) { _player_id = id; };
+	inline uint8_t client_id() const {
+		return get_network_state().connections.local_user_index;
+	}
 };

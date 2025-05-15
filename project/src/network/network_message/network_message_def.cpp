@@ -11,6 +11,7 @@ extern inline network_message_header network_message_header_create(
     const network_message_header_size size_h
 );
 
+
 network_message_header network_message_header_receive(TCPsocket socket) {
     network_message_header header;
     const int recv_result = SDLNet_TCP_Recv(
@@ -18,10 +19,25 @@ network_message_header network_message_header_receive(TCPsocket socket) {
         &header,
         int(sizeof(header))
     );
-    // FIXME: allow for connection closed message
+    
     if (recv_result == network_utility_sdl_net_failure) {
         assert(false && "fatal error: SDLNet_TCP_Recv failed");
         std::exit(EXIT_FAILURE);
+    } else if (recv_result == network_utility_sdl_net_connection_closed_bytes) {
+        assert(
+            network_utility_is_same_in_network_endian<network_message_type_option>(0)
+            && "fatal error: 0 must be represented the same way in network endian"
+        );
+        assert(
+            network_utility_is_same_in_network_endian<network_message_type_option>(network_message_type_none)
+            && "fatal error: network_message_type_none must be represented the same way in network endian"
+        );
+        header = network_message_header{
+            .connection_is_open = 0,
+            .illegal = 0,
+            .type_n = network_message_type_none,
+            .payload_size_n = 0
+        };
     } else if (recv_result != sizeof(header)) {
         assert(false && "fatal error: SDLNet_TCP_Recv invalid number of bytes received");
         std::exit(EXIT_FAILURE);

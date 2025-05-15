@@ -16,7 +16,6 @@ enum network_message_type
     network_message_type_none = 0,
     network_message_type_any,
     network_message_type_dbg_print,
-    network_message_type_dbg_print_two_byte_test = 0x0102,
     network_message_type_summon_true_bullet,
     network_message_type_summon_dummy_bullet,
     network_message_type_player_connect,
@@ -31,7 +30,7 @@ using network_message_type_option = uint16_t;
 using network_message_header_size = uint16_t;
 struct network_message_header
 {
-    network_message_type_option unused : 1;
+    network_message_type_option connection_is_open : 1;
     network_message_type_option illegal : 1;
     network_message_type_option type_n : 14;
     network_message_header_size payload_size_n;
@@ -42,7 +41,7 @@ static_assert(
 
 inline bool network_message_header_valid(const network_message_header header)
 {
-    return header.unused == 0 && header.illegal == 1;
+    return header.illegal == 1;
 }
 inline bool network_message_header_in_network_endian(const network_message_header header)
 {
@@ -59,7 +58,7 @@ inline network_message_header network_message_header_create(
 
     SDLNet_Write16(type, &type_n);
     SDLNet_Write16(payload_size_h, &header.payload_size_n);
-    header.unused = 0;
+    header.connection_is_open = 1;
     header.illegal = 1;
     header.type_n = type_n;
 
@@ -180,12 +179,22 @@ inline network_message_player_ready create_player_ready_message (uint32_t id, bo
     return msg;
 };
 
+<<<<<<< Updated upstream
 //mensaje sin contenido
 struct network_message_payload_empty {
-    //vac¨ªa
+    //vacï¿½ï¿½a
 };
 
 inline network_message_payload_empty create_payload_empty_message() {
+=======
+
+struct network_message_payload_empty {
+    constexpr static const network_message_type type{
+        network_message_type::network_message_type_none
+    };
+};
+inline network_message_payload_empty create_payload_empty_create_message() {
+>>>>>>> Stashed changes
     return network_message_payload_empty{};
 }
 

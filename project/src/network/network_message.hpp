@@ -113,17 +113,19 @@ network_message_pack<T> network_message_pack_receive(
     
     network_message_pack<T> message;
     message.header = header;
-    const int recv_result = SDLNet_TCP_Recv(
-        socket,
-        &message.payload,
-        int(payload_size)
-    );
-    if (recv_result == network_utility_sdl_net_failure) {
-        assert(false && "fatal error: SDLNet_TCP_Recv failed");
-        std::exit(EXIT_FAILURE);
-    } else if (recv_result != int(payload_size)) {
-        assert(false && "fatal error: SDLNet_TCP_Recv invalid number of bytes received");
-        std::exit(EXIT_FAILURE);
+    if (payload_size != 0) {
+        const int recv_result = SDLNet_TCP_Recv(
+            socket,
+            &message.payload,
+            int(payload_size)
+        );
+        if (recv_result == network_utility_sdl_net_failure) {
+            assert(false && "fatal error: SDLNet_TCP_Recv failed");
+            std::exit(EXIT_FAILURE);
+        } else if (recv_result != int(payload_size)) {
+            assert(false && "fatal error: SDLNet_TCP_Recv invalid number of bytes received");
+            std::exit(EXIT_FAILURE);
+        }
     }
     return message;
 }
