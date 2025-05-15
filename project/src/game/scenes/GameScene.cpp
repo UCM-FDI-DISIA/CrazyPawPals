@@ -214,7 +214,7 @@ void GameScene::enterScene()
 	auto e = wm->get_current_event();
 	RewardScene::will_have_mythic(e != NONE || ((wm->get_current_wave()+1)%5 == 0));
 	manager.getComponent<HUD>(manager.getHandler(ecs::hdlr::HUD_ENTITY))->start_new_wave();
-	spawn_catkuza(Vector2D{10.0f, 0.0f});
+	//spawn_catkuza(Vector2D{10.0f, 0.0f});
 	// spawn_rata_basurera(Vector2D{5.0f, 0.0f});
 	// spawn_rey_basurero(Vector2D{-5.0f, 0.0f});
 	// spawn_super_michi_mafioso(Vector2D{5.0f, 0.0f});
@@ -577,23 +577,22 @@ void GameScene::spawn_super_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene)
 void GameScene::spawn_catkuza(Vector2D posVec, ecs::sceneId_t scene)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
+	auto&& weapon = *new WeaponCatKuza();
 
-	auto e = create_enemy(GameStructs::EnemyProperties{
-		"catkuza", 
-		posVec, 
-		GameStructs::DEFAULT, 
-		30, 
-		1.8f, 
-		2.5f, 
-		GameStructs::CLOSEST, 
-		{0.0f, 0.0f}, 
-		0.0f, 
-		2.0f}, 
-		scene, static_cast<Weapon *>(&weapon));
+	auto ec = GameStructs::EnemyProperties{
+		"catkuza",
+		posVec,
+		GameStructs::DEFAULT,
+		30,
+		1.8f,
+		2.5f,
+		GameStructs::CLOSEST,
+		{0.0f, 0.0f},
+		0.0f,
+		2.0f };
 
 	if (Game::Instance()->is_host() || Game::Instance()->is_network_none())
 	{
-		auto &&weapon = *new WeaponCatKuza();
 
 		auto e = create_enemy(
 			ec,
