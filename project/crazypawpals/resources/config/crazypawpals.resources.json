@@ -16,9 +16,14 @@
       "size": 100
     },
     {
-      "id": "ALFA_SLAB",
+      "id": "ALFA_SLAB_200",
       "file": "resources/fonts/AlfaSlabOne-Regular.ttf",
       "size": 200
+    },
+    {
+      "id": "ALFA_SLAB",
+      "file": "resources/fonts/AlfaSlabOne-Regular.ttf",
+      "size": 16
     },
     {
       "id": "RUBIK_MONO",

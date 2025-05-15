@@ -43,7 +43,7 @@ void MultiplayerMenu::initScene()
 
     //Button back
     GameStructs::ButtonProperties backB = {
-        { {0.025f, 0.025f},{0.10f, 0.07f} },
+        { {0.035f, 0.025f},{0.10f, 0.1f} },
         0.0f, ""
     };
     backB.sprite_key = "back2";
@@ -59,26 +59,23 @@ void MultiplayerMenu::initScene()
 
     // --- BUTTONS FOR SKINS ---
      //Button mimi
-    GameStructs::ButtonProperties skinMimiB = {
-        { {0.2f, 0.15f}, { 0.15f, 0.25f } },
+    GameStructs::ButtonProperties skinB = {
+        { {0.04f, 0.4f}, { 0.15f, 0.25f } },
             0.0f, ""
     };
-    skinMimiB.sprite_key = "mimibutton";
-    create_skin_button(skinMimiB, "mimi");
+    skinB.sprite_key = "mimibutton";
+    create_skin_button(skinB, "mimi");
 
     //Button piu
-    GameStructs::ButtonProperties skinPiuB = {
-        { {0.2f, 0.5f}, { 0.15f, 0.25f } },
-            0.0f, ""
-    };
-    skinPiuB.sprite_key = "piubutton";
-    create_skin_button(skinPiuB, "piu");
+    skinB.rect.position.x = 0.21f;
+    skinB.sprite_key = "piubutton";
+    create_skin_button(skinB, "piu");
 
 
     // --- BUTTONS ABOUT MULTIPLAYER ---
     //Button host
     GameStructs::ButtonProperties hostB = {
-        { {0.5f, 0.15f}, { 0.20f, 0.15f } },
+        { {0.5f, 0.1f}, { 0.20f, 0.15f } },
             0.0f, ""
     };
     hostB.sprite_key = "host";
@@ -86,8 +83,8 @@ void MultiplayerMenu::initScene()
 
     GameStructs::ButtonProperties edit_ip_button_descriptor{
         rect_f32{
-            position2_f32{0.7f + 0.15f + 0.05f, 0.39f},
-            size2_f32{ 0.075f, 0.075f }
+            position2_f32{0.7f + 0.15f + 0.05f, 0.3f},
+            size2_f32{ 0.075f, 0.12f }
         },
         0.0f,
         std::string{"edit_ip"},
@@ -97,7 +94,7 @@ void MultiplayerMenu::initScene()
     
     //Button copy ip
     GameStructs::ButtonProperties copyB = {
-        { {0.7f, 0.15f}, { 0.20f, 0.15f } },
+        { {0.7f, 0.1f}, { 0.20f, 0.15f } },
             0.0f, ""
     };
     copyB.sprite_key = "copyip";
@@ -105,7 +102,7 @@ void MultiplayerMenu::initScene()
 
     //Button client
     GameStructs::ButtonProperties clientB = {
-        { {0.5f, 0.35f}, { 0.20f, 0.15f } },
+        { {0.5f, 0.3f}, { 0.20f, 0.15f } },
             0.0f, ""
     };
     clientB.sprite_key = "client";
@@ -114,7 +111,7 @@ void MultiplayerMenu::initScene()
 
 void MultiplayerMenu::enterScene()
 {
-    Game::Instance()->get_mngr()->change_ent_scene(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA), ecs::scene::MAINMENUSCENE);
+    Game::Instance()->get_mngr()->change_ent_scene(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA), ecs::scene::MULTIPLAYERMENUSCENE);
     host_has_pressed_play = false;
 #ifdef GENERATE_LOG
     log_writer_to_csv::Instance()->add_new_log();
@@ -342,7 +339,7 @@ void MultiplayerMenu::update(uint32_t delta_time) {
             ip_input = Texture{
                 sdlutils().renderer(),
                 _ipHost.empty() ? std::string{"Ip..."} : _ipHost,
-                sdlutils().fonts().at("ARIAL16"),
+                sdlutils().fonts().at("ALFA_SLAB"),
                 SDL_Color{0, 16, 24, 255},
                 SDL_Color{255, 255, 255, 0},
             };
@@ -389,7 +386,7 @@ void MultiplayerMenu::render() {
     //Adapted to screep
     const rect_f32 textInput = rect_f32_screen_rect_from_viewport(
         rect_f32{
-            position2_f32{ 0.7f, 0.39f },
+            position2_f32{ 0.7f, 0.34f },
             size2_f32{ 0.15f + 0.05f, 0.075f }
         },
         _cam.cam.screen
