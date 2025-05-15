@@ -3,6 +3,7 @@
     font-weight: 400;
     font-style: normal;
 }
+
 .cherry-bomb-one-regular {
     font-family: "Cherry Bomb One", system-ui;
     font-weight: 400;
@@ -16,16 +17,19 @@
     font-style: normal;
     font-variation-settings: "wdth" 100;
 }
+
 .rubik-bubbles-regular {
     font-family: "Rubik Bubbles", system-ui;
     font-weight: 400;
     font-style: normal;
 }
+
 .sue-ellen-francisco-regular {
     font-family: "Sue Ellen Francisco", cursive;
     font-weight: 400;
     font-style: normal;
 }
+
 .barriecito-regular {
     font-family: "Barriecito", system-ui;
     font-weight: 400;
@@ -33,111 +37,119 @@
 }
 
 body {
-    /*    border: 10px solid #675547;*/
     background-color: #f4e9d3;
     background-size: cover;
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-image: url('../img/floor_bg.png');
-
 }
+
 .encabezado {
-    border: 5px solid #675547;
-    border-bottom-width: 0px;
+    border: 0.3vw solid #675547;
+    border-bottom-width: 0;
     background-color: #877465;
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
+    border-top-left-radius: 1.5vw;
+    border-top-right-radius: 1.5vw;
     display: flex;
-    align-items: center; /* Alinea verticalmente la imagen y el texto */
-    gap: 50px; /* Espacio entre imagen y texto */
-    padding-left: 15px;
+    align-items: center;
+    gap: 3vw;
+    padding-left: 1vw;
     background-image: none;
 }
 
 .logo {
-    width: 75px;
+    width: 5vw;
     height: auto;
 }
+
 h1 {
     padding: 0;
     margin: 0;
     color: #c9b8a7;
 }
+
 .titulo-principal {
     font-family: "Cherry Bomb One", system-ui;
-    font-size: 110px;
+    font-size: 7vw;
     text-align: center;
-    padding-left: 150px;
-    -webkit-text-stroke: 1px black; /* grosor y color del contorno */
+    padding-left: 10vw;
+    -webkit-text-stroke: 0.1vw black;
 }
 
 .slogan {
     font-family: "Barriecito", system-ui;
-    font-size: 22px;
+    font-size: 1.5vw;
     text-align: center;
-    padding-top: 100px;
+    padding-top: 7vw;
 }
+
 h2 {
     margin-top: 3%;
     margin-bottom: 3%;
     font-family: "Cherry Bomb One", system-ui;
-    font-size: 100px;
+    font-size: 6.5vw;
     text-align: center;
     font-weight: normal;
-    color: #7cafae;
-    -webkit-text-stroke: 3px black; /* grosor y color del contorno */
+    color: #83c1f5;
+    -webkit-text-stroke: 0.3vw black;
 }
+
 h3 {
     margin-top: 3%;
     margin-bottom: 3%;
     font-family: "Cherry Bomb One", system-ui;
-    font-size: 64px;
+    font-size: 4vw;
     text-align: center;
     font-weight: normal;
 }
+
 p {
     font-family: "Sour Gummy";
-    font-size: 22px;
+    font-size: 1.4vw;
     text-align: center;
-    margin-left: 20%;
-    margin-right: 20%;
+    margin-left: 10%;
+    margin-right: 10%;
 }
+
 .column {
     float: left;
     width: 25%;
 }
+
 .column2 {
     float: left;
     width: 33%;
 }
+
 .column3 {
     float: left;
     width: 50%;
 }
+
 .column4 {
     float: right;
     width: 50%;
 }
-.footer{
+
+.footer {
     position: fixed;
     bottom: 0;
     width: 90%;
-    padding: 10px;
+    padding: 0.5vw;
     text-align: center;
     font-family: "Sour Gummy";
-    font-size: 10px;
+    font-size: 0.8vw;
     color: black;
 }
-.image{
+
+.image, .iconimage {
     align-content: center;
     margin-left: 10%;
     margin-right: 10%;
 }
-.iconimage{
+
+.iconimage {
     filter: brightness(0%);
-    align-content: center;
-    margin-left: 10%;
-    margin-right: 10%;
 }
 
 .centered {
@@ -145,20 +157,19 @@ p {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    padding: 20px;
+    padding: 2vw;
 }
-
 
 .tab {
     display: flex;
-    justify-content: center; /* Centra los botones horizontalmente */
-    gap: 50px; /* Espacio entre botones */
-    border-left: 5px solid #675547; /* Borde izquierdo (si lo deseas) */
-    border-right: 5px solid #675547; /* Borde derecho (si lo deseas) */
-    border-bottom: 5px solid #675547; /* Color del borde superior */
+    justify-content: center;
+    gap: 4vw;
+    border-left: 0.3vw solid #675547;
+    border-right: 0.3vw solid #675547;
+    border-bottom: 0.3vw solid #675547;
     background-color: #c9b8a7;
-    border-bottom-left-radius: 20px;
-    border-bottom-right-radius: 20px;
+    border-bottom-left-radius: 2vw;
+    border-bottom-right-radius: 2vw;
 }
 
     .tab button {
@@ -166,117 +177,118 @@ p {
         background-color: #f4e9d3;
         outline: none;
         cursor: pointer;
-        padding: 20px 30px;
-        font-size: 30px;
+        padding: 1.5vw 2vw;
+        font-size: 2vw;
         transition: 0.3s;
-        border-bottom-left-radius: 20px;
-        border-bottom-right-radius: 20px;
+        border-bottom-left-radius: 2vw;
+        border-bottom-right-radius: 2vw;
         color: #dba780;
-        -webkit-text-stroke: 2px #4a2714; /* grosor y color del contorno */
+        -webkit-text-stroke: 0.1vw #4a2714;
     }
 
-        /* Change background color of buttons on hover */
         .tab button:hover {
             background-color: #8e817a;
         }
 
-        /* Create an active/current tablink class */
         .tab button.active {
             background-color: #c1e1df;
         }
 
-/* Style the tab content */
 .tabcontent {
     display: none;
-    /*border: 1px solid #ccc;*/
-    border-top: none;
 }
-.info1 {
+
+.info1, .info2 {
     display: flex;
-    align-items: center; /* Centra verticalmente imagen y texto */
+    align-items: center;
     width: 100%;
 }
 
 .info1-img {
-    width: 600px; /* Tamaño de la imagen */
+    width: 35vw;
     height: auto;
-    padding-right: 60px;
-    padding-top: 60px;
+    padding-right: 4vw;
+    padding-top: 4vw;
 }
 
-.info1-text p:first-child {
-    font-weight: bold;
-    font-size: 48px;
-    width: 100%;
-    padding-top: 40px;
-    padding-bottom: 0px;
-}
-
-.info1-text p {
-    text-align: left;
-    font-size: 24px;
-    margin-left: 0px;
-    padding-bottom: 80px;
-    padding-left: 50px;
-    margin-top: 0px;
-    margin-bottom: 0px;
-}
-/*.info1-text {
-    background-color: #f4e9d3;
-    border-radius:30px;
-}*/
-.info2 {
-    display: flex;
-    align-items: center; /* Centra verticalmente imagen y texto */
-    width: 100%;
-    margin-left:80px;
-}
-.info2-img {
-    width: 500px; /* Tamaño de la imagen */
-    height: auto;
-    padding-right: 60px;
-    padding-left: 30px;
-}
-
+.info1-text p:first-child,
 .info2-text p:first-child {
     font-weight: bold;
-    font-size: 48px;
+    font-size: 3vw;
     width: 100%;
-    padding-top: 40px;
-    padding-bottom: 0px;
+    padding-top: 2.5vw;
+    padding-bottom: 0;
 }
 
+.info1-text p,
 .info2-text p {
     text-align: left;
-    font-size: 24px;
-    margin-left: 0px; /* Elimina el margen si no lo necesitas ahora */
-    padding-bottom: 150px;
-    margin-top: 40px;
-    margin-bottom: 0px;
+    font-size: 1.5vw;
+    margin-left: 0;
+    padding-bottom: 6vw;
+    padding-left: 3vw;
+    margin-top: 0;
+    margin-bottom: 0;
 }
+
+.info2 {
+    margin-left: 5vw;
+}
+
+.info2-img {
+    width: 30vw;
+    height: auto;
+    padding-right: 4vw;
+    padding-left: 2vw;
+}
+
 .logo1 {
-    width: 200px;
+    width: 12vw;
     height: auto;
 }
+
 .dev-info {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 1.5vw;
     margin-left: 24%;
 }
+
 .credits-info {
     display: flex;
-    align-items: flex-start; /* Alínea los títulos arriba */
-    gap: 40px;
+    align-items: flex-start;
+    gap: 2.5vw;
     justify-content: center;
 }
 
 .credits-column {
     text-align: center;
 }
+
 .controls {
-    width: 600px; /* Tamaño de la imagen */
+    width: 35vw;
     height: auto;
     padding-left: 7%;
     padding-top: 3%;
 }
+
+.download-container {
+    text-align: center;
+    margin-top: 3%;
+}
+
+.download-btn {
+    background-color: #83c1f5;
+    color: white;
+    border: none;
+    padding: 1.5vw 3vw;
+    font-size: 2vw;
+    cursor: pointer;
+    border-radius: 0.5vw;
+    font-family: "Barriecito", system-ui;
+}
+
+    .download-btn:hover {
+        background-color: #33628a;
+        font-size: 2.25vw;
+    }
