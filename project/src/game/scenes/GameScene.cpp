@@ -1501,7 +1501,7 @@ bool GameScene::change_player_filter(uint32_t playerId, filter filter)
 	return false;
 }
 
-ecs::entity_t  GameScene::create_dumb_player(ecs::sceneId_t scene, uint32_t playerId, std::string tex_name)
+ecs::entity_t GameScene::create_dumb_player(ecs::sceneId_t scene, uint32_t playerId, std::string tex_name)
 {
 	auto&& manager = *Game::Instance()->get_mngr();
 	auto&& camera = manager.getComponent<camera_component>(manager.getHandler(ecs::hdlr::CAMERA))->cam;

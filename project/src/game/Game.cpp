@@ -41,7 +41,7 @@ Game::Game() : _mngr(nullptr), network{
 	.game_state = {},
 	.connections = {
 		.connected_users = 0,
-		.local_user_index = 0,
+		.local_user_index = network_context_maximum_connections,
 		.oldest_non_host_index = 0
 	}
 } {

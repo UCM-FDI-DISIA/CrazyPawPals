@@ -23,10 +23,10 @@ enum network_message_type
     network_message_type_new_connection_sync_request,
     network_message_type_new_connection_sync_response,
 
-    network_message_type_player_connect,
+    // network_message_type_player_connect,
     network_message_type_player_update,
-    network_message_type_client_id,
-    network_message_type_new_player,
+    // network_message_type_client_id,
+    // network_message_type_new_player,
     network_message_type_host_has_pressed_play,
     network_message_type_player_ready,
     network_message_type_start_game,

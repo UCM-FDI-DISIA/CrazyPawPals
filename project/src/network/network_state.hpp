@@ -18,6 +18,17 @@ struct network_state {
     network_connections connections;
 };
 
+template <size_t MaximumConnections>
+inline size_t network_state_next_user_index(
+    const network_state<MaximumConnections> &state
+) {
+    if (state.connections.connected_users >= MaximumConnections) {
+        assert(false && "fatal error: too many users, should not request next user index");
+        std::exit(EXIT_FAILURE);
+    }
+    return state.connections.connected_users;
+}
+
 // TODO: remove user
 template <size_t MaximumConnections>
 size_t network_state_add_user(
@@ -30,7 +41,7 @@ size_t network_state_add_user(
         std::exit(EXIT_FAILURE);
     }
 
-    size_t user_index = state.connections.connected_users;
+    size_t user_index = network_state_next_user_index(state);
     ecs::entity_t &player_slot = state.game_state.user_players.at(user_index);
     if (player_slot != ecs::entity_t{}) {
         assert(false && "fatal error: user slot is not empty");
