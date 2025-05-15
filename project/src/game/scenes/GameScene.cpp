@@ -391,13 +391,14 @@ ecs::entity_t GameScene::dumb_enemy(GameStructs::EnemyProperties &ec, ecs::scene
 		&tr,
 		&rect,
 		&syn,
-		new Health(ec.health),
 		new dyn_image(
 			rect_f32{{0, 0}, {1, 1}},
 			rect,
 			manager.getComponent<camera_component>(manager.getHandler(ecs::hdlr::CAMERA))->cam,
 			sdlutils().images().at(ec.sprite_key),
-			tr));
+			tr),
+		new Health(ec.health)
+		);
 
 	online_enemy(e);
 	return e;
