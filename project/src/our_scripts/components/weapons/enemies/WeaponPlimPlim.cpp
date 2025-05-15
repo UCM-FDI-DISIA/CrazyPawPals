@@ -5,7 +5,7 @@
 #include "../../../card_system/ShootPatrons.hpp"
 #include "../../rendering/RotationComponent.h"
 
-WeaponPlimPlim::WeaponPlimPlim() : Weapon(4, 5000, 20.0f, 0.1f, "p_plimplim", 1.0f, 1.0f) {}
+WeaponPlimPlim::WeaponPlimPlim() : Weapon(4, 5000, 1.0f, 0.06f, "p_plimplim", 1.0f, 1.0f) { }
 
 WeaponPlimPlim::~WeaponPlimPlim() {}
 
@@ -22,11 +22,8 @@ void WeaponPlimPlim::callback(Vector2D shootPos, Vector2D shootDir)
 	bp.collision_filter = GameStructs::collide_with::player;
 	bp.sprite_key = "p_plimplim";
 
-	float totalAngle = 120.0f;
-	auto *mngr = Game::Instance()->get_mngr();
-	std::vector<ecs::entity_t> es = patrons::ShotgunPatron(bp, ecs::grp::BULLET, totalAngle, 3);
-	for (auto e : es)
-	{
-		mngr->addComponent<RotationComponent>(e, RotationComponent::Mode::CONTINUOUS, 0.9f, 360.0f);
-	}
+	float totalAngle = 160.0f;
+
+	patrons::ShotgunPatron(bp, ecs::grp::BULLET, totalAngle, 3);
+
 }

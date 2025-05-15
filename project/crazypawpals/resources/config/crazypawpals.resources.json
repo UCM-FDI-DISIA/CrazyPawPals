@@ -253,10 +253,6 @@
       "file": "resources/images/enemies/ratatouille.png"
     },
     {
-      "id": "heart",
-      "file": "resources/images/ui/hud/heart.png"
-    },
-    {
       "id": "manaorb",
       "file": "resources/images/ui/hud/caffeinefull.png"
     },

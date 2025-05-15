@@ -212,7 +212,7 @@ void GameScene::enterScene()
 	wm->start_new_wave();
 	// get the current event
 	auto e = wm->get_current_event();
-	RewardScene::will_have_mythic(e != NONE);
+	RewardScene::will_have_mythic(e != NONE || ((wm->get_current_wave()+1)%5 == 0));
 	manager.getComponent<HUD>(manager.getHandler(ecs::hdlr::HUD_ENTITY))->start_new_wave();
 	spawn_catkuza(Vector2D{10.0f, 0.0f});
 	// spawn_rata_basurera(Vector2D{5.0f, 0.0f});
@@ -372,6 +372,8 @@ ecs::entity_t GameScene::create_enemy(GameStructs::EnemyProperties &ec, ecs::sce
 		&state,
 		&fll);
 
+	if (scene == ecs::scene::GAMESCENE)Game::Instance()->get_mngr()->getComponent<WaveManager>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::WAVE))->newEnemy();
+
 	return e;
 }
 ecs::entity_t GameScene::dumb_enemy(GameStructs::EnemyProperties &ec, ecs::sceneId_t scene)
@@ -434,9 +436,9 @@ void GameScene::spawn_super_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene)
 			ec,
 			scene,
 			static_cast<Weapon *>(&weapon));
-
 		Transform *tr = manager.getComponent<Transform>(e);
 		MovementController *mc = manager.getComponent<MovementController>(e);
+		mc->set_max_speed(0.06);
 		StateMachine *state = manager.getComponent<StateMachine>(e);
 
 		Follow *fll = manager.getComponent<Follow>(e);
@@ -576,17 +578,18 @@ void GameScene::spawn_catkuza(Vector2D posVec, ecs::sceneId_t scene)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
 
-	GameStructs::EnemyProperties ec = GameStructs::EnemyProperties{
-		"catkuza",
-		posVec,
-		GameStructs::DEFAULT,
-		25,
-		1.8f,
-		2.5f,
-		GameStructs::CLOSEST,
-		{0.0f, 0.0f},
-		0.0f,
-		2.0f};
+	auto e = create_enemy(GameStructs::EnemyProperties{
+		"catkuza", 
+		posVec, 
+		GameStructs::DEFAULT, 
+		30, 
+		1.8f, 
+		2.5f, 
+		GameStructs::CLOSEST, 
+		{0.0f, 0.0f}, 
+		0.0f, 
+		2.0f}, 
+		scene, static_cast<Weapon *>(&weapon));
 
 	if (Game::Instance()->is_host() || Game::Instance()->is_network_none())
 	{
@@ -599,6 +602,7 @@ void GameScene::spawn_catkuza(Vector2D posVec, ecs::sceneId_t scene)
 
 		Transform *tr = manager.getComponent<Transform>(e);
 		MovementController *mc = manager.getComponent<MovementController>(e);
+		mc->set_max_speed(0.04);
 		StateMachine *state = manager.getComponent<StateMachine>(e);
 
 		Follow *fll = manager.getComponent<Follow>(e);
@@ -811,9 +815,10 @@ void GameScene::spawn_sarno_rata(Vector2D posVec, ecs::sceneId_t scene)
 			ec,
 			scene,
 			static_cast<Weapon *>(&weapon));
-
+			
 		Transform *tr = manager.getComponent<Transform>(e);
 		MovementController *mc = manager.getComponent<MovementController>(e);
+		mc->set_max_speed(0.08);
 		StateMachine *state = manager.getComponent<StateMachine>(e);
 
 		Follow *fll = manager.getComponent<Follow>(e);
@@ -869,11 +874,13 @@ void GameScene::spawn_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene)
 			ec,
 			scene,
 			static_cast<Weapon *>(&weapon));
-
+			
 		Transform *tr = manager.getComponent<Transform>(e);
 		MovementController *mc = manager.getComponent<MovementController>(e);
+		mc->set_max_speed(0.05);
 		StateMachine *state = manager.getComponent<StateMachine>(e);
 		auto state_cm = state->getConditionManager();
+
 
 		Follow *fll = manager.getComponent<Follow>(e);
 		fll->act_follow();
@@ -885,9 +892,9 @@ void GameScene::spawn_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene)
 		state->add_state("Walking", walkingState);
 		state->add_state("Attacking", attackingState);
 		state->add_state("Backing", backingState);
-
-		float dist_to_attack = 3.0f;
-		float dist_to_fallback = 2.5f;
+		
+		float dist_to_attack = 5.0f;
+		float dist_to_fallback = 4.5f;
 
 		state->add_transition("Walking", "Attacking", [state_cm, fll, tr, dist_to_attack]()
 							  { return state_cm->is_player_near(fll->get_act_follow(), tr, dist_to_attack); });
@@ -946,6 +953,7 @@ void GameScene::spawn_plim_plim(Vector2D posVec, ecs::sceneId_t scene)
 
 		Transform *tr = manager.getComponent<Transform>(e);
 		MovementController *mc = manager.getComponent<MovementController>(e);
+		mc->set_max_speed(0.06);
 		StateMachine *state = manager.getComponent<StateMachine>(e);
 		auto state_cm = state->getConditionManager();
 
@@ -982,7 +990,7 @@ void GameScene::spawn_boom(Vector2D posVec, ecs::sceneId_t scene)
 			"boom",				  // sprite_key
 			posVec,				  // start_pos
 			GameStructs::DEFAULT, // enemy_type
-			14,					  // health
+			28,					  // health
 			1.8f,				  // width
 			1.8f,				  // height
 			GameStructs::CLOSEST, // target_strategy
@@ -1002,6 +1010,7 @@ void GameScene::spawn_boom(Vector2D posVec, ecs::sceneId_t scene)
 
 		Transform *tr = manager.getComponent<Transform>(e);
 		MovementController *mc = manager.getComponent<MovementController>(e);
+		mc->set_max_speed(0.03f);
 		StateMachine *state = manager.getComponent<StateMachine>(e);
 		auto state_cm = state->getConditionManager();
 		Health *health = manager.getComponent<Health>(e);
@@ -1050,13 +1059,14 @@ void GameScene::spawn_ratatouille(Vector2D posVec, ecs::sceneId_t scene)
 	if (Game::Instance()->is_host() || Game::Instance()->is_network_none())
 	{
 		int damage = 4;
+
 		float randSize = float(sdlutils().rand().nextInt(6, 10)) / 10.0f;
 		auto &&rect = *new rect_component{0, 0, ec.width * randSize, ec.height * randSize};
 		auto &&rigidbody = *new rigidbody_component{rect_f32{{0.0f, -0.15f}, {0.5f, 0.6f}}, mass_f32{3.0f}, 0.05f};
 		auto &&tr_a = *new Transform(ec.start_pos, ec.dir, ec.r, ec.s * randSize);
 		auto &&fll = *new Follow(ec.follow);
 		auto &&col = *new collisionable{tr_a, rigidbody, rect, collisionable_option_trigger};
-		auto &&mc = *new MovementController(ec.max_speed, ec.acceleration, ec.decceleration * deccel_spawned_creatures_multi);
+		auto &&mc = *new MovementController(ec.max_speed*1.4, ec.acceleration, ec.decceleration * deccel_spawned_creatures_multi);
 		auto &&state = *new StateMachine();
 
 		auto e = create_entity(
@@ -1110,6 +1120,10 @@ void GameScene::spawn_ratatouille(Vector2D posVec, ecs::sceneId_t scene)
 	{
 		dumb_enemy(ec, scene);
 	}
+
+	Game::Instance()->get_mngr()->getComponent<WaveManager>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::WAVE))->newEnemy();
+
+	//Game::Instance()->get_mngr()->getHandler()
 }
 #pragma endregion
 
@@ -1123,7 +1137,7 @@ void GameScene::spawn_rata_basurera(Vector2D posVec, ecs::sceneId_t scene)
 			"basurero",			  // sprite_key
 			posVec,				  // start_pos
 			GameStructs::DEFAULT, // enemy_type
-			8,					  // health
+			16,					  // health
 			2.0f,				  // width
 			2.2f,				  // height
 			GameStructs::CLOSEST, // target_strategy
@@ -1190,7 +1204,7 @@ void GameScene::spawn_rey_basurero(Vector2D posVec, ecs::sceneId_t scene)
 			"rey_basurero",		  // sprite_key
 			posVec,				  // start_pos
 			GameStructs::DEFAULT, // enemy_type
-			7,					  // health
+			14,					  // health
 			2.0f,				  // width
 			2.0f,				  // height
 			GameStructs::CLOSEST, // target_strategy
@@ -1334,9 +1348,12 @@ ecs::entity_t GameScene::generate_proyectile(const GameStructs::BulletProperties
 		&player_rigidbody,
 		&player_collisionable,
 		new bullet_collision_component(bp));
-	if (bp.collision_filter == GameStructs::collide_with::enemy || bp.collision_filter == GameStructs::collide_with::all)
-		manager->addComponent<collision_registration_by_id>(e);
 
+	//if (bp.bitset != nullptr)
+		//manager->addComponent<collision_registration_by_id>(e, bp.bitset);
+	//else 
+	if (bp.collision_filter == GameStructs::collide_with::enemy || bp.collision_filter == GameStructs::collide_with::all)
+		manager->addComponent<collision_registration_by_id>(e, bp.bitset);
 	return e;
 }
 ecs::entity_t GameScene::create_proyectile(const GameStructs::BulletProperties &bp, ecs::grpId_t gid)

@@ -3,6 +3,7 @@
 #include <crtdbg.h>
 #include <iostream>
 #include "game/Game.h"
+#include <SDL.h>
 
 int main(int, char**) {
 

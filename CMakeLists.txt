@@ -10,7 +10,8 @@ project(CrazyPawPals C CXX)
         add_definitions(-D_CRTDBG_MAP_ALLOC)
     endif()
 
-    if ((MSVC OR MSVC_IDE) AND (NOT (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")))
+    set(USER_MSVC ((MSVC OR MSVC_IDE) AND (NOT (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"))))
+    if (${USER_MSVC})
         message(STATUS "MSVC detected")
         add_compile_options(
             /W4
@@ -80,12 +81,21 @@ project(CrazyPawPals C CXX)
         ${CrazyPawPals_LIB_DIRECTORY}/SDL2-2.30.11
     )
 
+    if (CMAKE_BUILD_TYPE STREQUAL "Release")
+        if (${USER_MSVC})
+            set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
+        else()
+            set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mwindows -Wl,--subsystem,windows")
+        endif()
+    endif()
     add_executable(
         ${PROJECT_NAME}
+        WIN32
         ${CrazyPawPals_SRC_DIRECTORY}/main.cpp
         ${CrazyPawPals_SOURCES}
-     "project/src/our_scripts/components/ui/HUD.cpp" "project/src/our_scripts/components/ui/HUD.h")
+    )
     
+
     if (NOT $ENV{DBG_NETWORK})
         set(DBG_NETWORK false)
         set(DBG_NETWORK_HOST false)
