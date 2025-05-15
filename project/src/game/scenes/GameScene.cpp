@@ -1527,7 +1527,8 @@ ecs::entity_t GameScene::create_dumb_player(ecs::sceneId_t scene, uint32_t playe
 
 	manager.addComponent<PlayerSynchronize>(player, playerId);
 
-	Game::network_users_state &state = Game::Instance()->get_network_state();
-	network_state_add_user(state, player, std::move(tex_name));
+	// we already do it externally
+	// Game::network_users_state &state = Game::Instance()->get_network_state();
+	// network_state_add_user(state, player, std::move(tex_name));
 	return player;
 }

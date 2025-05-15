@@ -240,6 +240,14 @@ static void multiplayer_menu_host_loop(network_context &ctx) {
                     Game::network_users_state &state = Game::Instance()->get_network_state();
                     
                     const uint8_t sprite_key_length{payload.sprite_key.sprite_key_length};
+                    assert(
+                        0 < sprite_key_length
+                        && "error: sprite key length must be greater than 0"
+                    );
+                    assert(
+                        sprite_key_length < network_user_sprite_key_maximum_buffer_size
+                        && "error: sprite key length must be less than the maximum buffer size"
+                    );
                     const std::string_view sprite_key{
                         payload.sprite_key.sprite_key.data(),
                         sprite_key_length
@@ -362,8 +370,9 @@ static void multiplayer_menu_client_loop(network_context& ctx) {
                 // new
                 ecs::entity_t &local_player_slot = state.game_state.user_players.at(payload.connections.local_user_index);
                 assert(local_player_slot == nullptr && "error: local player slot must be empty before assigning");
-
-                local_player_slot = own_player_entity;
+                
+                // we assign it bellow
+                // local_player_slot = own_player_entity;
                 state.connections.local_user_index = payload.connections.local_user_index;
                 state.connections.connected_users = 0;
             } else {
