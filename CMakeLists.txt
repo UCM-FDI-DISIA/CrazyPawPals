@@ -81,7 +81,8 @@ project(CrazyPawPals C CXX)
         ${CrazyPawPals_LIB_DIRECTORY}/SDL2-2.30.11
     )
 
-    if (CMAKE_BUILD_TYPE STREQUAL "Release")
+
+    if ((CMAKE_BUILD_TYPE STREQUAL "Release"))
         if (${USER_MSVC})
             set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
         else()
@@ -90,10 +91,17 @@ project(CrazyPawPals C CXX)
     endif()
     add_executable(
         ${PROJECT_NAME}
-        WIN32
+        # WIN32
         ${CrazyPawPals_SRC_DIRECTORY}/main.cpp
         ${CrazyPawPals_SOURCES}
     )
+    if ((CMAKE_BUILD_TYPE STREQUAL "Release"))
+        set_target_properties(
+            ${PROJECT_NAME}
+            PROPERTIES
+            WIN32_EXECUTABLE TRUE
+        )
+    endif()
     
 
     if (NOT $ENV{DBG_NETWORK})
