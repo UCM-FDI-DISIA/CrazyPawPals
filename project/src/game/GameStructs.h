@@ -162,4 +162,7 @@ namespace GameStructs
 		std::string sprite_key;
 		std::string current_anim;
 	};
+	struct filter {
+		int r, g, b, a;
+	};
 }

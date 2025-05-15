@@ -63,10 +63,17 @@ void PlayerSynchronize::sendPlayerUpdate()
 }
 
 void PlayerSynchronize::updatePlayer(GameStructs::NetPlayerData& data) {
-    if (data.sprite_key != _tex_name) GameScene::change_player_tex(_player_id, data.sprite_key);
+    if (data.sprite_key != _tex_name)
+        GameScene::change_player_tex(_player_id, _tex_name = data.sprite_key);
+
     _tr->setPos(data.pos);
     _health->setHeatlh(data.health);
-    if (data.current_anim != _anim->get_current_Anim())_anim->play_animation(data.current_anim);
+
+    if (data.current_anim != _anim->get_current_Anim())
+        _anim->play_animation(data.current_anim);
+
     _is_ghost = data.is_ghost;
+    GameScene::change_player_filter(data.id, _is_ghost
+        ? filter{ 100, 180, 255, 160 } : filter{ 255, 255, 255, 255 });
     
 }

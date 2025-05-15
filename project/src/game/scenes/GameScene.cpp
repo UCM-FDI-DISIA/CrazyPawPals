@@ -1472,6 +1472,17 @@ bool GameScene::change_player_tex(uint32_t playerId, const std::string& key_name
 	return false;
 }
 
+bool GameScene::change_player_filter(uint32_t playerId, filter filter)
+{
+	auto player = Game::Instance()->get_network_player(playerId);
+	auto&& manager = *Game::Instance()->get_mngr();
+	if (auto&& dy = manager.getComponent<dyn_image_with_frames>(player)) {
+		dy->_current_filter = filter;
+		return true;
+	}
+	return false;
+}
+
 ecs::entity_t  GameScene::create_dumb_player(ecs::sceneId_t scene, uint32_t playerId, std::string tex_name)
 {
 	auto&& manager = *Game::Instance()->get_mngr();
