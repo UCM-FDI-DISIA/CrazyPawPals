@@ -176,7 +176,6 @@ network_context_host_accept_connection_status_flags network_context_host_reject_
         network_utility_sdlnet_drain_and_close(client);
         return network_context_host_accept_connection_status_rejected
             | network_context_host_accept_connection_status_full;
-
     } else {
         return network_context_host_accept_connection_status_none;
     }
