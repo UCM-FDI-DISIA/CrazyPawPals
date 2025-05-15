@@ -55,6 +55,11 @@ protected:
 
 	ecs::entity_t create_button(const GameStructs::ButtonProperties& bp);
 	void create_static_background(Texture* bg);
+
+	std::string message{};
+	uint32_t message_time{5 * 1000};
+	bool showing_message{false};
 public:
 	ecs::sceneId_t get_scene_id() const { return _scene_ID; }
+	void show_message(const std::string& text, uint32_t time);
 };

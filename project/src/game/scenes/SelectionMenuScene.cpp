@@ -158,7 +158,7 @@ void SelectionMenuScene::enterScene()
     reset();
     _is_ready = false;
     if (Game::Instance()->is_host()) {
-        std::size_t numPlayers = Game::Instance()->get_network_players_num();
+        std::size_t numPlayers = Game::Instance()->get_network_state().connections.connected_users;
         _player_ready = std::vector<bool>(numPlayers, false);
     }
 }
@@ -444,14 +444,14 @@ void SelectionMenuScene::create_enter_button() {
                 }
                 else if(!_is_ready){
                     _is_ready = true;
-                    uint32_t id = Game::Instance()->get_local_player_id();
+                    uint32_t id = Game::Instance()->client_id();
                     network_message_pack_send(
                         network.profile.client.socket_to_host,
                         network_message_pack_create(network_message_type_player_ready,
                             create_player_ready_message(id,true))
                     );
                 }
-                show_message("Esperando a los otros michis...");
+                show_message("Esperando a los otros michis...", 5 * 1000);
             }
             else {
                 imgComp->_filter = false;

@@ -31,7 +31,7 @@ MultiplayerMenu::MultiplayerMenu() : Scene(ecs::scene::MULTIPLAYERMENUSCENE),
     }, 
     _ipHost{""},
     input_field_has_focus{false},
-    host_has_pressed_play(false)
+    host_has_pressed_play{false}
 {}
 
 MultiplayerMenu::~MultiplayerMenu()
@@ -262,7 +262,7 @@ static void multiplayer_menu_host_loop(network_context &ctx) {
                     for (size_t i = 0; i < state.connections.connected_users; ++i) {
                         sprite_keys.emplace_back(state.game_state.users_sprite_keys.at(i));
                     }
-                    const auto payload{
+                    const auto response_payload{
                         network_message_payload_new_connection_sync_response_create<network_context_maximum_connections>(
                             network_connections{
                                 .connected_users = state.connections.connected_users,
@@ -274,7 +274,7 @@ static void multiplayer_menu_host_loop(network_context &ctx) {
                     };
                     const auto response = network_message_pack_create(
                         network_message_type_new_connection_sync_response,
-                        payload
+                        response_payload
                     );
                     for (network_connection_size i = 0; i < ctx.profile.host.sockets_to_clients.connection_count; ++i) {
                         TCPsocket &client = ctx.profile.host.sockets_to_clients.connections[i];
@@ -546,7 +546,7 @@ void MultiplayerMenu::render() {
             int(num_player_rect.size.x),
             int(num_player_rect.size.y)
         };
-        int num_players = Game::Instance()->get_network_players_num();
+        int num_players = Game::Instance()->get_network_state().connections.connected_users;
         Texture num_player_tex{
         sdlutils().renderer(),
         "Jugadores conectados: " + std::to_string(num_players),
@@ -628,7 +628,7 @@ void MultiplayerMenu::create_play_button(const GameStructs::ButtonProperties& bp
             return;
         }
         if (Game::Instance()->is_host()) {
-            if (Game::Instance()->get_network_players_num() > 1) {
+            if (Game::Instance()->get_network_state().connections.connected_users > 1) {
                 host_has_pressed_play = true;
                 network_context& network = Game::Instance()->get_network();
                 //mandar a todos los clientes el mensaje de que el host a dado al boton de play
@@ -640,11 +640,11 @@ void MultiplayerMenu::create_play_button(const GameStructs::ButtonProperties& bp
                 }
             }
             else {
-                show_message("Espera a que lleguen los otros michis!");
+                show_message("Espera a que lleguen los otros michis!", 5 * 1000);
             }
 
         }
-        else if (Game::Instance()->is_client() && !host_has_pressed_play)show_message("Esperando instrucciones del michi operador... ");
+        else if (Game::Instance()->is_client() && !host_has_pressed_play)show_message("Esperando instrucciones del michi operador... ", 5 * 1000);
         
         if (host_has_pressed_play) Game::Instance()->change_Scene(Game::SELECTIONMENU);
         
