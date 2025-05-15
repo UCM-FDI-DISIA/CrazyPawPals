@@ -1,3 +1,4 @@
+
 #include "Scene.h"
 #include <cassert>
 
@@ -6,6 +7,7 @@
 
 #include "../../our_scripts/components/rendering/transformless_dyn_image.h"
 #include "../../our_scripts/components/ui/Button.h"
+
 #include <string>
 Scene::Scene(ecs::sceneId_t id) : _scene_ID(id) {}
 
@@ -92,4 +94,11 @@ void Scene::update(uint32_t delta_time)
 void Scene::render()
 {
     Game::Instance()->get_mngr()->render(_scene_ID);
+}
+
+void Scene::show_message(const std::string& text, uint32_t time)
+{
+    message = text;
+    message_time = sdlutils().currRealTime() + time;
+    showing_message = true;
 }

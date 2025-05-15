@@ -1,5 +1,7 @@
 #pragma once
 
+
+
 #include "Scene.h"
 #include <functional>
 #include "../../network/network_message.hpp"
@@ -7,6 +9,7 @@ class Weapon;
 class Transform;
 class StateMachine;
 struct EnemyProperties;
+struct filter;
 
 class GameScene : public event_system::event_receiver, public Scene
 {
@@ -20,9 +23,6 @@ class GameScene : public event_system::event_receiver, public Scene
 	void host_handle_menssage(network_context& ctx);
 	void client_handle_menssage(network_context& ctx);
 
-	void update_player(const network_message_player_update& msg);
-	bool change_player_tex(uint32_t playerId, const std::string& key_name);
-
 public:
 	GameScene();
 	~GameScene();
@@ -35,6 +35,8 @@ public:
 	//Statics
 	static ecs::entity_t create_player(ecs::sceneId_t scene = ecs::scene::GAMESCENE);
 	static bool change_player_tex(const std::string& key_name);
+	static bool change_player_tex(uint32_t playerId, const std::string& key_name);
+	static bool change_player_filter(uint32_t playerId, filter filter);
 	void reset_player();
 
 	static void spawn_sarno_rata(Vector2D posVec, ecs::sceneId_t scene = ecs::scene::GAMESCENE);

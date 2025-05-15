@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Image.h"
 #include "transformless_dyn_image.h"
 

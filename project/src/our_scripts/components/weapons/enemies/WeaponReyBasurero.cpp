@@ -1,8 +1,9 @@
 #include "WeaponReyBasurero.h"
+
 #include "../../../../game/Game.h"
 #include "../../../../game/scenes/GameScene.h"
 
-WeaponReyBasurero::WeaponReyBasurero() : Weapon(6, 8000, 25.0f, 0.02f, "p_michi_mafioso", 1.5f, 1.5f) {}
+WeaponReyBasurero::WeaponReyBasurero() : Weapon(1, 400, 25.0f, 0.75f, "p_michi_mafioso", 1.0f, 1.0f) {}
 
 WeaponReyBasurero::~WeaponReyBasurero() {}
 

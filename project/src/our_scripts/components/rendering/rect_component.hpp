@@ -1,6 +1,7 @@
 #ifndef RECT_COMPONENT_HPP
 #define RECT_COMPONENT_HPP
 
+
 #include "../../../ecs/Component.h"
 #include "../../../rendering/rect.hpp"
 

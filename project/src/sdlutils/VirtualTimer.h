@@ -1,9 +1,10 @@
-// This file is part of the course TPV2@UCM - Samir Genaim
 
 #pragma once
 
+
 #include <SDL.h>
 #include <cassert>
+
 
 /*
  * This class implements a virtual timer, i.e., a timer that can be paused and

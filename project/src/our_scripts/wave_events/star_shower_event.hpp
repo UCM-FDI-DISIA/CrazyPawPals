@@ -1,6 +1,7 @@
 #ifndef STAR_SHOWER_EVENT_HPP
 #define STAR_SHOWER_EVENT_HPP
 
+
 #include "wave_event.hpp"
 #include "../../rendering/rect.hpp"
 #include "../../rendering/units.hpp"

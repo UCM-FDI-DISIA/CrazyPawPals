@@ -1,4 +1,5 @@
-﻿#include "WeaponSuperMichiMafioso.h"
+﻿
+#include "WeaponSuperMichiMafioso.h"
 #include "../../../../game/Game.h"
 #include "../../../../game/scenes/GameScene.h"
 #include "../../movement/Transform.h"
@@ -48,7 +49,7 @@ void WeaponSuperMichiMafioso::attack2(Vector2D shootPos) {
 	bp.life_time = 2.0f;
 	bp.width = _attack_width;
 	bp.height = _attack_height;
-	bp.sprite_key = "p_super_michi_mafioso";
+	bp.sprite_key = "p_super_michi_mafioso_attack2";
 	bp.collision_filter = GameStructs::collide_with::player;
 	bp.weapon_type = GameStructs::SUPER_MICHI;
 
@@ -86,7 +87,7 @@ void WeaponSuperMichiMafioso::attack3(Vector2D shootPos) {
 void WeaponSuperMichiMafioso::generate_michi_mafioso() {
 	Vector2D posRandom = _tr->getPos() + Vector2D{ (float)sdlutils().rand().nextInt(1, 5), (float)sdlutils().rand().nextInt(1, 5) };
 	GameScene::spawn_michi_mafioso(posRandom);
-	Game::Instance()->get_mngr()->getComponent<WaveManager>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::WAVE))->newEnemy();
+	//Game::Instance()->get_mngr()->getComponent<WaveManager>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::WAVE))->newEnemy();
 }
 
 void WeaponSuperMichiMafioso::set_player_pos(Vector2D _pl) {

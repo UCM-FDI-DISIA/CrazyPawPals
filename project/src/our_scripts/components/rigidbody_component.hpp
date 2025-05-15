@@ -1,7 +1,9 @@
 #ifndef RIGIDBODY_COMPONENT_HPP
 #define RIGIDBODY_COMPONENT_HPP
 
+
 #include "../../ecs/Component.h"
+
 #include "../../ecs/ecs.h"
 #include "../../ecs/Entity.h"
 #include "../../physics/rigidbody.hpp"

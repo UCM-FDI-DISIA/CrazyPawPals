@@ -1,4 +1,3 @@
-// This file is part of the course TPV2@UCM - Samir Genaim
 
 #pragma once
 
@@ -53,7 +52,8 @@
 	TRIGGER_MANIFOLD, \
 	WEAPON, \
 	WAVEMANAGER, \
-	DAMAGE_POPUP
+	DAMAGE_POPUP, \
+	ERASE_TEXTURE
 
 // Groups list - must have at least one element
 //

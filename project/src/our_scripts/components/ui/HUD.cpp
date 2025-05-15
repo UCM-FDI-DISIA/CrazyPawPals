@@ -1,3 +1,4 @@
+
 #include "HUD.h"
 #include "game/Game.h"
 #include "ecs/Manager.h"
@@ -6,8 +7,8 @@
 HUD::HUD():_camera(nullptr),_wm(nullptr)
 {
 	_event_textures = std::vector<Texture*>(int(EVENTS_MAX)+1);
-	_event_textures[int(ICE_SKATE)] = (&sdlutils().images().at("event_letters")); 
-	_event_textures[STAR_SHOWER] = &sdlutils().images().at("event_letters");
+	_event_textures[int(ICE_SKATE)] = (&sdlutils().images().at("event_ice_skate")); 
+	_event_textures[STAR_SHOWER] = &sdlutils().images().at("event_star_shower");
 }
 
 HUD::~HUD()

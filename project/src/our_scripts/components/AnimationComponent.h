@@ -1,4 +1,5 @@
 #pragma once
+
 #include <unordered_map>
 #include <string>
 #include "../../ecs/Component.h"
@@ -28,6 +29,8 @@ public:
     void add_animation(const std::string& name, int ini_frame, int end_frame, uint32_t frame_duration);
 
     void play_animation(const std::string& name);
+
+    std::string get_current_Anim() { return _currentAnim; };
 
 private:
     dyn_image_with_frames* _dy;

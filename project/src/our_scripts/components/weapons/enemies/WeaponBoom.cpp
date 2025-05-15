@@ -1,9 +1,10 @@
+
 #include "WeaponBoom.h"
 #include "../../../../game/Game.h"
 #include "../../../../game/scenes/GameScene.h"
 #include "our_scripts/card_system/ShootPatrons.hpp"
 
-WeaponBoom::WeaponBoom() : Weapon(30, 5000, 20.0f, 0.0f, "p_boom", 2.0f, 2.0f) { }
+WeaponBoom::WeaponBoom() : Weapon(15, 5000, 20.0f, 0.0f, "p_boom", 2.0f, 2.0f) { }
 
 WeaponBoom::~WeaponBoom() {}
 

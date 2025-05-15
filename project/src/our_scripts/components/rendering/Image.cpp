@@ -1,3 +1,4 @@
+
 #include "Image.h"
 
 #include <cassert>

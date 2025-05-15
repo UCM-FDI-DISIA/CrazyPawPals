@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../components/WaveManager.h"
 #include "../../utils/EventsSystem.hpp"
 class ice_skating_event : public wave_event {

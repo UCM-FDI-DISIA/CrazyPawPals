@@ -1,3 +1,4 @@
+
 #include "Fog.h"
 
 #include "../../ecs/Manager.h"

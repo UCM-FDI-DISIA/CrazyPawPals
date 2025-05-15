@@ -1,4 +1,4 @@
-#include "MultiplayerMenu.h"
+﻿#include "MultiplayerMenu.h"
 #include "../../our_scripts/components/ui/Button.h"
 #include "../../our_scripts/components/rendering/transformless_dyn_image.h"
 #include "../../our_scripts/components/rendering/ImageForButton.h"
@@ -29,9 +29,9 @@ MultiplayerMenu::MultiplayerMenu() : Scene(ecs::scene::MULTIPLAYERMENUSCENE),
         SDL_Color{ 255, 255, 255, 255 }
     }, 
     _ipHost{""},
-    input_field_has_focus{false} {
-  
-}
+    input_field_has_focus{false},
+    host_has_pressed_play(false)
+{}
 
 MultiplayerMenu::~MultiplayerMenu()
 {
@@ -115,6 +115,7 @@ void MultiplayerMenu::initScene()
 void MultiplayerMenu::enterScene()
 {
     Game::Instance()->get_mngr()->change_ent_scene(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA), ecs::scene::MAINMENUSCENE);
+    host_has_pressed_play = false;
 #ifdef GENERATE_LOG
     log_writer_to_csv::Instance()->add_new_log();
     log_writer_to_csv::Instance()->add_new_log("ENTERED MULTIPLAYER MENU SCENE");
@@ -129,7 +130,7 @@ void MultiplayerMenu::exitScene()
 #endif
 }
 
-static void multiplayer_menu_host_loop(network_context &ctx) {
+void MultiplayerMenu:: multiplayer_menu_host_loop(network_context &ctx) {
     if (SDLNet_CheckSockets(ctx.profile.host.clients_host_set, 0) > 0) {
         if (SDLNet_SocketReady(ctx.profile.host.host_socket)) {
             network_connection_size connection_index;
@@ -182,17 +183,37 @@ static void multiplayer_menu_host_loop(network_context &ctx) {
                     uint32_t  key_length = SDLNet_Read32(&payload.sprite_key_length);
                     std::string sprite_key(payload.sprite_key, key_length);
 
+                    //crear un player local
                     GameScene::create_dumb_player(ecs::scene::GAMESCENE, new_id, sprite_key);
 
+                    //asignarle al cliente nuevo un id
                     auto id_msg = network_message_pack_create(
                         network_message_type_client_id,
                         create_client_id_message(new_id)
                     );
                     network_message_pack_send(connection, id_msg);
 
+                    //mandarle al cliente nuevo los clientes ya conectados
+                    for (auto player : Game::Instance()->get_network_players()) {
+                        uint32_t id = player.first;
+                        if (id != new_id) {
+                            ecs::entity_t player_entity = player.second;
+                            auto* dyn_img = Game::Instance()->get_mngr()->getComponent<dyn_image_with_frames>(player_entity);
+                           
+                            if (dyn_img) {
+                                std::string sprite_key = dyn_img->texture_name;
+                                network_message_pack_send(
+                                    connection,
+                                    network_message_pack_create(network_message_type_new_player,
+                                        create_player_connect_message(id, sprite_key)));
+                            }
+                            else std::cout << "Error: textura del player " << std::to_string(id) << std::endl;    
+                        }
+                    }
 
                     std::cout << "Player conectado. ID asignado: " << std::to_string(new_id) << ", sprite: " << payload.sprite_key << std::endl;
 
+                    //avisar a otros clientes que se ha conectado un nuevo cliente
                     auto new_player_msg = create_player_connect_message(new_id, sprite_key);
 
                     for (network_connection_size i = 0; i < ctx.profile.host.sockets_to_clients.connection_count; ++i) {
@@ -217,7 +238,7 @@ static void multiplayer_menu_host_loop(network_context &ctx) {
     }
 }
 
-static void multiplayer_menu_client_loop(network_context& ctx) {
+void MultiplayerMenu::multiplayer_menu_client_loop(network_context& ctx) {
     int active_sockets = SDLNet_CheckSockets(ctx.profile.client.client_set, 0);
     if (active_sockets > 0 && SDLNet_SocketReady(ctx.profile.client.socket_to_host)) {
 
@@ -232,6 +253,7 @@ static void multiplayer_menu_client_loop(network_context& ctx) {
             uint32_t id = SDLNet_Read32(&payload.client_id);
 
             Game::Instance()->set_local_player_id(id);
+            Game::Instance()->add_network_player(id, Game::Instance()->get_mngr()->getHandler(ecs::hdlr::PLAYER));
             std::cout << "player id:" << std::to_string(id) << std::endl;
 
             break;
@@ -248,6 +270,10 @@ static void multiplayer_menu_client_loop(network_context& ctx) {
 
             GameScene::create_dumb_player(ecs::scene::GAMESCENE, id, sprite_key);
 
+            break;
+        }
+        case network_message_type::network_message_type_host_has_pressed_play: {
+            host_has_pressed_play = true;
             break;
         }
         default: {
@@ -327,6 +353,11 @@ void MultiplayerMenu::update(uint32_t delta_time) {
         }
     }
 
+    if (showing_message) {
+        if (sdlutils().currRealTime() > message_time) {
+            showing_message = false;
+        }
+    }
     network_context &network = Game::Instance()->get_network();
     switch (network.profile_status) {
     case network_context_profile_status_none:
@@ -380,6 +411,44 @@ void MultiplayerMenu::render() {
         ip_input.height()
     };
     ip_input.render(occupied_text_field);
+
+
+    if (!Game::Instance()->is_network_none()) {
+        //mostar el num de jugadores conectados
+        auto camera = Game::Instance()->get_mngr()->getComponent<camera_component>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA));
+        rect_f32 num_player_rect = rect_f32_screen_rect_from_viewport(rect_f32({ { 0.50,0.05 }, { 0.2,0.05 } }), camera->cam.screen);
+        SDL_Rect num_player_true{
+            int(num_player_rect.position.x),
+            int(num_player_rect.position.y),
+            int(num_player_rect.size.x),
+            int(num_player_rect.size.y)
+        };
+        int num_players = Game::Instance()->get_network_players_num();
+        Texture num_player_tex{
+        sdlutils().renderer(),
+        "Jugadores conectados: " + std::to_string(num_players),
+        sdlutils().fonts().at("RUBIK_MONO"),
+        SDL_Color({128, 0, 32, 255}) };
+        num_player_tex.render(num_player_true);
+
+        //mostar mensaje cuando sea necesario
+        if (showing_message) {
+            rect_f32 message_rect = rect_f32_screen_rect_from_viewport(rect_f32({ { 0.4,0.7 }, { 0.5,0.1 } }), camera->cam.screen);
+            SDL_Rect message_true{
+                int(message_rect.position.x),
+                int(message_rect.position.y),
+                int(message_rect.size.x),
+                int(message_rect.size.y)
+            };
+            Texture message_tex{
+            sdlutils().renderer(),
+            message,
+            sdlutils().fonts().at("RUBIK_MONO"),
+            SDL_Color({128, 0, 32, 255}) };
+            message_tex.render(message_true);
+        }
+    }
+    
 }
 
 ecs::entity_t MultiplayerMenu::create_edit_ip_button(const GameStructs::ButtonProperties& bp) {
@@ -431,13 +500,33 @@ void MultiplayerMenu::create_play_button(const GameStructs::ButtonProperties& bp
     );
 
     auto buttonComp = mngr->getComponent<Button>(e);
-    buttonComp->connectClick([buttonComp, imgComp, mngr]() {
+    buttonComp->connectClick([buttonComp, imgComp, mngr, this]() {
         if (Game::Instance()->is_network_none()) {
             return;
         }
+        if (Game::Instance()->is_host()) {
+            if (Game::Instance()->get_network_players_num() > 1) {
+                host_has_pressed_play = true;
+                network_context& network = Game::Instance()->get_network();
+                //mandar a todos los clientes el mensaje de que el host a dado al boton de play
+                for (network_connection_size i = 0; i < network.profile.host.sockets_to_clients.connection_count; ++i) {
+                    TCPsocket& client = network.profile.host.sockets_to_clients.connections[i];
+                    network_message_pack_send(
+                        client,
+                        network_message_pack_create(network_message_type_host_has_pressed_play, create_payload_empty_message()));
+                }
+            }
+            else {
+                show_message("Espera a que lleguen los otros michis!");
+            }
+
+        }
+        else if (Game::Instance()->is_client() && !host_has_pressed_play)show_message("Esperando instrucciones del michi operador... ");
+        
+        if (host_has_pressed_play) Game::Instance()->change_Scene(Game::SELECTIONMENU);
+        
         imgComp->_filter = false;
         imgComp->swap_textures();
-        Game::Instance()->change_Scene(Game::SELECTIONMENU);
     });
 
     buttonComp->connectHover([buttonComp, imgComp]() {
@@ -505,6 +594,7 @@ void MultiplayerMenu::create_host_button(const GameStructs::ButtonProperties& bp
 
         Game::Instance()->set_local_player_id(0);
         auto player = Game::Instance()->get_mngr()->getHandler(ecs::hdlr::PLAYER);
+        Game::Instance()->add_network_player(0, player);
 
     });
 

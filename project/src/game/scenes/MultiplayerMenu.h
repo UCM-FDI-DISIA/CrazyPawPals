@@ -24,7 +24,11 @@ private:
 	void create_back_button(const GameStructs::ButtonProperties& bp);
 	void create_skin_button(const GameStructs::ButtonProperties& bp, const std::string& tex_name);
 
+	void multiplayer_menu_host_loop(network_context& ctx);
+	void multiplayer_menu_client_loop(network_context& ctx);
+
 	Texture ip_input;
 	std::string _ipHost;
 	bool input_field_has_focus;
+	bool host_has_pressed_play;
 };
