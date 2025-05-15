@@ -2,6 +2,7 @@
 #include "../../../ecs/Component.h"
 
 class Transform;
+class Health;
 class EnemySynchronize :public ecs::Component
 {
 public:
@@ -12,4 +13,5 @@ public:
 	void update(uint32_t delta_time) override;
 protected:
 	Transform* _tr;
+	Health* _ht;
 };
