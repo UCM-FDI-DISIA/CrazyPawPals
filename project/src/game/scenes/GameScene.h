@@ -16,6 +16,7 @@ class GameScene : public event_system::event_receiver, public Scene
 	[[maybe_unused]]
 
 	static ecs::entity_t create_enemy(GameStructs::EnemyProperties& ec, ecs::sceneId_t scene, Weapon* weapon = nullptr);
+	static void select_create_dumb_enemy(GameStructs::DumbEnemyProperties& ec);
 	static ecs::entity_t dumb_enemy(GameStructs::EnemyProperties& ec, ecs::sceneId_t scene);
 	static void online_enemy(ecs::entity_t ec);
 
@@ -39,16 +40,16 @@ public:
 	static bool change_player_filter(uint32_t playerId, filter filter);
 	void reset_player();
 
-	static void spawn_sarno_rata(Vector2D posVec, ecs::sceneId_t scene = ecs::scene::GAMESCENE);
-	static void spawn_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene = ecs::scene::GAMESCENE);
-	static void spawn_plim_plim(Vector2D posVec, ecs::sceneId_t scene = ecs::scene::GAMESCENE);
-	static void spawn_boom(Vector2D posVec, ecs::sceneId_t scene = ecs::scene::GAMESCENE);
-	static void spawn_ratatouille(Vector2D posVec, ecs::sceneId_t scene = ecs::scene::GAMESCENE);
-	static void spawn_rata_basurera(Vector2D posVec, ecs::sceneId_t scene = ecs::scene::GAMESCENE);
-	static void spawn_rey_basurero(Vector2D posVec, ecs::sceneId_t scene = ecs::scene::GAMESCENE);
+	static void spawn_sarno_rata(Vector2D posVec, ecs::sceneId_t scene = ecs::scene::GAMESCENE,  uint32_t _id = -1);
+	static void spawn_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene = ecs::scene::GAMESCENE, uint32_t _id = -1);
+	static void spawn_plim_plim(Vector2D posVec, ecs::sceneId_t scene = ecs::scene::GAMESCENE, uint32_t _id = -1);
+	static void spawn_boom(Vector2D posVec, ecs::sceneId_t scene = ecs::scene::GAMESCENE, uint32_t _id = -1);
+	static void spawn_ratatouille(Vector2D posVec, ecs::sceneId_t scene = ecs::scene::GAMESCENE, uint32_t _id = -1);
+	static void spawn_rata_basurera(Vector2D posVec, ecs::sceneId_t scene = ecs::scene::GAMESCENE, uint32_t _id = -1);
+	static void spawn_rey_basurero(Vector2D posVec, ecs::sceneId_t scene = ecs::scene::GAMESCENE, uint32_t _id = -1);
 
-	static void spawn_super_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene = ecs::scene::GAMESCENE);
-	static void spawn_catkuza(Vector2D posVec, ecs::sceneId_t scene = ecs::scene::GAMESCENE);
+	static void spawn_super_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene = ecs::scene::GAMESCENE, uint32_t _id = -1);
+	static void spawn_catkuza(Vector2D posVec, ecs::sceneId_t scene = ecs::scene::GAMESCENE, uint32_t _id = -1);
 
 	static ecs::entity_t create_hud(ecs::sceneId_t scene = ecs::scene::GAMESCENE);
 	static ecs::entity_t create_environment(ecs::sceneId_t scene = ecs::scene::GAMESCENE);

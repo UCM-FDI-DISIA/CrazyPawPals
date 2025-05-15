@@ -67,12 +67,17 @@ namespace GameStructs
 	struct DumbEnemyProperties
 	{
 		Vector2D _pos;
+		uint32_t _type;
+		int _health;
+		uint32_t _id;
 	};
 
 	struct EnemyProperties
 	{
 		// Sprite
 		std::string sprite_key;
+		uint32_t _id;
+
 		Vector2D start_pos;
 
 		// Weapon

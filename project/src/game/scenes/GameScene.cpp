@@ -370,11 +370,47 @@ ecs::entity_t GameScene::create_enemy(GameStructs::EnemyProperties &ec, ecs::sce
 		&col,
 		&mc,
 		&state,
-		&fll);
+		&fll
+	);
 
 	if (scene == ecs::scene::GAMESCENE)Game::Instance()->get_mngr()->getComponent<WaveManager>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::WAVE))->newEnemy();
 
 	return e;
+}
+void GameScene::select_create_dumb_enemy(GameStructs::DumbEnemyProperties &ec)
+{
+	switch (ec._type)
+    {
+        case 0:
+            spawn_sarno_rata(ec._pos, ecs::scene::GAMESCENE, ec._id);
+            break;
+        case 1:
+            spawn_michi_mafioso(ec._pos, ecs::scene::GAMESCENE, ec._id);
+            break;
+        case 2:
+            spawn_plim_plim(ec._pos, ecs::scene::GAMESCENE, ec._id);
+            break;
+        case 3:
+            spawn_boom(ec._pos, ecs::scene::GAMESCENE, ec._id);
+            break;
+        case 4:
+            spawn_ratatouille(ec._pos, ecs::scene::GAMESCENE, ec._id);
+            break;
+        case 5:
+            spawn_rata_basurera(ec._pos, ecs::scene::GAMESCENE, ec._id);
+            break;
+        case 6:
+            spawn_rey_basurero(ec._pos, ecs::scene::GAMESCENE, ec._id);
+            break;
+        case 7:
+            spawn_super_michi_mafioso(ec._pos, ecs::scene::GAMESCENE, ec._id);
+            break;
+        case 8:
+            spawn_catkuza(ec._pos, ecs::scene::GAMESCENE, ec._id);
+            break;
+        default:
+            break;
+    } 
 }
 ecs::entity_t GameScene::dumb_enemy(GameStructs::EnemyProperties &ec, ecs::sceneId_t scene)
 {
@@ -397,7 +433,8 @@ ecs::entity_t GameScene::dumb_enemy(GameStructs::EnemyProperties &ec, ecs::scene
 			manager.getComponent<camera_component>(manager.getHandler(ecs::hdlr::CAMERA))->cam,
 			sdlutils().images().at(ec.sprite_key),
 			tr),
-		new Health(ec.health)
+		new Health(ec.health),
+		new id_component(ec._id)
 		);
 
 	online_enemy(e);
@@ -414,11 +451,12 @@ void GameScene::online_enemy(ecs::entity_t ec)
 #pragma endregion
 
 #pragma region Super Michi Mafioso
-void GameScene::spawn_super_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene)
+void GameScene::spawn_super_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene, uint32_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
 	GameStructs::EnemyProperties ec = GameStructs::EnemyProperties{
 		"super_michi_mafioso", // sprite_key
+		_id,
 		posVec,				   // start_pos
 		GameStructs::DEFAULT,  // enemy_type
 		25,					   // health
@@ -576,13 +614,14 @@ void GameScene::spawn_super_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene)
 #pragma endregion
 
 #pragma region Catkuza
-void GameScene::spawn_catkuza(Vector2D posVec, ecs::sceneId_t scene)
+void GameScene::spawn_catkuza(Vector2D posVec, ecs::sceneId_t scene, uint32_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
 	auto&& weapon = *new WeaponCatKuza();
 
 	auto ec = GameStructs::EnemyProperties{
 		"catkuza",
+		_id,
 		posVec,
 		GameStructs::DEFAULT,
 		30,
@@ -790,13 +829,14 @@ void GameScene::spawn_catkuza(Vector2D posVec, ecs::sceneId_t scene)
 #pragma endregion
 
 #pragma region Sarno Rata
-void GameScene::spawn_sarno_rata(Vector2D posVec, ecs::sceneId_t scene)
+void GameScene::spawn_sarno_rata(Vector2D posVec, ecs::sceneId_t scene, uint32_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
 
 	GameStructs::EnemyProperties ec =
 		GameStructs::EnemyProperties{
 			"sarno_rata",		  // sprite_key
+			_id,
 			posVec,				  // start_pos
 			GameStructs::DEFAULT, // enemy_type
 			7,					  // health
@@ -851,12 +891,13 @@ void GameScene::spawn_sarno_rata(Vector2D posVec, ecs::sceneId_t scene)
 #pragma endregion
 
 #pragma region Michi Mafioso
-void GameScene::spawn_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene)
+void GameScene::spawn_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene, uint32_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
 	GameStructs::EnemyProperties ec =
 		GameStructs::EnemyProperties{
 			"michi_mafioso",	  // sprite_key
+			_id,
 			posVec,				  // start_pos
 			GameStructs::DEFAULT, // enemy_type
 			5,					  // health
@@ -926,13 +967,14 @@ void GameScene::spawn_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene)
 #pragma endregion
 
 #pragma region Plim Plim
-void GameScene::spawn_plim_plim(Vector2D posVec, ecs::sceneId_t scene)
+void GameScene::spawn_plim_plim(Vector2D posVec, ecs::sceneId_t scene, uint32_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
 
 	GameStructs::EnemyProperties ec =
 		GameStructs::EnemyProperties{
 			"plim_plim",		  // sprite_key
+			_id,
 			posVec,				  // start_pos
 			GameStructs::DEFAULT, // enemy_type
 			4,					  // health
@@ -983,12 +1025,13 @@ void GameScene::spawn_plim_plim(Vector2D posVec, ecs::sceneId_t scene)
 #pragma endregion
 
 #pragma region Boom
-void GameScene::spawn_boom(Vector2D posVec, ecs::sceneId_t scene)
+void GameScene::spawn_boom(Vector2D posVec, ecs::sceneId_t scene, uint32_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
 	GameStructs::EnemyProperties ec =
 		GameStructs::EnemyProperties{
 			"boom",				  // sprite_key
+			_id,
 			posVec,				  // start_pos
 			GameStructs::DEFAULT, // enemy_type
 			28,					  // health
@@ -1040,12 +1083,13 @@ void GameScene::spawn_boom(Vector2D posVec, ecs::sceneId_t scene)
 #pragma endregion
 
 #pragma region Ratatouille
-void GameScene::spawn_ratatouille(Vector2D posVec, ecs::sceneId_t scene)
+void GameScene::spawn_ratatouille(Vector2D posVec, ecs::sceneId_t scene, uint32_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
 
 	GameStructs::EnemyProperties ec = GameStructs::EnemyProperties{
 		"ratatouille",		  // sprite_key
+		_id,
 		posVec,				  // start_pos
 		GameStructs::DEFAULT, // enemy_type (especial, no usa weapon)
 		2,					  // health
@@ -1129,13 +1173,14 @@ void GameScene::spawn_ratatouille(Vector2D posVec, ecs::sceneId_t scene)
 #pragma endregion
 
 #pragma region Rata Basurera
-void GameScene::spawn_rata_basurera(Vector2D posVec, ecs::sceneId_t scene)
+void GameScene::spawn_rata_basurera(Vector2D posVec, ecs::sceneId_t scene, uint32_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
 
 	GameStructs::EnemyProperties ec =
 		GameStructs::EnemyProperties{
 			"basurero",			  // sprite_key
+			_id,
 			posVec,				  // start_pos
 			GameStructs::DEFAULT, // enemy_type
 			16,					  // health
@@ -1196,13 +1241,14 @@ void GameScene::spawn_rata_basurera(Vector2D posVec, ecs::sceneId_t scene)
 #pragma endregion
 
 #pragma region Rey Basurero
-void GameScene::spawn_rey_basurero(Vector2D posVec, ecs::sceneId_t scene)
+void GameScene::spawn_rey_basurero(Vector2D posVec, ecs::sceneId_t scene, uint32_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
 
 	GameStructs::EnemyProperties ec =
 		GameStructs::EnemyProperties{
 			"rey_basurero",		  // sprite_key
+			_id,
 			posVec,				  // start_pos
 			GameStructs::DEFAULT, // enemy_type
 			14,					  // health
@@ -1469,6 +1515,20 @@ void GameScene::client_handle_menssage(network_context& ctx)
 
 			auto player = Game::Instance()->get_network_player(playerData.id);
 			Game::Instance()->get_mngr()->getComponent<PlayerSynchronize>(player)->updatePlayer(playerData);
+			break;
+		}
+		case network_message_type_create_enemy: {
+			auto message = network_message_dynamic_pack_into<network_message_enemy_create>(std::move(dyn_message));
+			auto&& payload = message->payload.content;
+
+			GameStructs::DumbEnemyProperties _enemy_properties;
+			_enemy_properties._id = SDLNet_Read32(&payload._enemy_id);
+			_enemy_properties._type = SDLNet_Read16(&payload._type);
+
+			_enemy_properties._pos.setX(static_cast<int16_t>(SDLNet_Read16(&payload._pos[0])) / static_cast<float>(fact_float_int));
+			_enemy_properties._pos.setY(static_cast<int16_t>(SDLNet_Read16(&payload._pos[1])) / static_cast<float>(fact_float_int));
+
+			select_create_dumb_enemy(_enemy_properties);
 			break;
 		}
 		default: {
