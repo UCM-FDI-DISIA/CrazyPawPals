@@ -178,62 +178,6 @@ static void multiplayer_menu_host_loop(network_context &ctx) {
                     std::cout << "message: " << payload.args.data() << std::endl;
                     break;
                 }
-                // case network_message_type_player_connect: {
-                //     auto message = network_message_dynamic_pack_into<network_message_player_connect>(std::move(dyn_message));
-                //     auto&& payload = message->payload.content;
-
-                //     static uint32_t next_id = 1;
-                //     uint32_t new_id = next_id++;
-
-                //     uint32_t  key_length = SDLNet_Read32(&payload.sprite_key_length);
-                //     std::string sprite_key(payload.sprite_key, key_length);
-
-                //     //crear un player local
-                //     GameScene::create_dumb_player(ecs::scene::GAMESCENE, new_id, sprite_key);
-
-                //     //asignarle al cliente nuevo un id
-                //     auto id_msg = network_message_pack_create(
-                //         network_message_type_client_id,
-                //         create_client_id_message(new_id)
-                //     );
-                //     network_message_pack_send(connection, id_msg);
-
-                //     //mandarle al cliente nuevo los clientes ya conectados
-                //     const Game::network_users_state &state = Game::Instance()->get_network_state();
-                //     for (size_t j = 0; j < state.connections.connected_users; ++j) {
-                //         uint32_t id = j;
-                //         if (id != new_id) {
-                //             const ecs::entity_t player_entity = state.game_state.user_players.at(id);
-                //             auto* dyn_img = Game::Instance()->get_mngr()->getComponent<dyn_image_with_frames>(player_entity);
-                           
-                //             if (dyn_img) {
-                //                 std::string sprite_key = dyn_img->texture_name;
-                //                 network_message_pack_send(
-                //                     connection,
-                //                     network_message_pack_create(network_message_type_new_player,
-                //                         create_player_connect_message(id, sprite_key)));
-                //             }
-                //             else std::cout << "Error: textura del player " << std::to_string(id) << std::endl;    
-                //         }
-                //     }
-
-                //     std::cout << "Player conectado. ID asignado: " << std::to_string(new_id) << ", sprite: " << payload.sprite_key << std::endl;
-
-                //     //avisar a otros clientes que se ha conectado un nuevo cliente
-                //     auto new_player_msg = create_player_connect_message(new_id, sprite_key);
-
-                //     for (network_connection_size i = 0; i < ctx.profile.host.sockets_to_clients.connection_count; ++i) {
-                //         TCPsocket& client = ctx.profile.host.sockets_to_clients.connections[i];
-
-                //         if (client != connection) {
-                //             network_message_pack_send(
-                //                 client,
-                //                 network_message_pack_create(network_message_type_new_player, new_player_msg));
-                //         }
-                //     }
-
-                //     break;
-                // }
                 case network_message_type::network_message_type_new_connection_sync_request: {
                     auto message = network_message_dynamic_pack_into<network_message_payload_new_connection_sync_request>(std::move(dyn_message));
                     const auto &payload = message->payload.content;
@@ -314,39 +258,8 @@ static void multiplayer_menu_client_loop(network_context& ctx) {
         const uint16_t type_n{ msg->header.type_n };
         const uint16_t type_h{ SDLNet_Read16(&type_n) };
         switch (type_h) {
-        // case network_message_type::network_message_type_client_id: {
-        //     auto message = network_message_dynamic_pack_into<network_message_client_id_from_host>(std::move(msg));
-        //     auto&& payload = message->payload.content;
-
-        //     uint32_t id = SDLNet_Read32(&payload.client_id);
-
-        //     Game::network_users_state &state = Game::Instance()->get_network_state();
-        //     assert(id <= state.connections.connected_users && "error: id must be less than or equal to the number of connected users");
-        //     state.connections.local_user_index = id;
-        //     ecs::entity_t &local_player_slot = state.game_state.user_players.at(id);
-        //     assert(local_player_slot == nullptr && "error: local player slot must be empty before assigning");
-
-        //     local_player_slot = Game::Instance()->get_mngr()->getHandler(ecs::hdlr::PLAYER);
-        //     std::cout << "player id:" << std::to_string(id) << std::endl;
-
-        //     break;
-        // }
-        // case network_message_type::network_message_type_new_player: {
-        //     auto message = network_message_dynamic_pack_into<network_message_player_connect>(std::move(msg));
-        //     auto&& payload = message->payload.content;
-
-        //     uint32_t id = SDLNet_Read32(&payload.player_id);
-        //     std::cout << "nuevo player con id:" << std::to_string(id) << std::endl;
-
-        //     uint32_t  key_length = SDLNet_Read32(&payload.sprite_key_length);
-        //     std::string sprite_key(payload.sprite_key, key_length);
-
-        //     GameScene::create_dumb_player(ecs::scene::GAMESCENE, id, sprite_key);
-
-        //     break;
-        // }
         case network_message_type::network_message_type_host_has_pressed_play: {
-            // host_has_pressed_play = true;
+            //host_has_pressed_play = true;
             break;
         }
         case network_message_type::network_message_type_new_connection_sync_request: {

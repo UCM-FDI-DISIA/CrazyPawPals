@@ -61,7 +61,7 @@ void PlayerSynchronize::sendPlayerUpdate()
     GameStructs::NetPlayerData playerData;
     playerData.id = _player_id;
     playerData.pos = _tr->getPos();
-    playerData.health = _health->getHealth();
+    playerData.health = _is_ghost ? 0 : _health->getHealth();
     playerData.is_ghost = _is_ghost;
     playerData.sprite_key = _tex_name;
     playerData.current_anim = _anim->get_current_Anim();

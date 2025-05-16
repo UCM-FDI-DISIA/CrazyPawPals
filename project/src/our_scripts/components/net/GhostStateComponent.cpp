@@ -5,6 +5,7 @@
 #include "../../../ecs/Manager.h"
 
 #include "../rendering/dyn_image_with_frames.hpp"
+#include "../Health.h"
 #include "../movement/MovementController.h"
 #include "../weapons/Weapon.h"
 #include "../cards/Mana.h"
@@ -39,12 +40,16 @@ void GhostStateComponent::initComponent()
     _weapon = manager->getComponent<Weapon>(_ent);
     assert(_weapon != nullptr);
 
+    _health = manager->getComponent<Health>(_ent);
+    assert(_health != nullptr);
+
     _normal_state = {
       .weapon_damage = _weapon->damage(),
       .max_speed = _mc->get_max_speed(),
       .cooldown = _weapon->cooldown(),
       .reload = _deck->reload_time(),
-      .mana_regen = _mana->mana_regen()
+      .mana_regen = _mana->mana_regen(),
+      .health = int(_health->getMaxHealth() * 0.2)
     };
 
     _ghost_state = {
@@ -52,7 +57,8 @@ void GhostStateComponent::initComponent()
         .max_speed = _normal_state.max_speed / 2.0f,
         .cooldown = _normal_state.cooldown * 2,
         .reload = _normal_state.reload * 2,
-        .mana_regen = _normal_state.mana_regen / 2
+        .mana_regen = _normal_state.mana_regen / 2,
+        .health = 0
     };
 
     change_state();
@@ -72,4 +78,6 @@ void GhostStateComponent::setState(GameStructs::PlayerData p)
     _weapon->set_cooldown(p.cooldown);
     _deck->set_reload_time(p.reload);
     _mana->set_mana_regen(p.mana_regen);
+    _health->setHeatlh(p.health);
+
 }
