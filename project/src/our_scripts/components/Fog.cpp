@@ -45,5 +45,7 @@ void Fog::setFog(bool fogActive_)
 		fogRect->setSize(orSize);
 		fogTransform->setWidth(orW);
 		fogTransform->setHeight(orH);
+		fogTransform->getPos().setY(orY);
+
 	}fogActive = fogActive_;
 }
