@@ -71,6 +71,7 @@
 #include "../../our_scripts/components/MythicComponent.h"
 #include "../../our_scripts/components/net/GhostStateComponent.h"
 #include "../../our_scripts/components/net/player_synchronize.h"
+#include "../../our_scripts/components/ui/MultiplayerHUD.h"
 #include "RewardScene.h"
 #ifdef GENERATE_LOG
 #include "../../our_scripts/log_writer_to_csv.hpp"
@@ -177,7 +178,10 @@ void GameScene::initScene()
 	auto &&manager = *Game::Instance()->get_mngr();
 	auto player = manager.getHandler(ecs::hdlr::PLAYER);
 	manager.addComponent<MythicComponent>(player);
-	if (!Game::Instance()->is_network_none())manager.addComponent<PlayerSynchronize>(player, uint32_t{Game::Instance()->client_id()});
+	if (!Game::Instance()->is_network_none()) {
+		manager.addComponent<PlayerSynchronize>(player, uint32_t{ Game::Instance()->client_id() });
+		manager.addComponent<MultiplayerHUD>(player);
+	}
 
 	manager.refresh();
 	// spawn_sarno_rata(Vector2D{5.0f, 0.0f});

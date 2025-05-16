@@ -7,6 +7,7 @@ class MovementController;
 class ManaComponent;
 class Deck;
 class Weapon;
+class Health;
 
 class GhostStateComponent :public ecs::Component {
 public:
@@ -32,6 +33,7 @@ private:
     ManaComponent* _mana;
     Deck* _deck;
     Weapon* _weapon;
+    Health* _health;
 
     GameStructs::PlayerData _normal_state;
     GameStructs::PlayerData _ghost_state;

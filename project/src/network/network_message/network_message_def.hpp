@@ -250,47 +250,6 @@ network_message_payload_new_connection_sync_response<MaximumConnections> network
     return payload;
 }
 
-
-//mandar al cliente su id
-struct network_message_client_id_from_host {
-    uint32_t client_id;
-};
-
-inline network_message_client_id_from_host create_client_id_message (uint32_t client_id) {
-
-    network_message_client_id_from_host id_from_host;
-    SDLNet_Write32(client_id, &id_from_host.client_id);
-    return id_from_host;
-};
-
-inline uint32_t network_message_client_id_from_host_get_id(const network_message_client_id_from_host message) {
-    return message.client_id;
-};
-
-//Struct de player cuando se conecta 
-struct network_message_player_connect {
-    uint32_t player_id;           
-    uint32_t sprite_key_length;
-    char sprite_key[32];
-};
-
-inline network_message_player_connect create_player_connect_message(uint32_t id, std::string texture) {
-    network_message_player_connect player_connet;
-
-    SDLNet_Write32(id, &player_connet.player_id);
-
-    const size_t size = texture.size();
-    assert(size < sizeof(player_connet.sprite_key) && "error: string size exceeds sprite_key capacity");
-   
-    SDLNet_Write32(static_cast<uint32_t>(size), &player_connet.sprite_key_length);
-
-    std::copy_n(texture.begin(), size, player_connet.sprite_key);
-    player_connet.sprite_key[size] = '\0';
-
-    return player_connet;
-}
-
-
 //Struct sincronizar player
 struct network_message_player_update {
     uint32_t player_id_n;

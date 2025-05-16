@@ -61,6 +61,14 @@
       "file": "resources/images/characters/piubutton_selected.png"
     },
     {
+      "id": "piu_icon",
+      "file": "resources/images/characters/piu_icon.png"
+    },
+    {
+      "id": "mimi_icon",
+      "file": "resources/images/characters/mimi_icon.png"
+    },
+    {
       "id": "p_revolver",
       "file": "resources/images/projectiles/revolver.png"
     },
