@@ -386,30 +386,39 @@ void GameScene::select_create_dumb_enemy(GameStructs::DumbEnemyProperties &ec)
 	switch (ec._type)
 	{
 	case 0:
-		spawn_sarno_rata(ec._pos, ecs::scene::GAMESCENE, ec._id);
+		std::cout << "spawning sarno rata" << std::endl;
+		spawn_sarno_rata(ec._pos, ecs::scene::GAMESCENE, (uint8_t)ec._id);
 		break;
 	case 1:
+		std::cout << "spawning michi mafioso" << std::endl;
 		spawn_michi_mafioso(ec._pos, ecs::scene::GAMESCENE, ec._id);
 		break;
 	case 2:
+		std::cout << "spawning plim plim" << std::endl;
 		spawn_plim_plim(ec._pos, ecs::scene::GAMESCENE, ec._id);
 		break;
 	case 3:
+		std::cout << "spawning boom" << std::endl;
 		spawn_boom(ec._pos, ecs::scene::GAMESCENE, ec._id);
 		break;
 	case 4:
+		std::cout << "spawning ratatouille" << std::endl;
 		spawn_ratatouille(ec._pos, ecs::scene::GAMESCENE, ec._id);
 		break;
 	case 5:
+		std::cout << "spawning rata basurera" << std::endl;
 		spawn_rata_basurera(ec._pos, ecs::scene::GAMESCENE, ec._id);
 		break;
 	case 6:
+		std::cout << "spawning rey basurero" << std::endl;
 		spawn_rey_basurero(ec._pos, ecs::scene::GAMESCENE, ec._id);
 		break;
 	case 7:
+		std::cout << "spawning super michi mafioso" << std::endl;
 		spawn_super_michi_mafioso(ec._pos, ecs::scene::GAMESCENE, ec._id);
 		break;
 	case 8:
+		std::cout << "spawning cat kuza" << std::endl;
 		spawn_catkuza(ec._pos, ecs::scene::GAMESCENE, ec._id);
 		break;
 	default:
@@ -440,6 +449,7 @@ ecs::entity_t GameScene::dumb_enemy(GameStructs::EnemyProperties &ec, ecs::scene
 		new Health(ec.health),
 		new id_component(ec._id),
 		&rigidbody,
+		new FlipXController(),
 		&col);
 
 	// Agregar el componente de sincronizacion
@@ -859,7 +869,6 @@ uint8_t GameScene::spawn_catkuza(Vector2D posVec, ecs::sceneId_t scene, uint8_t 
 uint8_t GameScene::spawn_sarno_rata(Vector2D posVec, ecs::sceneId_t scene, uint8_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
-	std::cout << "sarno rata id " << _id << std::endl;
 	GameStructs::EnemyProperties ec =
 		GameStructs::EnemyProperties{
 			"sarno_rata", // sprite_key
@@ -1581,6 +1590,7 @@ void GameScene::client_handle_menssage(network_context &ctx)
 
 			_enemy_properties._pos.setX(static_cast<int16_t>(SDLNet_Read16(&payload._pos[0])) / static_cast<float>(fact_float_int));
 			_enemy_properties._pos.setY(static_cast<int16_t>(SDLNet_Read16(&payload._pos[1])) / static_cast<float>(fact_float_int));
+			std::cout << "Creando client enemigo con ID: " << (int)_enemy_properties._id << std::endl;
 
 			select_create_dumb_enemy(_enemy_properties);
 			break;
@@ -1595,6 +1605,7 @@ void GameScene::client_handle_menssage(network_context &ctx)
 			_enemy_properties._health = SDLNet_Read16(&payload._health_n);
 			_enemy_properties._pos.setX(static_cast<int16_t>(SDLNet_Read16(&payload._pos[0])) / static_cast<float>(fact_float_int));
 			_enemy_properties._pos.setY(static_cast<int16_t>(SDLNet_Read16(&payload._pos[1])) / static_cast<float>(fact_float_int));
+			//std::cout << "Actualizando enemigo con ID: " << (int)_enemy_properties._id << std::endl;
 
 			auto enemy = get_network_enemy(_enemy_properties._id);
 			if(enemy != nullptr)

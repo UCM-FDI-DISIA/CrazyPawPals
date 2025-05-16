@@ -2,6 +2,7 @@
 #include "../../../ecs/Component.h"
 
 class Transform;
+class dyn_image;
 class Health;
 class EnemySynchronize :public ecs::Component
 {
@@ -16,6 +17,8 @@ public:
 
 protected:
 	Transform* _tr;
+	dyn_image *_dy;
+
 	Health* _ht;
 	uint8_t _enemy_id;
 
