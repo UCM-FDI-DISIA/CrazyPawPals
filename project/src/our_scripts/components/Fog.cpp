@@ -22,7 +22,6 @@ Fog::initComponent() {
 
 void Fog::update(uint32_t delta_time) {
 	(void)delta_time;
-	fogTransform->getPos().setY(orY);
 	if (!fogActive) {
 		fogPercentage = 0;
 	}
