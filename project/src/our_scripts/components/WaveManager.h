@@ -122,6 +122,7 @@ public:
     inline bool wave_completed() { return !_wave_active; }
     void event_callback0(const Msg& m) override;
     void event_callback1(const Msg& m) override;
+    void delayed_despawn();
     void newEnemy() { _numEnemies++; _enemiesSpawned++; };
 #ifdef GENERATE_LOG
     static inline uint32_t get_ticks_on_wave() {

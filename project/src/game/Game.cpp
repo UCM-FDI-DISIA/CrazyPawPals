@@ -166,9 +166,9 @@ void Game::start() {
 			exit = true;
 			continue;
 		}
+		_mngr->refresh();
 		_scenes[_current_scene_index]->update(delta_time_milliseconds);
 
-		_mngr->refresh();
 
 		sdlutils().clearRenderer();
 		_scenes[_current_scene_index]->render();

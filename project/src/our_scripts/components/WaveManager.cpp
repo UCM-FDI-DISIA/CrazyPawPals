@@ -105,6 +105,11 @@ void WaveManager::initialize_next_wave_params(bool normal_wave)
     //Si no es normal wave spawnea tb un bos
 }
 
+void WaveManager::delayed_despawn()
+{    void erase_all_enemies();
+    void erase_all_bullets();
+}
+
 void WaveManager::_spawn_boss()
 {
     enemy_spawn_caller* esc;
@@ -279,6 +284,8 @@ void WaveManager::reset_wave_manager()
 {
     _currentWave = -1;
     _event_pity = 0;
+    //erase_all_bullets();
+    //erase_all_enemies();
 }
 
 void WaveManager::endwave()
