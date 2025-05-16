@@ -3,13 +3,6 @@
 #include "../../../ecs/Manager.h"
 #include "../Health.h"
 
-MultiplayerHUD::MultiplayerHUD()
-{
-}
-
-MultiplayerHUD::~MultiplayerHUD()
-{
-}
 
 void MultiplayerHUD::initComponent()
 {

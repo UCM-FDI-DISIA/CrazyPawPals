@@ -13,9 +13,9 @@ private:
 	void drawHealthBar(float x, float y, int health, int maxHealth, int shield);
 	void drawText(const std::string& text, float x, float y);
 public:
-	__CMPID_DECL__(ecs::cmp::MULTIPLAYER_HUD);
-	MultiplayerHUD();
-	virtual ~MultiplayerHUD();
+	__CMPID_DECL__(ecs::cmp::MULTIPLAYER_HUD)
+	inline MultiplayerHUD() = default;
+	virtual inline ~MultiplayerHUD() = default;
 	void initComponent() override;
 	void render() override;
 };
