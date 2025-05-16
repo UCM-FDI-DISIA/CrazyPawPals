@@ -259,7 +259,7 @@ struct network_payload_skin_selection_request {
     network_user_sprite_key<network_user_sprite_key_maximum_buffer_size> sprite_key;
 };
 using network_payload_skin_selection_response = network_payload_skin_selection_request;
-network_payload_skin_selection_request network_message_payload_skin_selection_create(
+network_payload_skin_selection_request network_payload_skin_selection_create(
     const uint8_t requester_id,
     const std::string_view sprite_key
 );

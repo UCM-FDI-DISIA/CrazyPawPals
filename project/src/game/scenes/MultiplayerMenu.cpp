@@ -15,6 +15,8 @@
 #include "../../network/network_message.hpp"
 #include <fstream>
 #include <limits>
+#include <cassert>
+#include <cstdlib>
 
 #ifdef GENERATE_LOG
 #include "../../our_scripts/log_writer_to_csv.hpp"
@@ -240,7 +242,36 @@ static void multiplayer_menu_host_loop(network_context &ctx) {
                     std::exit(EXIT_FAILURE);
                     break;
                 }
+                case network_message_type::network_message_type_skin_selection_request: {
+                    auto message = network_message_dynamic_pack_into<network_payload_skin_selection_request>(std::move(dyn_message));
+                    const auto &payload = message->payload.content;
+                    const uint8_t requester_id{payload.requester_id};
+                    const std::string_view sprite_key{
+                        payload.sprite_key.sprite_key.data(),
+                        payload.sprite_key.sprite_key_length
+                    };
+                    Game::Instance()->get_network_state().game_state.users_sprite_keys.at(requester_id) = std::string{sprite_key};
+                    for (network_connection_size i = 0; i < ctx.profile.host.sockets_to_clients.connection_count; ++i) {
+                        TCPsocket &client = ctx.profile.host.sockets_to_clients.connections[i];
+                        if (client == connection) {
+                            continue;
+                        }
+                        const auto response = network_message_pack_create(
+                            network_message_type_skin_selection_response,
+                            message->payload
+                        );
+                        network_message_pack_send(client, response);
+                    }
+                    break;
+                }
+                case network_message_type::network_message_type_skin_selection_response: {
+                    assert(false && "error: skin selection response should not be received by the host");
+                    std::exit(EXIT_FAILURE);
+                    break;
+                }
                 default: {
+                    assert(false && "unreachable: invalid network message type");
+                    std::exit(EXIT_FAILURE);
                     break;
                 }
                 }
@@ -324,8 +355,26 @@ static void multiplayer_menu_client_loop(network_context& ctx) {
             }
             break;
         }
+        case network_message_type::network_message_type_skin_selection_request: {
+            assert(false && "error: skin selection request should not be received by the client");
+            std::exit(EXIT_FAILURE);
+            break;
+        }
+        case network_message_type::network_message_type_skin_selection_response: {
+            auto message = network_message_dynamic_pack_into<network_payload_skin_selection_request>(std::move(msg));
+            const auto &payload = message->payload.content;
+            const uint8_t requester_id{payload.requester_id};
+            const std::string_view sprite_key{
+                payload.sprite_key.sprite_key.data(),
+                payload.sprite_key.sprite_key_length
+            };
+            Game::Instance()->get_network_state().game_state.users_sprite_keys.at(requester_id) = std::string{sprite_key};
+            break;
+        }
         default:
         {
+            assert(false && "unreachable: invalid network message type");
+            std::exit(EXIT_FAILURE);
             break;
         }
         }
@@ -877,6 +926,9 @@ void MultiplayerMenu::create_back_button(const GameStructs::ButtonProperties& bp
     });
 }
 
+/// @brief 
+/// @param bp 
+/// @param tex_name is very very dangerous as it is, thankfully we are passing statically stored string literals but should we pass a scoped std::string and after that many components would be pointing to a deallocated string
 void MultiplayerMenu::create_skin_button(const GameStructs::ButtonProperties& bp, const std::string& tex_name) {   
     auto* mngr = Game::Instance()->get_mngr();
     auto e = create_button(bp);
@@ -891,15 +943,55 @@ void MultiplayerMenu::create_skin_button(const GameStructs::ButtonProperties& bp
     );
 
     auto buttonComp = mngr->getComponent<Button>(e);
-    buttonComp->connectClick([buttonComp, imgComp, mngr, tex_name]() {
+    const std::string captured_texture_name = std::string{tex_name};
+    buttonComp->connectClick([buttonComp, imgComp, mngr, captured_texture_name]() {
         imgComp->_filter = false;
         imgComp->swap_textures();
 
-        GameScene::change_player_tex(tex_name);
+        GameScene::change_player_tex(captured_texture_name);
         //TODO
         std::cout << "You choosed your skin.";
         //Sends it to players
         // TODO: send message probably to all players
+        Game &game = *Game::Instance();
+        network_context &network = game.get_network();
+        Game::network_users_state &state = game.get_network_state();
+        if (game.is_host()) {
+            state.game_state.users_sprite_keys.at(game.client_id()) = std::string{captured_texture_name};
+            const network_payload_skin_selection_response payload{
+                network_payload_skin_selection_create(
+                    game.client_id(),
+                    captured_texture_name
+                )
+            };
+            const auto message = network_message_pack_create(
+                network_message_type_skin_selection_response,
+                payload
+            );
+            for (network_connection_size i = 0; i < network.profile.host.sockets_to_clients.connection_count; ++i) {
+                TCPsocket &client = network.profile.host.sockets_to_clients.connections[i];
+                network_message_pack_send(
+                    client,
+                    message
+                );
+            }
+        } else if (game.is_client()) {
+            state.game_state.users_sprite_keys.at(game.client_id()) = std::string{captured_texture_name};
+            const network_payload_skin_selection_request payload{
+                network_payload_skin_selection_create(
+                    game.client_id(),
+                    captured_texture_name
+                )
+            };
+            const auto message = network_message_pack_create(
+                network_message_type_skin_selection_request,
+                payload
+            );
+            network_message_pack_send(
+                network.profile.client.socket_to_host,
+                message
+            );
+        }
     });
 
     buttonComp->connectHover([buttonComp, imgComp]() {

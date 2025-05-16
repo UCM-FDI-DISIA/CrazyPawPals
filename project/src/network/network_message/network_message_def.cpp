@@ -90,7 +90,7 @@ network_message_payload_new_connection_sync_request network_message_payload_new_
     };
 }
 
-network_payload_skin_selection_request network_message_payload_skin_selection_create(
+network_payload_skin_selection_request network_payload_skin_selection_create(
     const uint8_t requester_id,
     const std::string_view sprite_key
 ) {
