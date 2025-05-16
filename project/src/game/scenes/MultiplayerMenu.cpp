@@ -256,7 +256,7 @@ static void multiplayer_menu_host_loop(network_context &ctx) {
                     const size_t network_user_index{network_state_next_user_index(state)}; 
                     const ecs::entity_t player_entity{GameScene::create_dumb_player(ecs::scene::GAMESCENE, network_user_index, std::string{sprite_key})};
 
-                    const size_t assigned_user_index{network_state_add_user(state, player_entity, std::string{sprite_key})};
+                    const size_t assigned_user_index{network_state_add_client_user(ctx, state, player_entity, std::string{sprite_key})};
                     if (assigned_user_index > (std::numeric_limits<uint8_t>::max)()) {
                         assert(false && "fatal error: assigned user index is greater than uint8_t max");
                         std::exit(EXIT_FAILURE);
@@ -656,7 +656,10 @@ void MultiplayerMenu::create_play_button(const GameStructs::ButtonProperties& bp
         }
         else if (Game::Instance()->is_client() && !host_has_pressed_play)show_message("Esperando instrucciones del michi operador... ", 5 * 1000);
         
-        if (host_has_pressed_play) Game::Instance()->change_Scene(Game::SELECTIONMENU);
+        // HACK: Uncomment this line to change the scene when the host has pressed play already
+        // if (host_has_pressed_play) {
+            Game::Instance()->change_Scene(Game::SELECTIONMENU);
+        // }
         
         imgComp->_filter = false;
         imgComp->swap_textures();
@@ -727,10 +730,15 @@ void MultiplayerMenu::create_host_button(const GameStructs::ButtonProperties& bp
 
         auto player = Game::Instance()->get_mngr()->getHandler(ecs::hdlr::PLAYER);
         Game &game = *Game::Instance();
-        network_state_add_user(
+        const size_t host_user_index = network_state_add_host_user_as_self(
+            network,
             game.get_network_state(),
             player,
             std::string{game.get_mngr()->getComponent<dyn_image_with_frames>(player)->texture_name}
+        );
+        assert(
+            host_user_index == 0
+            && "error: host user index should be 0 as it is the first user to be added"
         );
     });
 
