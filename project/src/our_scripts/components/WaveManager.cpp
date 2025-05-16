@@ -192,7 +192,7 @@ void WaveManager::spawn_next_group_of_enemies()
             dep._type = (enemyType)_enemy_types_for_current_wave[index]; //enemy ID
             dep._id = aux.second;
             dep._pos = aux.first;
-            if (Game::Instance()->get_network_players_num() > 1) {
+            if (Game::Instance()->get_network_state().connections.connected_users > 1) {
                 network_context& network = Game::Instance()->get_network();
                 //mandar a todos los clientes el mensaje de que el host a dado al boton de play
                 for (network_connection_size i = 0; i < network.profile.host.sockets_to_clients.connection_count; ++i) {
@@ -203,7 +203,6 @@ void WaveManager::spawn_next_group_of_enemies()
                     );
                 }
             }
-
         }
     }
 #ifdef GENERATE_LOG
