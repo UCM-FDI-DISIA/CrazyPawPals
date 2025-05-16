@@ -9,22 +9,28 @@ int main(int, char**) {
 
 	//para buscar donde esta el memory leaks
 	//_CrtSetBreakAlloc(28115);
-	try {
-		if(Game::Init())Game::Instance()->start();
+	if(Game::Init()) {
+		Game::Instance()->start();
 		Game::Instance()->Release();
 	}
-	catch (const std::string& e) { // catch exceptions thrown as strings
-		std::cerr << e << std::endl;
-	}
-	catch (const char* e) { // catch exceptions thrown as char*
-		std::cerr << e << std::endl;
-	}
-	catch (const std::exception& e) { // catch exceptions thrown as a sub-type of std::exception
-		std::cerr << e.what();
-	}
-	catch (...) {
-		std::cerr << "Caught and exception of unknown type ...";
-	}
+	// try {
+	// }
+	// catch (const std::string& e) { // catch exceptions thrown as strings
+	// 	std::cerr << e << std::endl;
+	// 	assert(false && "fatal error: exception thrown as string through std::cerr");
+	// }
+	// catch (const char* e) { // catch exceptions thrown as char*
+	// 	std::cerr << e << std::endl;
+	// 	assert(false && "fatal error: exception thrown as char* through std::cerr");
+	// }
+	// catch (const std::exception& e) { // catch exceptions thrown as a sub-type of std::exception
+	// 	std::cerr << e.what();
+	// 	assert(false && "fatal error: exception thrown as std::exception through std::cerr");
+	// }
+	// catch (...) {
+	// 	std::cerr << "Caught and exception of unknown type ...";
+	// 	assert(false && "fatal error: exception thrown as unknown type through std::cerr");
+	// }
 
 	//_CrtDumpMemoryLeaks();
 	return 0;

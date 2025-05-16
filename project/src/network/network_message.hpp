@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <cassert>
 #include <memory>
+#include <cstddef>
 
 struct network_message_connection_client_from_host {
     bool accepted : 1;
@@ -54,7 +55,7 @@ struct network_message {
 };
 template <typename T>
 struct network_message_pack : public network_message {
-    uint16_t padding;
+    uint32_t padding;
     network_message_payload<T> payload;
     struct deleter {
         void operator()(network_message_pack<T> *ptr) const {
@@ -64,17 +65,21 @@ struct network_message_pack : public network_message {
     };
 };
 
+
 template <typename T>
 network_message_pack<T> network_message_pack_create(
     const network_message_type_option type,
     const T &content
 ) {
+    static_assert(
+        offsetof(network_message_pack<T>, payload) == offsetof(network_message_pack<max_align_t>, payload),
+        "static error: network_message_pack<T> payload offset must be equal to network_message_pack<max_align_t> payload offset"
+    );
     network_message_pack<T> message;
     message.header = network_message_header_create(
         type,
         sizeof(network_message_payload<T>)
     );
-    message.padding = 0;
     message.payload = network_message_payload<T>{
         .content = content,
     };
@@ -94,6 +99,10 @@ template <typename T>
 network_message_pack<T> network_message_pack_receive(
     TCPsocket socket
 ) {
+    static_assert(
+        offsetof(network_message_pack<T>, payload) == offsetof(network_message_pack<max_align_t>, payload),
+        "static error: network_message_pack<T> payload offset must be equal to network_message_pack<max_align_t> payload offset"
+    );
     const network_message_header header = network_message_header_receive(socket);
     assert(
         network_message_header_valid(header)
@@ -113,17 +122,19 @@ network_message_pack<T> network_message_pack_receive(
     
     network_message_pack<T> message;
     message.header = header;
-    const int recv_result = SDLNet_TCP_Recv(
-        socket,
-        &message.payload,
-        int(payload_size)
-    );
-    if (recv_result == network_utility_sdl_net_failure) {
-        assert(false && "fatal error: SDLNet_TCP_Recv failed");
-        std::exit(EXIT_FAILURE);
-    } else if (recv_result != int(payload_size)) {
-        assert(false && "fatal error: SDLNet_TCP_Recv invalid number of bytes received");
-        std::exit(EXIT_FAILURE);
+    if (payload_size != 0) {
+        const int recv_result = SDLNet_TCP_Recv(
+            socket,
+            &message.payload,
+            int(payload_size)
+        );
+        if (recv_result == network_utility_sdl_net_failure) {
+            assert(false && "fatal error: SDLNet_TCP_Recv failed");
+            std::exit(EXIT_FAILURE);
+        } else if (recv_result != int(payload_size)) {
+            assert(false && "fatal error: SDLNet_TCP_Recv invalid number of bytes received");
+            std::exit(EXIT_FAILURE);
+        }
     }
     return message;
 }
@@ -138,6 +149,10 @@ void network_message_pack_send(
     TCPsocket socket,
     const network_message_pack<T> &message
 ) {
+    static_assert(
+        offsetof(network_message_pack<T>, payload) == offsetof(network_message_pack<max_align_t>, payload),
+        "static error: network_message_pack<T> payload offset must be equal to network_message_pack<max_align_t> payload offset"
+    );
     assert(
         network_message_header_valid(message.header)
         && "error: message header must be valid before sending"
@@ -177,6 +192,10 @@ void network_message_pack_send(
 template <typename From, typename To>
 network_message_pack<To> network_message_pack_into(network_message_pack<From> &&from) {
     static_assert(
+        offsetof(network_message_pack<To>, payload) == offsetof(network_message_pack<max_align_t>, payload),
+        "static error: network_message_pack<To> payload offset must be equal to network_message_pack<max_align_t> payload offset"
+    );
+    static_assert(
         sizeof(network_message_pack<To>) <= sizeof(network_message_pack<From>),
         "static error: network_message_pack<To> must be less than or equal to network_message_pack<From>"
     );
@@ -187,6 +206,10 @@ template <typename T>
 using network_message_resolved_dynamic_pack = std::unique_ptr<network_message_pack<T>, typename network_message_pack<T>::deleter>;
 template <typename To>
 network_message_resolved_dynamic_pack<To> network_message_dynamic_pack_into(network_message_dynamic_pack &&from) {
+    static_assert(
+        offsetof(network_message_pack<To>, payload) == offsetof(network_message_pack<max_align_t>, payload),
+        "static error: network_message_pack<To> payload offset must be equal to network_message_pack<max_align_t> payload offset"
+    );
     const size_t payload_size = size_t(SDLNet_Read16(&from->header.payload_size_n));
     if (sizeof(network_message_pack<To>) < payload_size) {
         assert(false && "fatal error: payload size must be less than or equal to the size of the payload");

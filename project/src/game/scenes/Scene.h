@@ -1,5 +1,4 @@
 #pragma once
-
 #include <vector>
 #include "../../ecs/Manager.h"
 #include "../../ecs/Entity.h"
@@ -27,7 +26,7 @@ public:
     virtual void update(uint32_t delta_time);
 	virtual void render();
 	virtual ecs::entity_t create_proyectile(const GameStructs::BulletProperties& bp, ecs::grpId_t gid) {return nullptr;};
-	void show_message(const std::string& text, uint32_t time = 2500);
+	
 	template <typename ... Cmps>
 	static ecs::entity_t create_entity(ecs::grpId_t gid, ecs::sceneId_t sid,Cmps ... components) {
 		ecs::entity_t ent = Game::Instance()->get_mngr()->addEntity(sid, gid);
@@ -58,10 +57,10 @@ protected:
 	ecs::entity_t create_decoration_image(const GameStructs::ButtonProperties& ip);
 	void create_static_background(Texture* bg);
 
-	std::string message;
-	uint32_t message_time;
-	bool showing_message = false;
-
+	std::string message{};
+	uint32_t message_time{5 * 1000};
+	bool showing_message{false};
 public:
 	ecs::sceneId_t get_scene_id() const { return _scene_ID; }
+	void show_message(const std::string& text, uint32_t time);
 };

@@ -176,8 +176,7 @@ void GameScene::initScene()
 	auto &&manager = *Game::Instance()->get_mngr();
 	auto player = manager.getHandler(ecs::hdlr::PLAYER);
 	manager.addComponent<MythicComponent>(player);
-	if (!Game::Instance()->is_network_none())
-		manager.addComponent<PlayerSynchronize>(player, Game::Instance()->get_local_player_id());
+	if (!Game::Instance()->is_network_none())manager.addComponent<PlayerSynchronize>(player, uint32_t{Game::Instance()->client_id()});
 
 	manager.refresh();
 	// spawn_sarno_rata(Vector2D{5.0f, 0.0f});
@@ -1506,8 +1505,10 @@ void GameScene::host_handle_menssage(network_context &ctx)
 					playerData.pos.setX(static_cast<int16_t>(SDLNet_Read16(&payload.pos_n[0])) / static_cast<float>(fact_float_int));
 					playerData.pos.setY(static_cast<int16_t>(SDLNet_Read16(&payload.pos_n[1])) / static_cast<float>(fact_float_int));
 
-					auto player = Game::Instance()->get_network_player(playerData.id);
-					Game::Instance()->get_mngr()->getComponent<PlayerSynchronize>(player)->updatePlayer(playerData);
+					auto &&game = *Game::Instance(); 
+					const Game::network_users_state &state = game.get_network_state();
+					auto player = state.game_state.user_players.at(playerData.id);
+					game.get_mngr()->getComponent<PlayerSynchronize>(player)->updatePlayer(playerData);
 
 					auto player_update_msg = create_player_update_message(playerData);
 
@@ -1565,7 +1566,7 @@ void GameScene::client_handle_menssage(network_context &ctx)
 			playerData.pos.setX(static_cast<int16_t>(SDLNet_Read16(&payload.pos_n[0])) / static_cast<float>(fact_float_int));
 			playerData.pos.setY(static_cast<int16_t>(SDLNet_Read16(&payload.pos_n[1])) / static_cast<float>(fact_float_int));
 
-			auto player = Game::Instance()->get_network_player(playerData.id);
+			auto player = Game::Instance()->get_network_state().game_state.user_players.at(playerData.id);
 			Game::Instance()->get_mngr()->getComponent<PlayerSynchronize>(player)->updatePlayer(playerData);
 			break;
 		}
@@ -1610,10 +1611,9 @@ void GameScene::client_handle_menssage(network_context &ctx)
 
 bool GameScene::change_player_tex(uint32_t playerId, const std::string &key_name)
 {
-	auto player = Game::Instance()->get_network_player(playerId);
-	auto &&manager = *Game::Instance()->get_mngr();
-	if (auto &&dy = manager.getComponent<dyn_image_with_frames>(player))
-	{
+	auto player = Game::Instance()->get_network_state().game_state.user_players.at(playerId);
+	auto&& manager = *Game::Instance()->get_mngr();
+	if (auto&& dy = manager.getComponent<dyn_image_with_frames>(player)) {
 		dy->texture = &sdlutils().images().at(key_name);
 		dy->texture_name = key_name;
 		return true;
@@ -1623,10 +1623,9 @@ bool GameScene::change_player_tex(uint32_t playerId, const std::string &key_name
 
 bool GameScene::change_player_filter(uint32_t playerId, filter filter)
 {
-	auto player = Game::Instance()->get_network_player(playerId);
-	auto &&manager = *Game::Instance()->get_mngr();
-	if (auto &&dy = manager.getComponent<dyn_image_with_frames>(player))
-	{
+	auto player = Game::Instance()->get_network_state().game_state.user_players.at(playerId);
+	auto&& manager = *Game::Instance()->get_mngr();
+	if (auto&& dy = manager.getComponent<dyn_image_with_frames>(player)) {
 		dy->_current_filter = filter;
 		return true;
 	}
@@ -1659,6 +1658,8 @@ ecs::entity_t GameScene::create_dumb_player(ecs::sceneId_t scene, uint32_t playe
 
 	manager.addComponent<PlayerSynchronize>(player, playerId);
 
-	Game::Instance()->add_network_player(playerId, player);
+	// we already do it externally
+	// Game::network_users_state &state = Game::Instance()->get_network_state();
+	// network_state_add_user(state, player, std::move(tex_name));
 	return player;
 }

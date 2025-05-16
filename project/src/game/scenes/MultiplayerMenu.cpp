@@ -14,6 +14,7 @@
 #include "../../network/network_utility.hpp"
 #include "../../network/network_message.hpp"
 #include <fstream>
+#include <limits>
 
 #ifdef GENERATE_LOG
 #include "../../our_scripts/log_writer_to_csv.hpp"
@@ -136,7 +137,12 @@ void MultiplayerMenu::exitScene()
     }
 }
 
-void MultiplayerMenu:: multiplayer_menu_host_loop(network_context &ctx) {
+static void multiplayer_menu_host_loop(network_context &ctx) {
+    if (ctx.profile_status != network_context_profile_status::network_context_profile_status_host) {
+        assert(false && "fatal error: host loop called when not in host mode");
+        std::exit(EXIT_FAILURE);
+    }
+
     if (SDLNet_CheckSockets(ctx.profile.host.clients_host_set, 0) > 0) {
         if (SDLNet_SocketReady(ctx.profile.host.host_socket)) {
             network_connection_size connection_index;
@@ -163,9 +169,7 @@ void MultiplayerMenu:: multiplayer_menu_host_loop(network_context &ctx) {
                 const uint16_t type_n{dyn_message->header.type_n};
                 const uint16_t type_h{SDLNet_Read16(&type_n)};
                 switch (type_h) {
-                case network_message_type::network_message_type_dbg_print: [[fallthrough]];
-                case network_message_type::network_message_type_dbg_print_two_byte_test: {
-                    // std::unique_ptr<network_message_pack<network_message_payload_dbg_print<64>>, typename network_message_pack<network_message_payload_dbg_print<64>>::deleter> m;
+                case network_message_type::network_message_type_dbg_print: {
                     auto message =
                         network_message_dynamic_pack_into<network_message_payload_dbg_print<64>>(std::move(dyn_message));
                     auto&& payload = message->payload.content;
@@ -180,59 +184,122 @@ void MultiplayerMenu:: multiplayer_menu_host_loop(network_context &ctx) {
                     std::cout << "message: " << payload.args.data() << std::endl;
                     break;
                 }
-                case network_message_type_player_connect: {
-                    auto message = network_message_dynamic_pack_into<network_message_player_connect>(std::move(dyn_message));
-                    auto&& payload = message->payload.content;
+                // case network_message_type_player_connect: {
+                //     auto message = network_message_dynamic_pack_into<network_message_player_connect>(std::move(dyn_message));
+                //     auto&& payload = message->payload.content;
 
-                    static uint32_t next_id = 1;
-                    uint32_t new_id = next_id++;
+                //     static uint32_t next_id = 1;
+                //     uint32_t new_id = next_id++;
 
-                    uint32_t  key_length = SDLNet_Read32(&payload.sprite_key_length);
-                    std::string sprite_key(payload.sprite_key, key_length);
+                //     uint32_t  key_length = SDLNet_Read32(&payload.sprite_key_length);
+                //     std::string sprite_key(payload.sprite_key, key_length);
 
-                    //crear un player local
-                    GameScene::create_dumb_player(ecs::scene::GAMESCENE, new_id, sprite_key);
+                //     //crear un player local
+                //     GameScene::create_dumb_player(ecs::scene::GAMESCENE, new_id, sprite_key);
 
-                    //asignarle al cliente nuevo un id
-                    auto id_msg = network_message_pack_create(
-                        network_message_type_client_id,
-                        create_client_id_message(new_id)
-                    );
-                    network_message_pack_send(connection, id_msg);
+                //     //asignarle al cliente nuevo un id
+                //     auto id_msg = network_message_pack_create(
+                //         network_message_type_client_id,
+                //         create_client_id_message(new_id)
+                //     );
+                //     network_message_pack_send(connection, id_msg);
 
-                    //mandarle al cliente nuevo los clientes ya conectados
-                    for (auto player : Game::Instance()->get_network_players()) {
-                        uint32_t id = player.first;
-                        if (id != new_id) {
-                            ecs::entity_t player_entity = player.second;
-                            auto* dyn_img = Game::Instance()->get_mngr()->getComponent<dyn_image_with_frames>(player_entity);
+                //     //mandarle al cliente nuevo los clientes ya conectados
+                //     const Game::network_users_state &state = Game::Instance()->get_network_state();
+                //     for (size_t j = 0; j < state.connections.connected_users; ++j) {
+                //         uint32_t id = j;
+                //         if (id != new_id) {
+                //             const ecs::entity_t player_entity = state.game_state.user_players.at(id);
+                //             auto* dyn_img = Game::Instance()->get_mngr()->getComponent<dyn_image_with_frames>(player_entity);
                            
-                            if (dyn_img) {
-                                std::string sprite_key = dyn_img->texture_name;
-                                network_message_pack_send(
-                                    connection,
-                                    network_message_pack_create(network_message_type_new_player,
-                                        create_player_connect_message(id, sprite_key)));
-                            }
-                            else std::cout << "Error: textura del player " << std::to_string(id) << std::endl;    
-                        }
+                //             if (dyn_img) {
+                //                 std::string sprite_key = dyn_img->texture_name;
+                //                 network_message_pack_send(
+                //                     connection,
+                //                     network_message_pack_create(network_message_type_new_player,
+                //                         create_player_connect_message(id, sprite_key)));
+                //             }
+                //             else std::cout << "Error: textura del player " << std::to_string(id) << std::endl;    
+                //         }
+                //     }
+
+                //     std::cout << "Player conectado. ID asignado: " << std::to_string(new_id) << ", sprite: " << payload.sprite_key << std::endl;
+
+                //     //avisar a otros clientes que se ha conectado un nuevo cliente
+                //     auto new_player_msg = create_player_connect_message(new_id, sprite_key);
+
+                //     for (network_connection_size i = 0; i < ctx.profile.host.sockets_to_clients.connection_count; ++i) {
+                //         TCPsocket& client = ctx.profile.host.sockets_to_clients.connections[i];
+
+                //         if (client != connection) {
+                //             network_message_pack_send(
+                //                 client,
+                //                 network_message_pack_create(network_message_type_new_player, new_player_msg));
+                //         }
+                //     }
+
+                //     break;
+                // }
+                case network_message_type::network_message_type_new_connection_sync_request: {
+                    auto message = network_message_dynamic_pack_into<network_message_payload_new_connection_sync_request>(std::move(dyn_message));
+                    const auto &payload = message->payload.content;
+                    Game::network_users_state &state = Game::Instance()->get_network_state();
+                    
+                    const uint8_t sprite_key_length{payload.sprite_key.sprite_key_length};
+                    assert(
+                        0 < sprite_key_length
+                        && "error: sprite key length must be greater than 0"
+                    );
+                    assert(
+                        sprite_key_length < network_user_sprite_key_maximum_buffer_size
+                        && "error: sprite key length must be less than the maximum buffer size"
+                    );
+                    const std::string_view sprite_key{
+                        payload.sprite_key.sprite_key.data(),
+                        sprite_key_length
+                    };
+                    std::cout << "message: new connection sync request. Sprite key: " << sprite_key << ". With length: " << uint16_t(sprite_key_length) << std::endl;
+                    const size_t network_user_index{network_state_next_user_index(state)}; 
+                    const ecs::entity_t player_entity{GameScene::create_dumb_player(ecs::scene::GAMESCENE, network_user_index, std::string{sprite_key})};
+
+                    const size_t assigned_user_index{network_state_add_client_user(ctx, state, player_entity, std::string{sprite_key})};
+                    if (assigned_user_index > (std::numeric_limits<uint8_t>::max)()) {
+                        assert(false && "fatal error: assigned user index is greater than uint8_t max");
+                        std::exit(EXIT_FAILURE);
                     }
-
-                    std::cout << "Player conectado. ID asignado: " << std::to_string(new_id) << ", sprite: " << payload.sprite_key << std::endl;
-
-                    //avisar a otros clientes que se ha conectado un nuevo cliente
-                    auto new_player_msg = create_player_connect_message(new_id, sprite_key);
-
+                    if (assigned_user_index != network_user_index) {
+                        assert(false && "fatal error: assigned user index is not equal to the network user index");
+                        std::exit(EXIT_FAILURE);
+                    }
+                    
+                    std::vector<std::string_view> sprite_keys;
+                    sprite_keys.reserve(state.connections.connected_users);
+                    for (size_t i = 0; i < state.connections.connected_users; ++i) {
+                        sprite_keys.emplace_back(state.game_state.users_sprite_keys.at(i));
+                    }
+                    const auto response_payload{
+                        network_message_payload_new_connection_sync_response_create<network_context_maximum_connections>(
+                            network_connections{
+                                .connected_users = state.connections.connected_users,
+                                .local_user_index = uint8_t(assigned_user_index),
+                                .oldest_non_host_index = state.connections.oldest_non_host_index
+                            },
+                            sprite_keys
+                        )
+                    };
+                    const auto response = network_message_pack_create(
+                        network_message_type_new_connection_sync_response,
+                        response_payload
+                    );
                     for (network_connection_size i = 0; i < ctx.profile.host.sockets_to_clients.connection_count; ++i) {
-                        TCPsocket& client = ctx.profile.host.sockets_to_clients.connections[i];
-
-                        if (client != connection) {
-                            network_message_pack_send(
-                                client,
-                                network_message_pack_create(network_message_type_new_player, new_player_msg));
-                        }
+                        TCPsocket &client = ctx.profile.host.sockets_to_clients.connections[i];
+                        network_message_pack_send(client, response);
                     }
-
+                    break;
+                }
+                case network_message_type::network_message_type_new_connection_sync_response: {
+                    assert(false && "error: new connection sync response should not be received by the host");
+                    std::exit(EXIT_FAILURE);
                     break;
                 }
                 default: {
@@ -245,7 +312,7 @@ void MultiplayerMenu:: multiplayer_menu_host_loop(network_context &ctx) {
     }
 }
 
-void MultiplayerMenu::multiplayer_menu_client_loop(network_context& ctx) {
+static void multiplayer_menu_client_loop(network_context& ctx) {
     int active_sockets = SDLNet_CheckSockets(ctx.profile.client.client_set, 0);
     if (active_sockets > 0 && SDLNet_SocketReady(ctx.profile.client.socket_to_host)) {
 
@@ -253,37 +320,102 @@ void MultiplayerMenu::multiplayer_menu_client_loop(network_context& ctx) {
         const uint16_t type_n{ msg->header.type_n };
         const uint16_t type_h{ SDLNet_Read16(&type_n) };
         switch (type_h) {
-        case network_message_type::network_message_type_client_id: {
-            auto message = network_message_dynamic_pack_into<network_message_client_id_from_host>(std::move(msg));
-            auto&& payload = message->payload.content;
+        // case network_message_type::network_message_type_client_id: {
+        //     auto message = network_message_dynamic_pack_into<network_message_client_id_from_host>(std::move(msg));
+        //     auto&& payload = message->payload.content;
 
-            uint32_t id = SDLNet_Read32(&payload.client_id);
+        //     uint32_t id = SDLNet_Read32(&payload.client_id);
 
-            Game::Instance()->set_local_player_id(id);
-            Game::Instance()->add_network_player(id, Game::Instance()->get_mngr()->getHandler(ecs::hdlr::PLAYER));
-            std::cout << "player id:" << std::to_string(id) << std::endl;
+        //     Game::network_users_state &state = Game::Instance()->get_network_state();
+        //     assert(id <= state.connections.connected_users && "error: id must be less than or equal to the number of connected users");
+        //     state.connections.local_user_index = id;
+        //     ecs::entity_t &local_player_slot = state.game_state.user_players.at(id);
+        //     assert(local_player_slot == nullptr && "error: local player slot must be empty before assigning");
 
-            break;
-        }
-        case network_message_type::network_message_type_new_player: {
-            auto message = network_message_dynamic_pack_into<network_message_player_connect>(std::move(msg));
-            auto&& payload = message->payload.content;
+        //     local_player_slot = Game::Instance()->get_mngr()->getHandler(ecs::hdlr::PLAYER);
+        //     std::cout << "player id:" << std::to_string(id) << std::endl;
 
-            uint32_t id = SDLNet_Read32(&payload.player_id);
-            std::cout << "nuevo player con id:" << std::to_string(id) << std::endl;
+        //     break;
+        // }
+        // case network_message_type::network_message_type_new_player: {
+        //     auto message = network_message_dynamic_pack_into<network_message_player_connect>(std::move(msg));
+        //     auto&& payload = message->payload.content;
 
-            uint32_t  key_length = SDLNet_Read32(&payload.sprite_key_length);
-            std::string sprite_key(payload.sprite_key, key_length);
+        //     uint32_t id = SDLNet_Read32(&payload.player_id);
+        //     std::cout << "nuevo player con id:" << std::to_string(id) << std::endl;
 
-            GameScene::create_dumb_player(ecs::scene::GAMESCENE, id, sprite_key);
+        //     uint32_t  key_length = SDLNet_Read32(&payload.sprite_key_length);
+        //     std::string sprite_key(payload.sprite_key, key_length);
 
-            break;
-        }
+        //     GameScene::create_dumb_player(ecs::scene::GAMESCENE, id, sprite_key);
+
+        //     break;
+        // }
         case network_message_type::network_message_type_host_has_pressed_play: {
-            host_has_pressed_play = true;
+            // host_has_pressed_play = true;
             break;
         }
-        default: {
+        case network_message_type::network_message_type_new_connection_sync_request: {
+            assert(false && "error: new connection sync request should not be received by the client");
+            std::exit(EXIT_FAILURE);
+            break;
+        }
+        case network_message_type::network_message_type_new_connection_sync_response: {
+            auto message = network_message_dynamic_pack_into<network_message_payload_new_connection_sync_response<network_context_maximum_connections>>(std::move(msg));
+            const auto &payload = message->payload.content;
+            Game::network_users_state &state = Game::Instance()->get_network_state();
+            const ecs::entity_t own_player_entity{Game::Instance()->get_mngr()->getHandler(ecs::hdlr::PLAYER)};
+
+            if (state.connections.local_user_index < payload.connections.local_user_index) {
+                // update
+                assert(
+                    state.connections.oldest_non_host_index == payload.connections.oldest_non_host_index
+                    && "error: oldest non host index must be equal to the payload on a new connection sync response"
+                );
+            } else if (state.connections.local_user_index == network_context_maximum_connections){
+                // new
+                ecs::entity_t &local_player_slot = state.game_state.user_players.at(payload.connections.local_user_index);
+                assert(local_player_slot == nullptr && "error: local player slot must be empty before assigning");
+                
+                // we assign it bellow
+                // local_player_slot = own_player_entity;
+                state.connections.local_user_index = payload.connections.local_user_index;
+                state.connections.connected_users = 0;
+            } else {
+                assert(false && "unreachable: local user index may be uninitialized (set to maximum connections) or set to a value less than the number of connected users");
+                std::exit(EXIT_FAILURE);
+            }
+            for (size_t i = state.connections.connected_users; i < payload.connections.connected_users; ++i) {
+                const auto sprite_key_length{payload.sprite_keys[i].sprite_key_length};
+                const std::string_view sprite_key{
+                    payload.sprite_keys[i].sprite_key.data(),
+                    sprite_key_length
+                };
+                const size_t network_user_index{network_state_next_user_index(state)};
+                ecs::entity_t player_entity;
+                if (i != payload.connections.local_user_index) {               
+                    player_entity = GameScene::create_dumb_player(ecs::scene::GAMESCENE, network_user_index, std::string{sprite_key});   
+                } else {
+                    player_entity = own_player_entity;
+                }
+                const size_t assigned_user_index{network_state_add_user(state, player_entity, std::string{sprite_key})};
+                if (assigned_user_index > (std::numeric_limits<uint8_t>::max)()) {
+                    assert(false && "fatal error: assigned user index is greater than uint8_t max");
+                    std::exit(EXIT_FAILURE);
+                }
+                if (assigned_user_index != network_user_index) {
+                    assert(false && "fatal error: assigned user index is not equal to the network user index");
+                    std::exit(EXIT_FAILURE);
+                }
+            }
+            if (state.connections.connected_users != payload.connections.connected_users) {
+                assert(false && "fatal error: connected users count must be equal to the payload");
+                std::exit(EXIT_FAILURE);
+            }
+            break;
+        }
+        default:
+        {
             break;
         }
         }
@@ -430,7 +562,7 @@ void MultiplayerMenu::render() {
             int(num_player_rect.size.x),
             int(num_player_rect.size.y)
         };
-        int num_players = Game::Instance()->get_network_players_num();
+        int num_players = Game::Instance()->get_network_state().connections.connected_users;
         Texture num_player_tex{
         sdlutils().renderer(),
         "Jugadores conectados: " + std::to_string(num_players),
@@ -512,7 +644,7 @@ void MultiplayerMenu::create_play_button(const GameStructs::ButtonProperties& bp
             return;
         }
         if (Game::Instance()->is_host()) {
-            if (Game::Instance()->get_network_players_num() > 1) {
+            if (Game::Instance()->get_network_state().connections.connected_users > 1) {
                 host_has_pressed_play = true;
                 network_context& network = Game::Instance()->get_network();
                 //mandar a todos los clientes el mensaje de que el host a dado al boton de play
@@ -524,13 +656,16 @@ void MultiplayerMenu::create_play_button(const GameStructs::ButtonProperties& bp
                 }
             }
             else {
-                show_message("Espera a que lleguen los otros michis!");
+                show_message("Espera a que lleguen los otros michis!", 5 * 1000);
             }
 
         }
-        else if (Game::Instance()->is_client() && !host_has_pressed_play)show_message("Esperando instrucciones del michi operador... ");
+        else if (Game::Instance()->is_client() && !host_has_pressed_play)show_message("Esperando instrucciones del michi operador... ", 5 * 1000);
         
-        if (host_has_pressed_play) Game::Instance()->change_Scene(Game::SELECTIONMENU);
+        // HACK: Uncomment this line to change the scene when the host has pressed play already
+        // if (host_has_pressed_play) {
+            Game::Instance()->change_Scene(Game::SELECTIONMENU);
+        // }
         
         imgComp->_filter = false;
         imgComp->swap_textures();
@@ -600,12 +735,21 @@ void MultiplayerMenu::create_host_button(const GameStructs::ButtonProperties& bp
         network_context_host_connect_alloc(network.profile.host);
         std::cout << "Host at port: " << Game::default_port << std::endl;
 
-        Game::Instance()->set_local_player_id(0);
         auto player = Game::Instance()->get_mngr()->getHandler(ecs::hdlr::PLAYER);
-        Game::Instance()->add_network_player(0, player);
-
+        
         _playButton->destination_rect.position.x = 0.55f;
 
+        Game &game = *Game::Instance();
+        const size_t host_user_index = network_state_add_host_user_as_self(
+            network,
+            game.get_network_state(),
+            player,
+            std::string{game.get_mngr()->getComponent<dyn_image_with_frames>(player)->texture_name}
+        );
+        assert(
+            host_user_index == 0
+            && "error: host user index should be 0 as it is the first user to be added"
+        );
     });
 
     buttonComp->connectHover([buttonComp, imgComp]() {
@@ -757,7 +901,7 @@ void MultiplayerMenu::create_client_button(const GameStructs::ButtonProperties& 
         network_message_pack_send(
             network.profile.client.socket_to_host,
             network_message_pack_create(
-                network_message_type::network_message_type_dbg_print_two_byte_test,
+                network_message_type::network_message_type_dbg_print,
                 network_message_payload_dbg_print_create<32>(
                     "Hello from client!"
                 )
@@ -765,16 +909,14 @@ void MultiplayerMenu::create_client_button(const GameStructs::ButtonProperties& 
         );
 
         auto player = mngr->getHandler(ecs::hdlr::PLAYER);
-        auto name = mngr->getComponent<dyn_image_with_frames>(player)->texture_name;
-        auto connect_msg = create_player_connect_message(0,name);
-
-        std::cout << "Player solicita conexion, con textura " << name << std::endl;
+        const std::string_view sprite_key = mngr->getComponent<dyn_image_with_frames>(player)->texture_name;
+        std::cout << "Player solicita conexion, con textura " << sprite_key << std::endl;
 
         network_message_pack_send(
             network.profile.client.socket_to_host,
             network_message_pack_create(
-                network_message_type_player_connect,
-                connect_msg
+                network_message_type_new_connection_sync_request,
+                network_message_payload_new_connection_sync_create(sprite_key)
             )
         );
         _playButton->destination_rect.position.x = 0.55f;

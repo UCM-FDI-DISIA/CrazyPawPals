@@ -155,6 +155,31 @@ network_context_host_accept_connection_status_flags network_context_host_accept_
     }
 }
 
+network_context_host_accept_connection_status_flags network_context_host_reject_connection(network_context_host &host) {
+    if (SDLNet_SocketReady(host.host_socket)) {
+        const TCPsocket client = SDLNet_TCP_Accept(host.host_socket);
+        const auto rejection_message =
+            network_message_connection_client_from_host_create_rejected();
+        const int send_result = SDLNet_TCP_Send(
+            client,
+            &rejection_message,
+            sizeof(rejection_message)
+        );
+        if (send_result == network_utility_sdl_net_failure) {
+            assert(false && "fatal error: SDLNet_TCP_Send failed");
+            std::exit(EXIT_FAILURE);
+        } else if (send_result != int(sizeof(rejection_message))) {
+            assert(false && "fatal error: SDLNet_TCP_Send invalid number of bytes sent");
+            std::exit(EXIT_FAILURE);
+        }
+        
+        network_utility_sdlnet_drain_and_close(client);
+        return network_context_host_accept_connection_status_rejected
+            | network_context_host_accept_connection_status_full;
+    } else {
+        return network_context_host_accept_connection_status_none;
+    }
+}
 
 extern inline bool network_context_client_resolved(const network_context_client &client);
 extern inline bool network_context_client_connected(const network_context_client &client);

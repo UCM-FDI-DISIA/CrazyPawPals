@@ -9,6 +9,7 @@
 #include "../../utils/Vector2D.h"
 #include "../../game/GameStructs.h"
 #include "../src/our_scripts/components/WaveManager.h"
+#include "../network_state.hpp"
 
 static int const fact_float_int = 1024;
 enum network_message_type
@@ -16,15 +17,20 @@ enum network_message_type
     network_message_type_none = 0,
     network_message_type_any,
     network_message_type_dbg_print,
-    network_message_type_dbg_print_two_byte_test = 0x0102,
     network_message_type_summon_true_bullet,
     network_message_type_summon_dummy_bullet,
-    network_message_type_player_connect,
+
+    network_message_type_new_connection_sync_request,
+    network_message_type_new_connection_sync_response,
+
+    // network_message_type_player_connect, // replaced by --> network_message_type_new_connection_sync_request
     network_message_type_player_update,
     network_message_type_enemy_update,
     network_message_type_client_id,
     network_message_type_new_player,
     network_message_type_create_enemy,
+    // network_message_type_client_id,  // replaced by vvv
+    // network_message_type_new_player, // replaced by --> network_message_type_new_connection_sync_response
     network_message_type_host_has_pressed_play,
     network_message_type_player_ready,
     network_message_type_start_game,
@@ -33,7 +39,7 @@ using network_message_type_option = uint16_t;
 using network_message_header_size = uint16_t;
 struct network_message_header
 {
-    network_message_type_option unused : 1;
+    network_message_type_option connection_is_open : 1;
     network_message_type_option illegal : 1;
     network_message_type_option type_n : 14;
     network_message_header_size payload_size_n;
@@ -44,7 +50,7 @@ static_assert(
 
 inline bool network_message_header_valid(const network_message_header header)
 {
-    return header.unused == 0 && header.illegal == 1;
+    return header.illegal == 1;
 }
 inline bool network_message_header_in_network_endian(const network_message_header header)
 {
@@ -62,7 +68,7 @@ inline network_message_header network_message_header_create(
 
     SDLNet_Write16(type, &type_n);
     SDLNet_Write16(payload_size_h, &header.payload_size_n);
-    header.unused = 0;
+    header.connection_is_open = 1;
     header.illegal = 1;
     header.type_n = type_n;
 
@@ -185,20 +191,75 @@ inline network_message_player_ready create_player_ready_message(uint32_t id, boo
     return msg;
 };
 
-// mensaje sin contenido
-struct network_message_payload_empty
-{
-    // vac��a
+//mensaje sin contenido
+struct network_message_payload_empty {
+    constexpr static const network_message_type type{
+        network_message_type::network_message_type_none
+    };
 };
-
-inline network_message_payload_empty create_payload_empty_message()
-{
+inline network_message_payload_empty create_payload_empty_message() {
     return network_message_payload_empty{};
 }
 
-// mandar al cliente su id
-struct network_message_client_id_from_host
-{
+
+constexpr static const uint8_t network_user_sprite_key_maximum_buffer_size{32};
+constexpr static const uint8_t network_user_sprite_key_maximum_key_length{
+    network_user_sprite_key_maximum_buffer_size - 1
+};
+template <uint8_t MaxKeyBufferSize>
+struct network_user_sprite_key {
+    std::array<char, MaxKeyBufferSize> sprite_key;
+    uint8_t sprite_key_length;
+};
+template <uint8_t MaxKeyBufferSize>
+network_user_sprite_key<MaxKeyBufferSize> network_user_sprite_key_create(
+    const std::string_view sprite_key
+) {
+    static_assert(
+        MaxKeyBufferSize <= std::numeric_limits<uint8_t>::max(),
+        "static error: sprite key length exceeds uint8_t max"
+    );
+    assert(
+        sprite_key.size() <= MaxKeyBufferSize && "error: sprite key size exceeds capacity"
+    );
+    network_user_sprite_key<MaxKeyBufferSize> payload;
+    payload.sprite_key_length = uint8_t(sprite_key.size());
+    std::copy_n(sprite_key.begin(), sprite_key.size(), payload.sprite_key.begin());
+    return payload;
+}
+
+struct network_message_payload_new_connection_sync_request {
+    network_user_sprite_key<network_user_sprite_key_maximum_buffer_size> sprite_key;
+};
+network_message_payload_new_connection_sync_request network_message_payload_new_connection_sync_create(
+    const std::string_view sprite_key
+);
+
+
+template <size_t MaximumConnections>
+struct network_message_payload_new_connection_sync_response {
+    std::array<network_user_sprite_key<network_user_sprite_key_maximum_buffer_size>, MaximumConnections> sprite_keys;
+    network_connections connections;
+};
+template <size_t MaximumConnections>
+network_message_payload_new_connection_sync_response<MaximumConnections> network_message_payload_new_connection_sync_response_create(
+    const network_connections connections,
+    const std::vector<std::string_view> &sprite_keys
+) {
+    network_message_payload_new_connection_sync_response<MaximumConnections> payload;
+    payload.connections = connections;
+    assert(
+        sprite_keys.size() <= MaximumConnections && "error: sprite keys size exceeds maximum connections"
+    );
+    for (size_t i = 0; i < sprite_keys.size(); ++i) {
+        payload.sprite_keys[i] = network_user_sprite_key_create<network_user_sprite_key_maximum_buffer_size>(sprite_keys[i]);
+    }
+    return payload;
+}
+
+
+//mandar al cliente su id
+struct network_message_client_id_from_host {
     uint32_t client_id;
 };
 

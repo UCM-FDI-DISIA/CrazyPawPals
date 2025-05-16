@@ -86,7 +86,7 @@ void WaveManager::initialize_next_wave_params(bool normal_wave)
 {
 	tokens_for_this_wave = (_currentWave * spawn_tokens_gained_per_wave) * (nPlayers == 1 ? 1 : nPlayers / 1.3f) + spawn_tokens_at_wave_0;
 
-    uint8_t cheaper_enemy;
+    uint8_t cheaper_enemy{(std::numeric_limits<uint8_t>::max)()};
     for (uint8_t i = 0; i < 3; ++i) {
         uint8_t j = 0;
         do {
@@ -242,9 +242,9 @@ void WaveManager::update(uint32_t delta_time) {
     }
 #ifdef GENERATE_LOG
     WaveManager::_ticks_on_wave++;
-#endif
-
-    std::cout << _numEnemies << " vs " << _enemiesKilled << std::endl;
+    #endif
+    
+    // std::cout << _numEnemies << " vs " << _enemiesKilled << std::endl;
 }
 //---------------------------------------------------------------------------------------------------------------------------------
 

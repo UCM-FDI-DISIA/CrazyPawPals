@@ -10,10 +10,22 @@
 #include "../Health.h"
 #include "../AnimationComponent.h"
 #include "GhostStateComponent.h"
+#include <cassert>
+#include <cstdlib>
 
+static uint32_t player_sync_player_id_expect(const uint32_t player_id) {
+    if (player_id >= uint32_t(network_context_maximum_connections)) {
+        assert(
+            false
+            && "error: player id must be less than the maximum number of connections"
+        );
+        std::exit(EXIT_FAILURE);
+    }
+    return player_id;
+}
 
 PlayerSynchronize::PlayerSynchronize(uint32_t _player_id)
-    : _player_id(_player_id), _tr(nullptr), _health(nullptr), _is_ghost(false) {};
+    : _player_id(player_sync_player_id_expect(_player_id)), _tr(nullptr), _health(nullptr), _is_ghost(false) {};
 
 PlayerSynchronize::~PlayerSynchronize() {};
 

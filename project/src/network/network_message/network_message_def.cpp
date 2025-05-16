@@ -1,6 +1,8 @@
 #include "network_message_def.hpp"
 #include "../network_utility.hpp"
 
+#include <limits>
+
 extern inline bool network_message_header_valid(const network_message_header header);
 extern inline bool network_message_header_in_network_endian(const network_message_header header);
 
@@ -9,6 +11,7 @@ extern inline network_message_header network_message_header_create(
     const network_message_header_size size_h
 );
 
+
 network_message_header network_message_header_receive(TCPsocket socket) {
     network_message_header header;
     const int recv_result = SDLNet_TCP_Recv(
@@ -16,10 +19,25 @@ network_message_header network_message_header_receive(TCPsocket socket) {
         &header,
         int(sizeof(header))
     );
-    // FIXME: allow for connection closed message
+    
     if (recv_result == network_utility_sdl_net_failure) {
         assert(false && "fatal error: SDLNet_TCP_Recv failed");
         std::exit(EXIT_FAILURE);
+    } else if (recv_result == network_utility_sdl_net_connection_closed_bytes) {
+        assert(
+            network_utility_is_same_in_network_endian<network_message_type_option>(0)
+            && "fatal error: 0 must be represented the same way in network endian"
+        );
+        assert(
+            network_utility_is_same_in_network_endian<network_message_type_option>(network_message_type_none)
+            && "fatal error: network_message_type_none must be represented the same way in network endian"
+        );
+        header = network_message_header{
+            .connection_is_open = 0,
+            .illegal = 0,
+            .type_n = network_message_type_none,
+            .payload_size_n = 0
+        };
     } else if (recv_result != sizeof(header)) {
         assert(false && "fatal error: SDLNet_TCP_Recv invalid number of bytes received");
         std::exit(EXIT_FAILURE);
@@ -56,4 +74,18 @@ NetworkWaveEvent network_message_wave_event_create(events event_type) {
 	//n_we.event_type = event_type;
 	SDLNet_Write32(event_type, &n_we.event_type);
     return n_we;
+}
+
+network_message_payload_new_connection_sync_request network_message_payload_new_connection_sync_create(const std::string_view sprite_key) {
+    static_assert(
+        network_user_sprite_key_maximum_key_length <= std::numeric_limits<uint8_t>::max(),
+        "static error: sprite key length exceeds uint8_t max"
+    );
+    assert(
+        sprite_key.size() <= network_user_sprite_key_maximum_key_length
+        && "error: sprite key size exceeds capacity"
+    );
+    return network_message_payload_new_connection_sync_request{
+        network_user_sprite_key_create<network_user_sprite_key_maximum_buffer_size>(sprite_key)
+    };
 }
