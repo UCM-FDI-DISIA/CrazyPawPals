@@ -17,11 +17,12 @@ Fog::initComponent() {
 	orSize = fogRect->getSize();
 	orW = fogTransform->getWidth();
 	orH = fogTransform->getHeight();
+	orY = fogTransform->getPos().getY();
 }
 
 void Fog::update(uint32_t delta_time) {
 	(void)delta_time;
-
+	fogTransform->getPos().setY(orY);
 	if (!fogActive) {
 		fogPercentage = 0;
 	}
@@ -29,6 +30,9 @@ void Fog::update(uint32_t delta_time) {
 		if (fogPercentage <= 1 - 0.0005) {
 			//10 seconds of wave * 1000 ms is a second
 			fogPercentage += delta_time / (float)(10000);
+		}
+		else {
+			fogTransform->getPos().setY(orY+10000.0f);
 		}
 		//std::cout << "Fog: " << fogPercentage * 100 << "%" << std::endl;
 
