@@ -100,7 +100,7 @@ void WaveManager::initialize_next_wave_params(bool normal_wave)
         );
         cheaper_enemy = std::min(cheaper_enemy,enemy_spawn_data[_enemy_types_for_current_wave[i]].enemies_group_spawn_cost);
     }
-    time_max_between_enemy_spawns_on_this_wave = std::min(max_spawn_wave_time / (tokens_for_this_wave / cheaper_enemy),5000);
+    time_max_between_enemy_spawns_on_this_wave = std::min(max_spawn_wave_time / std::max((tokens_for_this_wave / cheaper_enemy),1),5000);
     _next_spawn_time = sdlutils().virtualTimer().currTime();// +time_max_between_enemy_spawns_on_this_wave;
     //Si no es normal wave spawnea tb un bos
 }
