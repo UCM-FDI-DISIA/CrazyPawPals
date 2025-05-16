@@ -31,4 +31,5 @@ private:
 	std::string _ipHost;
 	bool input_field_has_focus;
 	bool host_has_pressed_play;
+	ImageForButton* _lastChosenSkin;
 };

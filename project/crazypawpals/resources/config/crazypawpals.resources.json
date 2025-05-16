@@ -31,6 +31,11 @@
       "size": 200
     },
     {
+      "id": "RUBIK_MONO_16",
+      "file": "resources/fonts/RubikMonoOne-Regular.ttf",
+      "size": 16
+    },
+    {
       "id": "CAL_SANS",
       "file": "resources/fonts/CalSans-Regular.ttf",
       "size": 200
