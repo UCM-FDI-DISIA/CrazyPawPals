@@ -31,7 +31,8 @@ MultiplayerMenu::MultiplayerMenu() : Scene(ecs::scene::MULTIPLAYERMENUSCENE),
     _ipHost{""},
     input_field_has_focus{false},
     host_has_pressed_play(false),
-    _lastChosenSkin(nullptr)
+    _lastChosenSkin(nullptr),
+    _playButton(nullptr)
 {}
 
 MultiplayerMenu::~MultiplayerMenu()
@@ -51,8 +52,9 @@ void MultiplayerMenu::initScene()
     create_back_button(backB);
 
     //Button play
+    //0.55f
     GameStructs::ButtonProperties playB = {
-        { {0.55f, 0.65f}, { 0.25f, 0.2f } },
+        { {100.55f, 0.65f}, { 0.25f, 0.2f } },
             0.0f, ""
     };
     playB.sprite_key = "enter_game";
@@ -126,10 +128,12 @@ void MultiplayerMenu::exitScene()
     log_writer_to_csv::Instance()->add_new_log("EXIT MULTIPLAYER MENU SCENE");
     log_writer_to_csv::Instance()->add_new_log();
 #endif
-    _lastChosenSkin->_filter = false;
-    _lastChosenSkin->swap_textures();
-    _lastChosenSkin->_filter = false;
-    _lastChosenSkin = nullptr;
+    if (_lastChosenSkin != nullptr) {
+        _lastChosenSkin->_filter = false;
+        _lastChosenSkin->swap_textures();
+        _lastChosenSkin->_filter = false;
+        _lastChosenSkin = nullptr;
+    }
 }
 
 void MultiplayerMenu:: multiplayer_menu_host_loop(network_context &ctx) {
@@ -501,7 +505,7 @@ void MultiplayerMenu::create_play_button(const GameStructs::ButtonProperties& bp
         Game::Instance()->get_mngr()->getComponent<camera_component>(
             Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA))->cam
     );
-
+    _playButton = imgComp;
     auto buttonComp = mngr->getComponent<Button>(e);
     buttonComp->connectClick([buttonComp, imgComp, mngr, this]() {
         if (Game::Instance()->is_network_none()) {
@@ -538,6 +542,7 @@ void MultiplayerMenu::create_play_button(const GameStructs::ButtonProperties& bp
         }
         imgComp->_filter = true;
         imgComp->swap_textures();
+        sdlutils().soundEffects().at("button_hover").play();
     });
 
     buttonComp->connectExit([buttonComp, imgComp]() {
@@ -599,6 +604,8 @@ void MultiplayerMenu::create_host_button(const GameStructs::ButtonProperties& bp
         auto player = Game::Instance()->get_mngr()->getHandler(ecs::hdlr::PLAYER);
         Game::Instance()->add_network_player(0, player);
 
+        _playButton->destination_rect.position.x = 0.55f;
+
     });
 
     buttonComp->connectHover([buttonComp, imgComp]() {
@@ -607,6 +614,7 @@ void MultiplayerMenu::create_host_button(const GameStructs::ButtonProperties& bp
         }
         imgComp->_filter = true;
         imgComp->swap_textures();
+        sdlutils().soundEffects().at("button_hover").play();
     });
 
     buttonComp->connectExit([buttonComp, imgComp]() {
@@ -649,6 +657,7 @@ void MultiplayerMenu::create_copy_ip_button(const GameStructs::ButtonProperties&
     buttonComp->connectHover([buttonComp, imgComp]() {
         imgComp->_filter = true;
         imgComp->swap_textures();
+        sdlutils().soundEffects().at("button_hover").play();
     });
 
     buttonComp->connectExit([buttonComp, imgComp]() {
@@ -726,6 +735,7 @@ void MultiplayerMenu::create_client_button(const GameStructs::ButtonProperties& 
         if (connection & network_context_client_connect_status_connected) {
             std::cout << "message: connected to host. Host public ip: " << ip_buffer
                 << " Host port: " << Game::default_port << std::endl;
+
         } else if (connection & network_context_client_connect_status_error) {
             if (connection & network_context_client_connect_status_invalid) {
                 std::cerr << "warning: invalid connection. Machine with public ip: " << ip_buffer
@@ -767,6 +777,7 @@ void MultiplayerMenu::create_client_button(const GameStructs::ButtonProperties& 
                 connect_msg
             )
         );
+        _playButton->destination_rect.position.x = 0.55f;
     });
 
     buttonComp->connectHover([buttonComp, imgComp]() {
@@ -775,6 +786,7 @@ void MultiplayerMenu::create_client_button(const GameStructs::ButtonProperties& 
         }
         imgComp->_filter = true;
         imgComp->swap_textures();
+        sdlutils().soundEffects().at("button_hover").play();
     });
 
     buttonComp->connectExit([buttonComp, imgComp]() {
@@ -814,6 +826,7 @@ void MultiplayerMenu::create_back_button(const GameStructs::ButtonProperties& bp
     buttonComp->connectHover([buttonComp, imgComp]() {
         imgComp->_filter = true;
         imgComp->swap_textures();
+        sdlutils().soundEffects().at("button_hover").play();
     });
 
     buttonComp->connectExit([buttonComp, imgComp]() {
@@ -855,6 +868,7 @@ void MultiplayerMenu::create_skin_button(const GameStructs::ButtonProperties& bp
 
     buttonComp->connectHover([buttonComp, imgComp]() {
         imgComp->_filter = true;
+        sdlutils().soundEffects().at("button_hover").play();
     });
 
     buttonComp->connectExit([buttonComp, imgComp]() {

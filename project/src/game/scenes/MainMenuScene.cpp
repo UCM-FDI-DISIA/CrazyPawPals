@@ -165,6 +165,7 @@ void MainMenuScene::create_multiplayer_button(const GameStructs::ButtonPropertie
     buttonComp->connectHover([buttonComp, imgComp]() {
         imgComp->_filter = true;
         imgComp->swap_textures();
+        sdlutils().soundEffects().at("button_hover").play();
         });
 
     buttonComp->connectExit([buttonComp, imgComp]() {

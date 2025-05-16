@@ -32,4 +32,5 @@ private:
 	bool input_field_has_focus;
 	bool host_has_pressed_play;
 	ImageForButton* _lastChosenSkin;
+	ImageForButton* _playButton;
 };
