@@ -130,9 +130,10 @@ void WaveManager::spawn_next_group_of_enemies()
     //ONLY ENTERS HERE IF TOKENS LEFT > 0 
     //rest tokens
     uint8_t index = sdlutils().rand().nextInt(0, 3);
+    uint8_t i = 0;
     //tokens can only be -1 at worst at end of the round (cause I know that there will always be at least a 2 cost enemy on the group)
-    while ((tokens_for_this_wave - enemy_spawn_data[_enemy_types_for_current_wave[index]].enemies_group_spawn_cost) < -1) {
-        index = ++index % 3;
+    while ((tokens_for_this_wave - enemy_spawn_data[_enemy_types_for_current_wave[(index+i)%3]].enemies_group_spawn_cost) < -1 && i<3U) {
+        i++;
         //std::cout << (tokens_for_this_wave - enemy_spawn_data[_enemy_types_for_current_wave[index]].enemies_group_spawn_cost) << std::endl;
     }
     tokens_for_this_wave -= enemy_spawn_data[_enemy_types_for_current_wave[index]].enemies_group_spawn_cost;
