@@ -373,8 +373,11 @@ static void multiplayer_menu_client_loop(network_context& ctx) {
                 
                 // we assign it bellow
                 // local_player_slot = own_player_entity;
-                state.connections.local_user_index = payload.connections.local_user_index;
-                state.connections.connected_users = 0;
+                state.connections = network_connections{
+                    .connected_users = 0,
+                    .local_user_index = payload.connections.local_user_index,
+                    .oldest_non_host_index = payload.connections.oldest_non_host_index
+                };
             } else {
                 assert(false && "unreachable: local user index may be uninitialized (set to maximum connections) or set to a value less than the number of connected users");
                 std::exit(EXIT_FAILURE);

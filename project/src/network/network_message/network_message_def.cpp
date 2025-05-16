@@ -89,3 +89,25 @@ network_message_payload_new_connection_sync_request network_message_payload_new_
         network_user_sprite_key_create<network_user_sprite_key_maximum_buffer_size>(sprite_key)
     };
 }
+
+network_payload_skin_selection_request network_message_payload_skin_selection_create(
+    const uint8_t requester_id,
+    const std::string_view sprite_key
+) {
+    static_assert(
+        network_user_sprite_key_maximum_key_length <= std::numeric_limits<uint8_t>::max(),
+        "static error: sprite key length exceeds uint8_t max"
+    );
+    assert(
+        sprite_key.size() <= network_user_sprite_key_maximum_key_length
+        && "error: sprite key size exceeds capacity"
+    );
+    assert(
+        requester_id < network_context_maximum_connections
+        && "error: requester id out of range, it exceeds maximum connections"
+    );
+    return network_payload_skin_selection_request{
+        requester_id,
+        network_user_sprite_key_create<network_user_sprite_key_maximum_buffer_size>(sprite_key)
+    };
+}

@@ -23,6 +23,9 @@ enum network_message_type
     network_message_type_new_connection_sync_request,
     network_message_type_new_connection_sync_response,
 
+    network_message_type_skin_selection_request,
+    network_message_type_skin_selection_response,
+
     // network_message_type_player_connect, // replaced by --> network_message_type_new_connection_sync_request
     network_message_type_player_update,
     // network_message_type_client_id,  // replaced by vvv
@@ -249,6 +252,17 @@ network_message_payload_new_connection_sync_response<MaximumConnections> network
     }
     return payload;
 }
+
+
+struct network_payload_skin_selection_request {
+    uint8_t requester_id;
+    network_user_sprite_key<network_user_sprite_key_maximum_buffer_size> sprite_key;
+};
+using network_payload_skin_selection_response = network_payload_skin_selection_request;
+network_payload_skin_selection_request network_message_payload_skin_selection_create(
+    const uint8_t requester_id,
+    const std::string_view sprite_key
+);
 
 
 //mandar al cliente su id
