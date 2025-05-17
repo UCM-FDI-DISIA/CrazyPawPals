@@ -11,7 +11,8 @@
 #include "../src/our_scripts/components/WaveManager.h"
 #include "../network_state.hpp"
 
-static int const fact_float_int = 1024;
+constexpr int fixed_point_fraction_bits = 12; // 12 bits para la fracción (parte decimal)
+constexpr float fact_float_int = 1 << fixed_point_fraction_bits;
 enum network_message_type
 {
     network_message_type_none = 0,
@@ -271,7 +272,7 @@ struct network_message_player_update
     char sprite_key[32];
     uint32_t anim_key_length;
     char anim_key[32];
-    int16_t pos_n[2];
+    int32_t pos_n[2];
     uint16_t health_n;
     uint16_t is_ghost_n;
 };
@@ -302,8 +303,8 @@ inline network_message_player_update create_player_update_message(const GameStru
     player_connet.anim_key[sizeAnim] = '\0';
 
     // Vector2D pos
-    SDLNet_Write16(player.pos.getX() * fact_float_int, &player_connet.pos_n[0]);
-    SDLNet_Write16(player.pos.getY() * fact_float_int, &player_connet.pos_n[1]);
+    SDLNet_Write32(player.pos.getX() * fact_float_int, &player_connet.pos_n[0]);
+    SDLNet_Write32(player.pos.getY() * fact_float_int, &player_connet.pos_n[1]);
 
     // int health
     SDLNet_Write16(player.health, &player_connet.health_n);
@@ -317,7 +318,7 @@ inline network_message_player_update create_player_update_message(const GameStru
 // Struct de EnemyProperties
 struct network_message_enemy_create
 {
-    int16_t _pos[2];
+    int32_t _pos[2];
     uint16_t _type;
     uint16_t _enemy_id;
 };
@@ -330,8 +331,8 @@ inline network_message_enemy_create create_enemy(GameStructs::DumbEnemyPropertie
     SDLNet_Write16(ep._type, &n_ep._type);
 
     // Vector2D init_pos
-    SDLNet_Write16(ep._pos.getX() * fact_float_int, &n_ep._pos[0]);
-    SDLNet_Write16(ep._pos.getY() * fact_float_int, &n_ep._pos[1]);
+    SDLNet_Write32(ep._pos.getX() * fact_float_int, &n_ep._pos[0]);
+    SDLNet_Write32(ep._pos.getY() * fact_float_int, &n_ep._pos[1]);
 
     return n_ep;
 };
@@ -351,8 +352,8 @@ inline network_message_enemy_update create_update_enemy_message(GameStructs::Dum
     SDLNet_Write16(ep._id, &n_ep._enemy_id);
 
     // Vector2D init_pos
-    SDLNet_Write16(ep._pos.getX() * fact_float_int, &n_ep._pos[0]);
-    SDLNet_Write16(ep._pos.getY() * fact_float_int, &n_ep._pos[1]);
+    SDLNet_Write32(ep._pos.getX() * fact_float_int, &n_ep._pos[0]);
+    SDLNet_Write32(ep._pos.getY() * fact_float_int, &n_ep._pos[1]);
 
     // int health
     SDLNet_Write16(ep._health, &n_ep._health_n);
