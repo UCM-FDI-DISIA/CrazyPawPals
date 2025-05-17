@@ -80,6 +80,13 @@ void WaveManager::erase_all_bullets()
         manager->setAlive(e, false);
 }
 
+void WaveManager::erase_all_popups()
+{
+    auto manager = Game::Instance()->get_mngr();
+    for (auto e : manager->getEntities(ecs::grp::DAMAGE_POPUPS))
+        manager->setAlive(e, false);
+}
+
 //Chooses enemies in _enemy_types_for_current_wave
 void WaveManager::initialize_next_wave_params(bool normal_wave)
 {
@@ -274,12 +281,16 @@ void WaveManager::start_new_wave()
 
     if ((_currentWave + 1) % 5 == 0)
         _spawn_boss();
+
+    erase_all_popups();
 }
 
 void WaveManager::reset_wave_manager()
 {
     _currentWave = -1;
-    _event_pity = 0;
+    _event_pity = 0;        
+    erase_all_bullets();
+    erase_all_enemies();
 }
 
 void WaveManager::endwave()
