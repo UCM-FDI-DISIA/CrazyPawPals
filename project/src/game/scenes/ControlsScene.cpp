@@ -65,7 +65,7 @@ void ControlsScene::create_mainmenu_button(const GameStructs::ButtonProperties& 
     buttonComp->connectClick([buttonComp, &mngr]() {
         
 
-        Game::Instance()->change_Scene(Game::MAINMENU);
+        Game::Instance()->queue_scene(Game::MAINMENU);
         });
 
     buttonComp->connectHover([buttonComp]() {

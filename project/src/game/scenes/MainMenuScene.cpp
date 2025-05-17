@@ -89,7 +89,7 @@ MainMenuScene::create_start_button(const GameStructs::ButtonProperties& bp) {
     buttonComp->connectClick([buttonComp, imgComp, mngr]() {
         imgComp->_filter = false;
         imgComp->swap_textures();
-        Game::Instance()->change_Scene(Game::SELECTIONMENU);
+        Game::Instance()->queue_scene(Game::SELECTIONMENU);
     });
 
     buttonComp->connectHover([buttonComp, imgComp]() {
@@ -123,7 +123,7 @@ MainMenuScene::create_controls_button(const GameStructs::ButtonProperties& bp)
         imgComp->_filter = false;
         imgComp->swap_textures();
         imgComp->_filter = false;
-        Game::Instance()->change_Scene(Game::TUTORIAL);
+        Game::Instance()->queue_scene(Game::TUTORIAL);
     });
 
     buttonComp->connectHover([buttonComp, imgComp]() {

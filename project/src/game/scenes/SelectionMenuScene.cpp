@@ -412,7 +412,7 @@ void SelectionMenuScene::create_enter_button() {
     buttonComp->connectClick([buttonComp, mngr, imgComp,this]() {
         if (_weapon_selected && _deck_selected) {
             imgComp->_filter = false;
-            Game::Instance()->change_Scene(Game::GAMESCENE);
+            Game::Instance()->queue_scene(Game::GAMESCENE);
             imgComp->destination_rect.position.x = 10.0f;
         }
     }); 

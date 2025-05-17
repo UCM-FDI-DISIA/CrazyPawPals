@@ -135,7 +135,8 @@ void Game::initGame()
 	_mngr->setHandler(ecs::hdlr::PLAYER, player);
 
 	//iniciar el juego en el mainmenu
-	change_Scene(MAINMENU);
+	queue_scene(MAINMENU);
+	update_scene();
 	set_volumes();
 }
 
@@ -168,6 +169,7 @@ void Game::start() {
 		}
 		_scenes[_current_scene_index]->update(delta_time_milliseconds);
 
+		if ( _next_scene_index != -1) update_scene();
 		_mngr->refresh();
 
 		sdlutils().clearRenderer();
@@ -201,16 +203,12 @@ std::pair<int, int> Game::get_world_half_size() const
 	return std::pair<int, int>(15,8);
 }
 
-void Game::change_Scene(State nextScene){
-	if (nextScene < 0 || nextScene >= NUM_SCENE) {
-		std::cerr << "Error: Invalid scene index" << std::endl;
-		return;
-	}
+void Game::update_scene(){
 
 	//Inicializa cuando entra por primera vez a una escena
-	if (!_scene_inits[nextScene] && _scenes[nextScene] != nullptr) {
-		_scenes[nextScene]->initScene();
-		_scene_inits[nextScene] = true;
+	if (!_scene_inits[_next_scene_index] && _scenes[_next_scene_index] != nullptr) {
+		_scenes[_next_scene_index]->initScene();
+		_scene_inits[_next_scene_index] = true;
 		_mngr->refresh();
 	}
 
@@ -218,8 +216,18 @@ void Game::change_Scene(State nextScene){
 		_scenes[_current_scene_index]->exitScene();
 	}
 
-	_current_scene_index = nextScene;
+	_current_scene_index = _next_scene_index;
 	_scenes[_current_scene_index]->enterScene();
+	_next_scene_index = -1;
+}
+void Game::queue_scene(State nextScene)
+{
+	if (nextScene < 0 || nextScene >= NUM_SCENE) {
+		std::cerr << "Error: Invalid scene index" << std::endl;
+		return;
+	}
+
+	_next_scene_index = nextScene;
 }
 void Game::set_volumes() {
 	sdlutils().soundEffects().at("button_hover").setVolume(20);
