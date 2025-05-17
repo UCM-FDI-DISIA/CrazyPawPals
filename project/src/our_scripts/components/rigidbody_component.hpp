@@ -113,7 +113,6 @@ struct on_collision : public ecs::Component {
     void update(uint32_t delta_time) override {
         (void)delta_time;
         static_assert((collision_manifolds_capacity & (collision_manifolds_capacity - 1)) == 0);
-        manifolds->count = 0;
         for (ptrdiff_t i = ((ptrdiff_t)manifolds->count - 1) & (manifolds->manifolds.size() - 1); i >= 0; --i) {
             auto& my_manifold = manifolds->manifolds[i];
             if (my_manifold.collision_tick != last_collision_tick[i]) {
@@ -121,6 +120,7 @@ struct on_collision : public ecs::Component {
                 last_collision_tick[i] = my_manifold.collision_tick;
             }
         }
+        manifolds->count = 0;
     }
 };
 
@@ -139,14 +139,14 @@ struct on_trigger : public ecs::Component {
     void update(uint32_t delta_time) override {
         (void)delta_time;
         static_assert((collision_manifolds_capacity & (collision_manifolds_capacity - 1)) == 0);
-        manifolds->count = 0; // manifolds no existe si el player ha muerto, da excepción
         for (ptrdiff_t i = ((ptrdiff_t)manifolds->count - 1) & (manifolds->manifolds.size() - 1); i >= 0; --i) {
             auto& my_manifold = manifolds->manifolds[i];
             if (my_manifold.collision_tick != last_collision_tick[i]) {
-                static_cast<OnTriggerComponent*>(this)->on_contact(my_manifold); // Muere el player, los componentes no vivos se borran al cambiar de escena
+                static_cast<OnTriggerComponent*>(this)->on_contact(my_manifold);
                 last_collision_tick[i] = my_manifold.collision_tick;
             }
         }
+        manifolds->count = 0;
     }
 };
 

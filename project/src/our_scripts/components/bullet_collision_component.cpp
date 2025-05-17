@@ -22,10 +22,11 @@ void bullet_collision_component::on_contact(const collision_manifold& tm)
     if (check_if_valid_collision(entity_collided_with)) {
         auto &&manager = *Game::Instance()->get_mngr();
         if (manager.hasComponent<Health>(entity_collided_with)) {
-            Game::Instance()->get_mngr()->setAlive(_ent, pierce_number-- > 0);
             apply_weapon_effect(type, entity_collided_with);
             auto health = manager.getComponent<Health>(entity_collided_with);
             health->takeDamage(my_damage);
+
+            Game::Instance()->get_mngr()->setAlive(_ent, pierce_number-- > 0);
         }
     }
 }
