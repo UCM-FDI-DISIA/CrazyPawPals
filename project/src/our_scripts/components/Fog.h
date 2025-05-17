@@ -32,4 +32,5 @@ private:
 	float orSize;
 	int orW;
 	int orH;
+	float orY;
 };
