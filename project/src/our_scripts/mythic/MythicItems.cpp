@@ -227,8 +227,10 @@ void ZoomiesInducer::update(uint32_t dt) {
 	if (_timer + _last_time <= sdlutils().virtualTimer().currTime()) {
 		//std::cout << "ZoomiesInducer" << std::endl;
 		_last_time = sdlutils().virtualTimer().currTime();
-		Vector2D nextPos = _tr->getPos() + _tr->getDir().normalize() * _distance;
-		_mc->dash(nextPos, _duration);
+		if (_tr->getDir().magnitude() > 0.05f) {
+			Vector2D nextPos = _tr->getPos() + _tr->getDir().normalize() * _distance;
+			_mc->dash(nextPos, _duration);
+		}
 	}
 }
 #pragma endregion
