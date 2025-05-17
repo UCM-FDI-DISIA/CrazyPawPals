@@ -21,6 +21,7 @@ network_message_header network_message_header_receive(TCPsocket socket) {
     );
     
     if (recv_result == network_utility_sdl_net_failure) {
+        std::cerr << "error: SDLNet_TCP_Recv failed: " << SDLNet_GetError() << std::endl;
         assert(false && "fatal error: SDLNet_TCP_Recv failed");
         std::exit(EXIT_FAILURE);
     } else if (recv_result == network_utility_sdl_net_connection_closed_bytes) {

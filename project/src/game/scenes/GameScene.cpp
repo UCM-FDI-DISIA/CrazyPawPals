@@ -1489,6 +1489,15 @@ void GameScene::host_handle_menssage(network_context &ctx)
 {
 	if (SDLNet_CheckSockets(ctx.profile.host.clients_host_set, 0) > 0)
 	{
+		if (SDLNet_SocketReady(ctx.profile.host.host_socket)) {
+			network_message_dynamic_pack dyn_message = network_message_dynamic_pack_receive(ctx.profile.host.host_socket);
+			const uint16_t type_n{dyn_message->header.type_n};
+			const uint16_t type_h{SDLNet_Read16(&type_n)};
+			std::cout << "message: received message to host socket of type: " << type_h << std::endl;
+			assert(false && "error: host socket should not receive messages in this scene");
+			std::exit(EXIT_FAILURE);
+		}
+
 		for (network_connection_size i = 0; i < ctx.profile.host.sockets_to_clients.connection_count; ++i)
 		{
 			TCPsocket &connection = ctx.profile.host.sockets_to_clients.connections[i];

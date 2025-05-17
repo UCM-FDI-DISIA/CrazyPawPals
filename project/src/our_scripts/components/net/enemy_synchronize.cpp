@@ -24,7 +24,7 @@ void EnemySynchronize::initComponent()
 	assert(_ht != nullptr);
 	auto id_comp = mngr->getComponent<id_component>(_ent);
 	_enemy_id = id_comp->getId();
-	std::cout << "Enemy ID en syncronize: " << (int)_enemy_id << std::endl;
+	// std::cout << "Enemy ID en syncronize: " << (int)_enemy_id << std::endl;
 
 	_dy = Game::Instance()->get_mngr()->getComponent<dyn_image>(_ent);
 	assert(_dy != nullptr);
@@ -45,7 +45,7 @@ void EnemySynchronize::send_enemy_update()
 
 	GameStructs::DumbEnemyProperties enemyData;
 	enemyData._id = _enemy_id;
-	std::cout << "Enemy ID en syncronize: " << (int)enemyData._id << std::endl;
+	// std::cout << "Enemy ID en syncronize: " << (int)enemyData._id << std::endl;
 
 	enemyData._pos = _tr->getPos();
 	enemyData._health = _ht->getHealth();
@@ -63,7 +63,7 @@ void EnemySynchronize::update_enemy(GameStructs::DumbEnemyProperties &data)
 	auto id_comp = mngr->getComponent<id_component>(_ent);
 
 	_enemy_id = id_comp->getId();
-	std::cout << "Enemy ID en syncronize: " << (int)_enemy_id << std::endl;
+	// std::cout << "Enemy ID en syncronize: " << (int)_enemy_id << std::endl;
 
 	Vector2D _last_pos = _tr->getPos();
 	_tr->setPos(data._pos);
