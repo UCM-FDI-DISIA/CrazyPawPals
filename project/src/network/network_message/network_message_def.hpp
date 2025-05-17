@@ -8,7 +8,7 @@
 #include <string_view>
 #include "../../utils/Vector2D.h"
 #include "../../game/GameStructs.h"
-#include "../src/our_scripts/components/WaveManager.h"
+//#include "../src/our_scripts/components/WaveManager.h"
 #include "../network_state.hpp"
 
 static int const fact_float_int = 1024;
@@ -34,6 +34,8 @@ enum network_message_type
     network_message_type_host_has_pressed_play,
     network_message_type_player_ready,
     network_message_type_start_game,
+    network_message_type_start_wave,
+    network_message_type_end_wave,
 };
 using network_message_type_option = uint16_t;
 using network_message_header_size = uint16_t;
@@ -113,9 +115,9 @@ network_message_payload_dbg_print<ArgumentsSize> network_message_payload_dbg_pri
     return msg;
 }
 struct NetworkNewWave {
-    events event_type;
+    uint16_t event_type;
 };
-NetworkNewWave network_message_wave_event_create(events event_type);
+NetworkNewWave network_message_wave_event_create(uint16_t event_type);
 
 // Struct de BulletProperties que se envia por la red
 struct NetworkBulletProperties
@@ -392,6 +394,23 @@ inline network_message_enemy_update create_update_enemy_message(GameStructs::Dum
     SDLNet_Write16(ep._health, &n_ep._health_n);
 
     return n_ep;
+};
+
+
+struct network_message_start_wave {
+    uint16_t wave_event;
+};
+inline network_message_start_wave create_start_wave_message(uint16_t wave_event) {
+    network_message_start_wave n_sw;
+    SDLNet_Write16(wave_event, &n_sw.wave_event);
+    return n_sw;
+};
+
+struct network_message_end_wave {
+};
+inline network_message_end_wave create_end_wave_message() {
+    network_message_end_wave ew;
+    return ew;
 };
 
 #endif

@@ -182,23 +182,25 @@ void WaveManager::spawn_next_group_of_enemies()
             break;
         }
     }
-    if (Game::Instance()->is_host() && Game::Instance()->get_network_state().connections.connected_users > 1) {
-        for (uint8_t i = 0; i < enemy_spawn_data[_enemy_types_for_current_wave[index]].number_of_enemies_simultaneous_spawn; ++i) {
-            GameStructs::DumbEnemyProperties dep;
-            auto aux = esc->spawn_callback();//returns initial pos Vector2D
-        
-            dep._type = (enemyType)_enemy_types_for_current_wave[index]; //enemy ID
-            dep._id = aux.second;
-            dep._pos = aux.first;
-            network_context& network = Game::Instance()->get_network();
-            //mandar a todos los clientes el mensaje de que el host a dado al boton de play
-            for (network_connection_size i = 0; i < network.profile.host.sockets_to_clients.connection_count; ++i) {
-                TCPsocket& client = network.profile.host.sockets_to_clients.connections[i];
-                network_message_pack_send(
-                    client,
-                    network_message_pack_create(network_message_type_create_enemy, create_enemy(dep))
-                );
-	        std::cout << "Creando enemigo en el client: " << (int)i << " de tipo: "<< (enemyType)dep._type << std::endl;
+    if(Game::Instance()->is_host()) {
+        if (Game::Instance()->get_network_state().connections.connected_users > 1) {
+            for (uint8_t i = 0; i < enemy_spawn_data[_enemy_types_for_current_wave[index]].number_of_enemies_simultaneous_spawn; ++i) {
+                GameStructs::DumbEnemyProperties dep;
+                auto aux = esc->spawn_callback();//returns initial pos Vector2D
+
+                dep._type = (enemyType)_enemy_types_for_current_wave[index]; //enemy ID
+                dep._id = aux.second;
+                dep._pos = aux.first;
+                network_context& network = Game::Instance()->get_network();
+                //mandar a todos los clientes el mensaje de que el host a dado al boton de play
+                for (network_connection_size i = 0; i < network.profile.host.sockets_to_clients.connection_count; ++i) {
+                    TCPsocket& client = network.profile.host.sockets_to_clients.connections[i];
+                    network_message_pack_send(
+                        client,
+                        network_message_pack_create(network_message_type_create_enemy, create_enemy(dep))
+                    );
+                    std::cout << "Creando enemigo en el client: " << (int)i << " de tipo: " << (enemyType)dep._type << std::endl;
+                }
             }
         }
     }
@@ -290,6 +292,14 @@ void WaveManager::start_new_wave()
         _spawn_boss();
 
     //START WAVE MESSAGE
+    network_context& network = Game::Instance()->get_network();
+    for (network_connection_size i = 0; i < network.profile.host.sockets_to_clients.connection_count; ++i) {
+        TCPsocket& client = network.profile.host.sockets_to_clients.connections[i];
+        network_message_pack_send(
+            client,
+            network_message_pack_create(network_message_type_start_wave, create_start_wave_message(get_current_event()))
+        );
+    }
 }
 
 void WaveManager::reset_wave_manager()
@@ -346,6 +356,14 @@ void WaveManager::endwave()
         erase_all_enemies();
 
         //SEND END WAVE MESSAGE
+        network_context& network = Game::Instance()->get_network();
+        for (network_connection_size i = 0; i < network.profile.host.sockets_to_clients.connection_count; ++i) {
+            TCPsocket& client = network.profile.host.sockets_to_clients.connections[i];
+            network_message_pack_send(
+                client,
+                network_message_pack_create(network_message_type_end_wave, create_end_wave_message())
+            );
+        }
     }
 }
 

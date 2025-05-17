@@ -1629,10 +1629,22 @@ void GameScene::client_handle_menssage(network_context &ctx)
 				Game::Instance()->get_mngr()->getComponent<EnemySynchronize>(enemy)->update_enemy(_enemy_properties);
 			break;
 		}
-		default:
+		case network_message_type_start_wave:
 		{
+			auto message = network_message_dynamic_pack_into<network_message_start_wave>(std::move(dyn_message));
+			auto&& payload = message->payload.content;
+			dynamic_cast<DumbWaveManager*>(Game::Instance()->get_wave_manager())->start_wave(SDLNet_Read16(&payload.wave_event));
 			break;
 		}
+		case network_message_type_end_wave:
+		{
+			auto message = network_message_dynamic_pack_into<network_message_end_wave>(std::move(dyn_message));
+			auto&& payload = message->payload.content;
+			dynamic_cast<DumbWaveManager*>(Game::Instance()->get_wave_manager())->end_wave();
+			break;
+		}
+		default:
+			break;
 		}
 	}
 }

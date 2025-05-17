@@ -4,11 +4,14 @@
 #include "../wave_events/no_event.hpp"
 #include "../wave_events/ice_skating_event.hpp"
 #include "../wave_events/star_shower_event.hpp"
+#include "WaveManager.h"
 DumbWaveManager::DumbWaveManager() {
     _current_wave_event = std::make_unique<no_event>();
 }
-void DumbWaveManager::start_wave()
+void DumbWaveManager::start_wave(uint16_t ev)
 {
+    choose_new_event(events(ev));
+
     _currentWaveInitTime = sdlutils().virtualTimer().currRealTime();
     _current_wave_event->start_wave_callback();
     _currentWaveTime = 0;
@@ -36,6 +39,7 @@ void DumbWaveManager::update(uint32_t dt) {
 }
 void DumbWaveManager::choose_new_event(events new_event)
 {
+    _current_event = new_event;
     switch (new_event) {
     case NONE:
         _current_wave_event = (std::unique_ptr<wave_event>)new no_event();

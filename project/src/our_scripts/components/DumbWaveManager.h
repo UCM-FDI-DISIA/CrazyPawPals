@@ -20,7 +20,7 @@ public:
 	DumbWaveManager();
 	__CMPID_DECL__(ecs::cmp::DUMB_WAVE_MANAGER)
 	//void initComponent() override;
-	void start_wave();
+	void start_wave(uint16_t);
 	void end_wave();
 	void update(uint32_t dt) override;
 	events get_current_event() override { return _current_event; }
