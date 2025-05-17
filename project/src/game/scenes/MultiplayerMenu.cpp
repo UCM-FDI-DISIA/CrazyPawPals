@@ -1018,14 +1018,13 @@ void MultiplayerMenu::create_skin_button(const GameStructs::ButtonProperties& bp
 
         GameScene::change_player_tex(captured_texture_name);
         //TODO
-        std::cout << "You choosed your skin.";
+        std::cout << "You choosed your skin." << std::endl;
         //Sends it to players
         // TODO: send message probably to all players
         Game &game = *Game::Instance();
         network_context &network = game.get_network();
-        Game::network_users_state &state = game.get_network_state();
         if (game.is_host()) {
-            state.game_state.users_sprite_keys.at(game.client_id()) = std::string{captured_texture_name};
+            game.get_network_state().game_state.users_sprite_keys.at(game.client_id()) = std::string{captured_texture_name};
             const network_payload_skin_selection_response payload{
                 network_payload_skin_selection_create(
                     game.client_id(),
@@ -1044,7 +1043,7 @@ void MultiplayerMenu::create_skin_button(const GameStructs::ButtonProperties& bp
                 );
             }
         } else if (game.is_client()) {
-            state.game_state.users_sprite_keys.at(game.client_id()) = std::string{captured_texture_name};
+            game.get_network_state().game_state.users_sprite_keys.at(game.client_id()) = std::string{captured_texture_name};
             const network_payload_skin_selection_request payload{
                 network_payload_skin_selection_create(
                     game.client_id(),
