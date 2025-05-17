@@ -65,7 +65,7 @@ void VictoryScene::create_enter_button() {
 
     buttonComp->connectClick([buttonComp, imgComp, mngr, this]() {
         imgComp->_filter = false;
-        Game::Instance()->change_Scene(Game::MAINMENU);
+        Game::Instance()->queue_scene(Game::MAINMENU);
         });
     buttonComp->connectHover([buttonComp, imgComp, this]() { imgComp->_filter = true;});
     buttonComp->connectExit([buttonComp, imgComp, this]() { imgComp->_filter = false;});

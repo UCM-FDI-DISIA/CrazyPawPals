@@ -1498,7 +1498,7 @@ void GameScene::event_callback1(const event_system::event_receiver::Msg &m)
 	{
 		// sino se resetea al jugador y pasa al gameOver
 		reset_player();
-		Game::Instance()->change_Scene(Game::GAMEOVER);
+		Game::Instance()->queue_scene(Game::GAMEOVER);
 	}
 }
 

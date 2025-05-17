@@ -81,6 +81,13 @@ void WaveManager::erase_all_bullets()
         manager->setAlive(e, false);
 }
 
+void WaveManager::erase_all_popups()
+{
+    auto manager = Game::Instance()->get_mngr();
+    for (auto e : manager->getEntities(ecs::grp::DAMAGE_POPUPS))
+        manager->setAlive(e, false);
+}
+
 //Chooses enemies in _enemy_types_for_current_wave
 void WaveManager::initialize_next_wave_params(bool normal_wave)
 {
@@ -131,9 +138,10 @@ void WaveManager::spawn_next_group_of_enemies()
     //ONLY ENTERS HERE IF TOKENS LEFT > 0 
     //rest tokens
     uint8_t index = sdlutils().rand().nextInt(0, 3);
+    uint8_t i = 0;
     //tokens can only be -1 at worst at end of the round (cause I know that there will always be at least a 2 cost enemy on the group)
-    while ((tokens_for_this_wave - enemy_spawn_data[_enemy_types_for_current_wave[index]].enemies_group_spawn_cost) < -1) {
-        index = ++index % 3;
+    while ((tokens_for_this_wave - enemy_spawn_data[_enemy_types_for_current_wave[(index+i)%3]].enemies_group_spawn_cost) < -1 && i<3U) {
+        i++;
         //std::cout << (tokens_for_this_wave - enemy_spawn_data[_enemy_types_for_current_wave[index]].enemies_group_spawn_cost) << std::endl;
     }
     tokens_for_this_wave -= enemy_spawn_data[_enemy_types_for_current_wave[index]].enemies_group_spawn_cost;
@@ -257,7 +265,7 @@ WaveManager::activateFog() {
 
 void 
 WaveManager::enterRewardsMenu() {
-    Game::Instance()->change_Scene(Game::REWARDSCENE);
+    Game::Instance()->queue_scene(Game::REWARDSCENE);
 }
 
 void WaveManager::start_new_wave()
@@ -289,13 +297,15 @@ void WaveManager::start_new_wave()
     if ((_currentWave + 1) % 5 == 0)
         _spawn_boss();
 
-    //START WAVE MESSAGE
+    erase_all_popups();
 }
 
 void WaveManager::reset_wave_manager()
 {
     _currentWave = -1;
-    _event_pity = 0;
+    _event_pity = 0;        
+    erase_all_bullets();
+    erase_all_enemies();
 }
 
 void WaveManager::endwave()
@@ -334,7 +344,7 @@ void WaveManager::endwave()
 
 #endif
     if (_currentWave == 9) {
-        Game::Instance()->change_Scene(Game::State::VICTORY);
+        Game::Instance()->queue_scene(Game::State::VICTORY);
     }
     else {
         fog->setFog(false);

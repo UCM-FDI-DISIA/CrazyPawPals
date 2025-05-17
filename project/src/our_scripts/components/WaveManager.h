@@ -64,6 +64,7 @@ private:
     bool is_wave_finished();
     void erase_all_enemies();
     void erase_all_bullets();
+    void erase_all_popups();
     void select_event();
 
     uint32_t change_to_rewards_time;

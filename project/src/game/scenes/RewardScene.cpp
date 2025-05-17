@@ -736,8 +736,8 @@ void RewardScene::create_next_round_button(const GameStructs::ButtonProperties& 
 
     buttonComp->connectClick([buttonComp, mngr, imgComp, this]() { if (_selected) {
         _lr->swap_textures();
-        if (!_mythic) Game::Instance()->change_Scene(Game::GAMESCENE);
-        else Game::Instance()->change_Scene(Game::MYTHICSCENE);
+        if (!_mythic) Game::Instance()->queue_scene(Game::GAMESCENE);
+        else Game::Instance()->queue_scene(Game::MYTHICSCENE);
         imgComp->swap_textures();
         imgComp->_filter = false;
         imgComp->destination_rect.position.x = 2.0f;
