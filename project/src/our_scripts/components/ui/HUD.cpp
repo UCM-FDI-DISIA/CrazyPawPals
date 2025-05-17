@@ -3,6 +3,9 @@
 #include "game/Game.h"
 #include "ecs/Manager.h"
 #include "../../../sdlutils/SDLUtils.h"
+#include "../../components/WaveManagerFacade.h"
+#include "../../components/WaveManager.h"
+#include "../../components/DumbWaveManager.h"
 
 HUD::HUD():_camera(nullptr),_wm(nullptr)
 {
@@ -17,7 +20,7 @@ HUD::~HUD()
 
 void HUD::initComponent()
 {
-	_wm = Game::Instance()->get_mngr()->getComponent<WaveManager>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::WAVE));
+	_wm = Game::Instance()->get_wave_manager();
 	_camera = Game::Instance()->get_mngr()->getComponent<camera_component>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA));
 }
 

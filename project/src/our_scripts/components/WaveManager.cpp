@@ -10,10 +10,10 @@
 #include "../wave_events/no_event.hpp"
 #include "../wave_events/ice_skating_event.hpp"
 #include "../wave_events/star_shower_event.hpp"
-#include "../log_writer_to_csv.hpp"
 #include "../../network/network_message.hpp"
 
 #ifdef GENERATE_LOG
+#include "../log_writer_to_csv.hpp"
 #include "Health.h"
 #include "cards/Mana.h"
 #include "cards/Deck.hpp"
@@ -30,7 +30,7 @@ WaveManager::WaveManager() :
     _enemiesSpawned(0),
     _enemiesKilled(0),
     _numEnemies(0),
-    _current_wave_event(new no_event(this)),
+    _current_wave_event(new no_event()),
     _event_pity(0)
 {
     event_system::event_manager::Instance()->suscribe_to_event(event_system::enemy_dead, this, &event_system::event_receiver::event_callback0);
@@ -86,7 +86,7 @@ void WaveManager::initialize_next_wave_params(bool normal_wave)
 {
 	tokens_for_this_wave = (_currentWave * spawn_tokens_gained_per_wave) * (nPlayers == 1 ? 1 : nPlayers / 1.3f) + spawn_tokens_at_wave_0;
 
-    uint8_t cheaper_enemy{(std::numeric_limits<uint8_t>::max)()};
+    float cheaper_enemy{(std::numeric_limits<uint8_t>::max)()};
     for (uint8_t i = 0; i < 3; ++i) {
         uint8_t j = 0;
         do {
@@ -99,9 +99,9 @@ void WaveManager::initialize_next_wave_params(bool normal_wave)
             ++j < i && //This is false for (i==1)
             _enemy_types_for_current_wave[j] != _enemy_types_for_current_wave[i]  //This is false if enemy chosen for index 2 is alredy taken in index 1
         );
-        cheaper_enemy = std::min(cheaper_enemy,enemy_spawn_data[_enemy_types_for_current_wave[i]].enemies_group_spawn_cost);
+        cheaper_enemy = std::min(cheaper_enemy,(float)enemy_spawn_data[_enemy_types_for_current_wave[i]].enemies_group_spawn_cost);
     }
-    time_max_between_enemy_spawns_on_this_wave = std::min(max_spawn_wave_time / (tokens_for_this_wave / cheaper_enemy),5000);
+    time_max_between_enemy_spawns_on_this_wave = std::min(max_spawn_wave_time / (tokens_for_this_wave / cheaper_enemy),5000.0f);
     _next_spawn_time = sdlutils().virtualTimer().currTime();// +time_max_between_enemy_spawns_on_this_wave;
     //Si no es normal wave spawnea tb un bos
 }
@@ -288,6 +288,8 @@ void WaveManager::start_new_wave()
 
     if ((_currentWave + 1) % 5 == 0)
         _spawn_boss();
+
+    //START WAVE MESSAGE
 }
 
 void WaveManager::reset_wave_manager()
@@ -342,9 +344,9 @@ void WaveManager::endwave()
         _all_enemies_already_spawned = false;
         erase_all_bullets();
         erase_all_enemies();
-        //enterRewardsMenu();
-    }
 
+        //SEND END WAVE MESSAGE
+    }
 }
 
 void WaveManager::event_callback0(const Msg& m)
@@ -356,8 +358,13 @@ void WaveManager::event_callback0(const Msg& m)
 void WaveManager::event_callback1(const Msg& m)
 {
     _current_wave_event->end_wave_callback();
-    _current_wave_event = std::make_unique<no_event>(this);
+    _current_wave_event = std::make_unique<no_event>();
     fog->setFog(false);
+}
+
+void WaveManager::newEnemy()
+{
+    if (!Game::Instance()->is_client()) { _numEnemies++; _enemiesSpawned++; }
 }
 
 void WaveManager::select_event()
@@ -388,10 +395,10 @@ void WaveManager::choose_new_event()
 
     switch(_current_event) {
     case NONE:
-        _current_wave_event = (std::unique_ptr<wave_event>)new no_event(this);
+        _current_wave_event = (std::unique_ptr<wave_event>)new no_event();
         break;
     case ICE_SKATE:
-        _current_wave_event = (std::unique_ptr<wave_event>)new ice_skating_event(this);
+        _current_wave_event = (std::unique_ptr<wave_event>)new ice_skating_event();
         break;
     case STAR_SHOWER: {
         constexpr static const rect_f32 event_area = {
@@ -401,7 +408,6 @@ void WaveManager::choose_new_event()
         constexpr static const size_t min_drops_inclusive = 5;
         constexpr static const size_t max_drops_exclusive = 23;
         _current_wave_event = std::make_unique<star_shower_event>(
-            *this,
             event_area,
             star_drop_descriptor{
                 .drop_position = { 0.0f, 0.0f },

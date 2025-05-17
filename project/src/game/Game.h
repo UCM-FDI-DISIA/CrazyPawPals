@@ -12,6 +12,7 @@ namespace ecs {
 class Manager;
 }
 class Scene;
+class WaveManagerFacade;
 class Game: public Singleton<Game>  {
 public:
 	enum State {
@@ -35,6 +36,7 @@ public:
 	void start();
 
 	ecs::Manager* get_mngr();
+	WaveManagerFacade*& get_wave_manager();
 	event_system::event_manager* get_event_mngr();
 	
 	Scene* get_currentScene();
@@ -48,6 +50,7 @@ public:
 
 
 private:
+	WaveManagerFacade* wave_manager;
 	int _current_scene_index = -1;
 	std::vector<Scene*> _scenes;
 	std::vector<bool> _scene_inits;

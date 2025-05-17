@@ -229,7 +229,7 @@ void GameScene::enterScene()
 void GameScene::exitScene()
 {
 	auto &&manager = *Game::Instance()->get_mngr();
-	manager.getComponent<WaveManager>(manager.getHandler(ecs::hdlr::WAVE))->reset_wave_time();
+	Game::Instance()->get_wave_manager()->reset_wave_time();
 #ifdef GENERATE_LOG
 	log_writer_to_csv::Instance()->add_new_log("EXIT GAME SCENE");
 	log_writer_to_csv::Instance()->add_new_log();
@@ -1382,18 +1382,23 @@ void GameScene::spawn_wave_manager()
 {
 	ecs::entity_t ent;
 	if (Game::Instance()->is_host() || Game::Instance()->is_network_none()) {
+		auto wmf = new WaveManager();
 		ent = create_entity(
 			ecs::grp::DEFAULT,
 			ecs::scene::GAMESCENE,
-			new WaveManager());
+			wmf);
+		Game::Instance()->get_wave_manager() = wmf;
 	}
 	else {
+		auto wmf = new DumbWaveManager();
 		ent = create_entity(
 			ecs::grp::DEFAULT,
 			ecs::scene::GAMESCENE,
-			new DumbWaveManager());
+			wmf);
+		Game::Instance()->get_wave_manager() = wmf;
 	}
 	Game::Instance()->get_mngr()->setHandler(ecs::hdlr::WAVE, ent);
+
 }
 void GameScene::spawn_fog()
 {

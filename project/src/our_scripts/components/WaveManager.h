@@ -7,6 +7,7 @@
 #include "../wave_events/wave_event.hpp"
 #include "rendering/transformless_dyn_image.h"
 #include "../../utils/EventsSystem.hpp"
+#include "WaveManagerFacade.h"
 
 enum events {
     NONE = -1, // 0xffffffffff
@@ -53,7 +54,7 @@ constexpr int max_spawn_wave_time = 40 * 1000; //30 sec
 constexpr int spawn_tokens_gained_per_wave = 3; 
 constexpr int spawn_tokens_at_wave_0 = 3;
 
-class WaveManager : public event_system::event_receiver, public ecs::Component {
+class WaveManager : public event_system::event_receiver, public WaveManagerFacade, public ecs::Component {
 private:
     void choose_new_event();
     void endwave();
@@ -114,14 +115,14 @@ public:
     void start_new_wave();
     void reset_wave_manager();
 
-    inline Uint32 get_wave_time() { return _currentWaveTime; }
-    inline void reset_wave_time() { _currentWaveTime = 0; }
-    inline int get_current_wave() { return _currentWave; }
-    inline events get_current_event() { return _current_event; }
-    inline bool wave_completed() { return !_wave_active; }
+    Uint32 get_wave_time() override { return _currentWaveTime; }
+    void reset_wave_time() override { _currentWaveTime = 0; }
+    int get_current_wave() override { return _currentWave; }
+    events get_current_event() override { return _current_event; }
+    bool wave_completed() override { return !_wave_active; }
     void event_callback0(const Msg& m) override;
     void event_callback1(const Msg& m) override;
-    void newEnemy() { _numEnemies++; _enemiesSpawned++; };
+    void newEnemy();
 #ifdef GENERATE_LOG
     static inline uint32_t get_ticks_on_wave() {
         return _ticks_on_wave;

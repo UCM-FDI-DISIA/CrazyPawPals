@@ -24,6 +24,7 @@
 #include "scenes/MythicScene.h"
 #include <cassert>
 #include <cstdlib>
+#include "our_scripts/components/WaveManagerFacade.h"
 
 #include "../network/network_message.hpp"
 
@@ -342,6 +343,12 @@ void Game::start() {
 
 ecs::Manager* Game::get_mngr() {
 	return _mngr;
+}
+
+WaveManagerFacade*& Game::get_wave_manager()
+{
+	assert(wave_manager);
+	return wave_manager;
 }
 
 event_system::event_manager* Game::get_event_mngr()
