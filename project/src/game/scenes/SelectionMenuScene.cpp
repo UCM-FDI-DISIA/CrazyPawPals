@@ -156,10 +156,10 @@ void SelectionMenuScene::enterScene()
     log_writer_to_csv::Instance()->add_new_log("ENTERED SELECTION MENU SCENE");
 #endif
     reset();
-    _is_ready = false;
     if (Game::Instance()->is_host()) {
-        std::size_t numPlayers = Game::Instance()->get_network_state().connections.connected_users;
-        _player_ready = std::vector<bool>(numPlayers, false);
+        Game::network_users_state& state = Game::Instance()->get_network_state();
+        state.game_state.ready_users.reset();
+        state.game_state.ready_user_count = 0;
     }
 }
 
@@ -437,18 +437,20 @@ void SelectionMenuScene::create_enter_button() {
         if (_weapon_selected && _deck_selected) {
             if (!Game::Instance()->is_network_none()) {
                 network_context& network = Game::Instance()->get_network();
+                Game::network_users_state& state = Game::Instance()->get_network_state();
+                uint32_t id = state.connections.local_user_index;
                 if (Game::Instance()->is_host()) {
-                    _is_ready = true;
-                    _player_ready[0] = true;
+                    state.game_state.ready_users.set(0, true);
+                    state.game_state.ready_user_count++;
                     checkAllPlayersReady();
                 }
-                else if(!_is_ready){
-                    _is_ready = true;
+                else if(!state.game_state.ready_users.test(id)){
+                    state.game_state.ready_users.set(id, true);
                     uint32_t id = Game::Instance()->client_id();
                     network_message_pack_send(
                         network.profile.client.socket_to_host,
                         network_message_pack_create(network_message_type_player_ready,
-                            create_player_ready_message(id,true))
+                            create_player_id_message(id))
                     );
                 }
                 show_message("Esperando a los otros michis...", 5 * 1000);
@@ -496,11 +498,14 @@ void SelectionMenuScene::update(uint32_t delta_time) {
                         const uint16_t type_h{ SDLNet_Read16(&type_n) };
                         switch (type_h) {
                         case network_message_type_player_ready: {
-                            auto message = network_message_dynamic_pack_into<network_message_player_ready>(std::move(dyn_message));
+                            auto message = network_message_dynamic_pack_into<network_message_player_id>(std::move(dyn_message));
                             auto&& payload = message->payload.content;
-                            uint32_t id_n = payload.id_n;
-                            uint32_t id = SDLNet_Read32(&id_n);
-                            _player_ready[id] = message->payload.content.is_ready;
+                            uint32_t id = SDLNet_Read32(&payload.id_n);
+
+                            Game::network_users_state& state = Game::Instance()->get_network_state();
+                            state.game_state.ready_users.set(id, true);
+                            state.game_state.ready_user_count++;
+
                             checkAllPlayersReady();
                             break;
                         }
@@ -535,17 +540,10 @@ void SelectionMenuScene::update(uint32_t delta_time) {
 
 void SelectionMenuScene::checkAllPlayersReady()
 {
-    if (!Game::Instance()->is_host() || !_is_ready) return;
-
-    bool all_ready = true;
-    for (const auto& player:_player_ready) {
-        if (!player) {
-            all_ready = false;
-            break;
-        }
-    }
-
-    if (all_ready) {
+    Game::network_users_state& state = Game::Instance()->get_network_state();
+    if (!Game::Instance()->is_host() || !state.game_state.ready_users.test(0)) return;
+    
+    if (state.game_state.ready_users.count() == state.connections.connected_users) {
         network_context& network = Game::Instance()->get_network();
         // enviar start a todos los clientes
         for (auto& client : network.profile.host.sockets_to_clients.connections) {

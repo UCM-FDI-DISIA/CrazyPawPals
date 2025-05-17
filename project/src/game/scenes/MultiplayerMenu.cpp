@@ -32,8 +32,7 @@ MultiplayerMenu::MultiplayerMenu() : Scene(ecs::scene::MULTIPLAYERMENUSCENE),
         SDL_Color{ 255, 255, 255, 255 }
     }, 
     _ipHost{""},
-    input_field_has_focus{false},
-    host_has_pressed_play{false}
+    input_field_has_focus{false}
 {}
 
 MultiplayerMenu::~MultiplayerMenu()
@@ -118,7 +117,7 @@ void MultiplayerMenu::initScene()
 void MultiplayerMenu::enterScene()
 {
     Game::Instance()->get_mngr()->change_ent_scene(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA), ecs::scene::MAINMENUSCENE);
-    host_has_pressed_play = false;
+
 #ifdef GENERATE_LOG
     log_writer_to_csv::Instance()->add_new_log();
     log_writer_to_csv::Instance()->add_new_log("ENTERED MULTIPLAYER MENU SCENE");
@@ -127,6 +126,11 @@ void MultiplayerMenu::enterScene()
 
 void MultiplayerMenu::exitScene()
 {
+    if (!Game::Instance()->is_network_none()) {
+        Game::network_users_state& state = Game::Instance()->get_network_state();
+        state.game_state.ready_users.reset();
+        state.game_state.ready_user_count = 0;
+    }
 #ifdef GENERATE_LOG
     log_writer_to_csv::Instance()->add_new_log("EXIT MULTIPLAYER MENU SCENE");
     log_writer_to_csv::Instance()->add_new_log();
@@ -269,6 +273,15 @@ static void multiplayer_menu_host_loop(network_context &ctx) {
                     std::exit(EXIT_FAILURE);
                     break;
                 }
+                case network_message_type::network_message_type_player_ready: {
+                    auto message = network_message_dynamic_pack_into<network_message_player_id>(std::move(dyn_message));
+                    const auto& payload = message->payload.content;
+                    Game::network_users_state& state = Game::Instance()->get_network_state();
+
+                    uint32_t player_id = SDLNet_Read32(&payload.id_n);
+                    state.game_state.ready_users.set(player_id, true);
+                    break;
+                }
                 default: {
                     assert(false && "unreachable: invalid network message type");
                     std::exit(EXIT_FAILURE);
@@ -289,10 +302,6 @@ static void multiplayer_menu_client_loop(network_context& ctx) {
         const uint16_t type_n{ msg->header.type_n };
         const uint16_t type_h{ SDLNet_Read16(&type_n) };
         switch (type_h) {
-        case network_message_type::network_message_type_host_has_pressed_play: {
-            //host_has_pressed_play = true;
-            break;
-        }
         case network_message_type::network_message_type_new_connection_sync_request: {
             assert(false && "error: new connection sync request should not be received by the client");
             std::exit(EXIT_FAILURE);
@@ -369,6 +378,19 @@ static void multiplayer_menu_client_loop(network_context& ctx) {
                 payload.sprite_key.sprite_key_length
             };
             Game::Instance()->get_network_state().game_state.users_sprite_keys.at(requester_id) = std::string{sprite_key};
+            break;
+        } 
+        case network_message_type::network_message_type_player_ready: {
+            auto message = network_message_dynamic_pack_into<network_message_player_id>(std::move(msg));
+            const auto& payload = message->payload.content;
+            Game::network_users_state& state = Game::Instance()->get_network_state();
+            uint32_t id = SDLNet_Read32(&payload.id_n);
+
+            state.game_state.ready_users.set(id, true);
+            bool local_player_ready = state.game_state.ready_users.test(state.connections.local_user_index);
+            if (id == 0 && local_player_ready) {
+                Game::Instance()->change_Scene(Game::SELECTIONMENU);
+            }
             break;
         }
         default:
@@ -602,29 +624,53 @@ void MultiplayerMenu::create_play_button(const GameStructs::ButtonProperties& bp
         if (Game::Instance()->is_network_none()) {
             return;
         }
+
+        auto& network = Game::Instance()->get_network();
+        auto& network_state = Game::Instance()->get_network_state();
+        uint8_t id = network_state.connections.local_user_index;
+
+
         if (Game::Instance()->is_host()) {
-            if (Game::Instance()->get_network_state().connections.connected_users > 1) {
-                host_has_pressed_play = true;
-                network_context& network = Game::Instance()->get_network();
-                //mandar a todos los clientes el mensaje de que el host a dado al boton de play
+            if (network_state.connections.connected_users > 1) {
+
+                network_state.game_state.ready_users.set(id, true);
+                network_state.game_state.ready_user_count++;
+
+                //mandar a todos los clientes el mensaje 
                 for (network_connection_size i = 0; i < network.profile.host.sockets_to_clients.connection_count; ++i) {
                     TCPsocket& client = network.profile.host.sockets_to_clients.connections[i];
                     network_message_pack_send(
                         client,
-                        network_message_pack_create(network_message_type_host_has_pressed_play, create_payload_empty_message()));
+                        network_message_pack_create(
+                            network_message_type_player_ready,
+                            create_player_id_message(0)));
                 }
+                Game::Instance()->change_Scene(Game::SELECTIONMENU);
             }
             else {
                 show_message("Espera a que lleguen los otros michis!", 5 * 1000);
             }
-
         }
-        else if (Game::Instance()->is_client() && !host_has_pressed_play)show_message("Esperando instrucciones del michi operador... ", 5 * 1000);
+        else {
         
-        // HACK: Uncomment this line to change the scene when the host has pressed play already
-        // if (host_has_pressed_play) {
-            Game::Instance()->change_Scene(Game::SELECTIONMENU);
-        // }
+            network_state.game_state.ready_users.set(id, true);
+            network_state.game_state.ready_user_count++;
+
+            network_message_pack_send(
+                network.profile.client.socket_to_host,
+                network_message_pack_create(
+                    network_message_type_player_ready,
+                    create_player_id_message(id)
+                )
+            );
+
+            if (network_state.game_state.ready_users.test(0)) {
+                Game::Instance()->change_Scene(Game::SELECTIONMENU);
+            }
+            else {
+                show_message("Esperando instrucciones del michi operador...", 5 * 1000);
+            }
+        }
         
         imgComp->_filter = false;
         imgComp->swap_textures();

@@ -45,11 +45,5 @@ private:
 
 	void reset();
 
-	//net
-	std::vector<bool> _player_ready;
-	bool _is_ready = false;
 	void checkAllPlayersReady();
-
-
-
 };

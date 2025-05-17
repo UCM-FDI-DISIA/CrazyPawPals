@@ -26,11 +26,7 @@ enum network_message_type
     network_message_type_skin_selection_request,
     network_message_type_skin_selection_response,
 
-    // network_message_type_player_connect, // replaced by --> network_message_type_new_connection_sync_request
     network_message_type_player_update,
-    // network_message_type_client_id,  // replaced by vvv
-    // network_message_type_new_player, // replaced by --> network_message_type_new_connection_sync_response
-    network_message_type_host_has_pressed_play,
     network_message_type_player_ready,
     network_message_type_start_game,
 };
@@ -175,15 +171,13 @@ inline NetworkBulletProperties network_message_bulletProperties_create(GameStruc
 
 
 //si esta preparado para empezar el juego (si ha eleigo mazo y arma)
-struct network_message_player_ready {
+struct network_message_player_id {
     uint32_t id_n;
-    bool is_ready;
 };
 
-inline network_message_player_ready create_player_ready_message (uint32_t id, bool is_ready) {
-    network_message_player_ready msg;
+inline network_message_player_id create_player_id_message (uint32_t id) {
+    network_message_player_id msg;
     SDLNet_Write32(id, &msg.id_n);
-    msg.is_ready = is_ready;
     return msg;
 };
 
@@ -263,47 +257,6 @@ network_payload_skin_selection_request network_payload_skin_selection_create(
     const uint8_t requester_id,
     const std::string_view sprite_key
 );
-
-
-//mandar al cliente su id
-struct network_message_client_id_from_host {
-    uint32_t client_id;
-};
-
-inline network_message_client_id_from_host create_client_id_message (uint32_t client_id) {
-
-    network_message_client_id_from_host id_from_host;
-    SDLNet_Write32(client_id, &id_from_host.client_id);
-    return id_from_host;
-};
-
-inline uint32_t network_message_client_id_from_host_get_id(const network_message_client_id_from_host message) {
-    return message.client_id;
-};
-
-//Struct de player cuando se conecta 
-struct network_message_player_connect {
-    uint32_t player_id;           
-    uint32_t sprite_key_length;
-    char sprite_key[32];
-};
-
-inline network_message_player_connect create_player_connect_message(uint32_t id, std::string texture) {
-    network_message_player_connect player_connet;
-
-    SDLNet_Write32(id, &player_connet.player_id);
-
-    const size_t size = texture.size();
-    assert(size < sizeof(player_connet.sprite_key) && "error: string size exceeds sprite_key capacity");
-   
-    SDLNet_Write32(static_cast<uint32_t>(size), &player_connet.sprite_key_length);
-
-    std::copy_n(texture.begin(), size, player_connet.sprite_key);
-    player_connet.sprite_key[size] = '\0';
-
-    return player_connet;
-}
-
 
 //Struct sincronizar player
 struct network_message_player_update {
