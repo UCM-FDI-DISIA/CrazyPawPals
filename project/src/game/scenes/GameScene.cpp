@@ -180,7 +180,7 @@ void GameScene::initScene()
 	manager.addComponent<MythicComponent>(player);
 
 	manager.refresh();
-	// spawn_sarno_rata(Vector2D{5.0f, 0.0f});
+
 	spawn_fog();
 	spawn_wave_manager();
 	auto hud = create_hud();
@@ -221,10 +221,7 @@ void GameScene::enterScene()
 		manager.addComponent<MultiplayerHUD>(player);
 	}
 	manager.getComponent<HUD>(manager.getHandler(ecs::hdlr::HUD_ENTITY))->start_new_wave();
-	// spawn_catkuza(Vector2D{10.0f, 0.0f});
-	//  spawn_rata_basurera(Vector2D{5.0f, 0.0f});
-	//  spawn_rey_basurero(Vector2D{-5.0f, 0.0f});
-	//  spawn_super_michi_mafioso(Vector2D{5.0f, 0.0f});
+
 #ifdef GENERATE_LOG
 	log_writer_to_csv::Instance()->add_new_log();
 	log_writer_to_csv::Instance()->add_new_log("ENTERED GAME SCENE");
@@ -1558,9 +1555,9 @@ void GameScene::host_handle_menssage(network_context &ctx)
 
 					auto player_update_msg = create_player_update_message(playerData);
 
-					for (network_connection_size i = 0; i < ctx.profile.host.sockets_to_clients.connection_count; ++i)
+					for (network_connection_size j = 0; j < ctx.profile.host.sockets_to_clients.connection_count; ++j)
 					{
-						TCPsocket &client = ctx.profile.host.sockets_to_clients.connections[i];
+						TCPsocket& client = ctx.profile.host.sockets_to_clients.connections[j];
 
 						if (client != connection)
 						{
@@ -1614,6 +1611,7 @@ void GameScene::client_handle_menssage(network_context &ctx)
 
 			auto player = Game::Instance()->get_network_state().game_state.user_players.at(playerData.id);
 			Game::Instance()->get_mngr()->getComponent<PlayerSynchronize>(player)->updatePlayer(playerData);
+
 			break;
 		}
 		case network_message_type_create_enemy:

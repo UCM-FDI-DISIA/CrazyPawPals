@@ -340,6 +340,7 @@ static void multiplayer_menu_client_loop(network_context& ctx) {
                 assert(false && "unreachable: local user index may be uninitialized (set to maximum connections) or set to a value less than the number of connected users");
                 std::exit(EXIT_FAILURE);
             }
+
             for (size_t i = state.connections.connected_users; i < payload.connections.connected_users; ++i) {
                 const auto sprite_key_length{payload.sprite_keys[i].sprite_key_length};
                 const std::string_view sprite_key{
@@ -347,8 +348,9 @@ static void multiplayer_menu_client_loop(network_context& ctx) {
                     sprite_key_length
                 };
                 const size_t network_user_index{network_state_next_user_index(state)};
+
                 ecs::entity_t player_entity;
-                if (i != payload.connections.local_user_index) {               
+                if (i != state.connections.local_user_index) {  
                     player_entity = GameScene::create_dumb_player(ecs::scene::GAMESCENE, network_user_index, std::string{sprite_key});   
                 } else {
                     player_entity = own_player_entity;
@@ -658,23 +660,27 @@ void MultiplayerMenu::create_play_button(const GameStructs::ButtonProperties& bp
         }
         else {
         
-            network_state.game_state.ready_users.set(id, true);
-            network_state.game_state.ready_user_count++;
-
-            network_message_pack_send(
-                network.profile.client.socket_to_host,
-                network_message_pack_create(
-                    network_message_type_player_ready,
-                    create_player_id_message(id)
-                )
-            );
-
             if (network_state.game_state.ready_users.test(0)) {
                 Game::Instance()->queue_scene(Game::SELECTIONMENU);
             }
             else {
-                show_message("Esperando instrucciones del michi operador...", 5 * 1000);
-            }
+
+                if (!network_state.game_state.ready_users.test(id)) {
+
+                    network_state.game_state.ready_users.set(id, true);
+                    network_state.game_state.ready_user_count++;
+
+                    network_message_pack_send(
+                        network.profile.client.socket_to_host,
+                        network_message_pack_create(
+                            network_message_type_player_ready,
+                            create_player_id_message(id)
+                        )
+                    );
+                }
+                else show_message("Esperando instrucciones del michi operador...", 5 * 1000);
+                
+            }   
         }
         
         imgComp->_filter = false;
