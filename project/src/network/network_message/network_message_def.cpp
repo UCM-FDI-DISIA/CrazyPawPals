@@ -68,11 +68,12 @@ void network_message_header_send(TCPsocket socket, const network_message_header 
     }
 }
 
-NetworkNewWave network_message_wave_event_create(events event_type) {
-	NetworkNewWave nne;
+NetworkWaveEvent network_message_wave_event_create(events event_type) {
+	NetworkWaveEvent n_we;
 
-	SDLNet_Write32(event_type, &nne.event_type);
-    return nne;
+	//n_we.event_type = event_type;
+	SDLNet_Write32(event_type, &n_we.event_type);
+    return n_we;
 }
 
 network_message_payload_new_connection_sync_request network_message_payload_new_connection_sync_create(const std::string_view sprite_key) {

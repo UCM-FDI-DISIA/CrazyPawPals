@@ -58,6 +58,7 @@ private:
     void choose_new_event();
     void endwave();
     void activateFog();
+    bool areAllEnemiesDead();
     void enterRewardsMenu();
     bool can_spawn_next_enemy();
     bool is_wave_finished();

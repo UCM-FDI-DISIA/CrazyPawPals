@@ -54,8 +54,7 @@
 	WAVEMANAGER, \
 	MULTIPLAYER_HUD, \
 	DAMAGE_POPUP, \
-	ERASE_TEXTURE, \
-	DUMB_WAVE_MANAGER
+	ERASE_TEXTURE
 
 // Groups list - must have at least one element
 //

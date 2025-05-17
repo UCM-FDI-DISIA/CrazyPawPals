@@ -27,18 +27,11 @@ enum network_message_type
     network_message_type_skin_selection_response,
 
     network_message_type_player_update,
+    network_message_type_player_ready,
+    network_message_type_start_game,
 
     network_message_type_enemy_update,
     network_message_type_create_enemy,
-    // network_message_type_player_connect, // replaced by --> network_message_type_new_connection_sync_request
-
-    network_message_type_client_id,
-    network_message_type_new_player,
-    // network_message_type_client_id,  // replaced by vvv
-    // network_message_type_new_player, // replaced by --> network_message_type_new_connection_sync_response
-    network_message_type_host_has_pressed_play,
-    network_message_type_player_ready,
-    network_message_type_start_game,
 };
 using network_message_type_option = uint16_t;
 using network_message_header_size = uint16_t;
@@ -118,11 +111,13 @@ network_message_payload_dbg_print<ArgumentsSize> network_message_payload_dbg_pri
     return msg;
 }
 
-
-struct NetworkNewWave {
+// Struct de eventos de oleada
+struct NetworkWaveEvent
+{
     events event_type;
 };
-NetworkNewWave network_message_wave_event_create(events event_type);
+
+NetworkWaveEvent network_message_wave_event_create(events event_type);
 
 // Struct de BulletProperties que se envia por la red
 struct NetworkBulletProperties
@@ -267,48 +262,6 @@ network_payload_skin_selection_request network_payload_skin_selection_create(
     const uint8_t requester_id,
     const std::string_view sprite_key
 );
-//mandar al cliente su id
-struct network_message_client_id_from_host {
-    uint32_t client_id;
-};
-
-inline network_message_client_id_from_host create_client_id_message(uint32_t client_id)
-{
-
-    network_message_client_id_from_host id_from_host;
-    SDLNet_Write32(client_id, &id_from_host.client_id);
-    return id_from_host;
-};
-
-inline uint32_t network_message_client_id_from_host_get_id(const network_message_client_id_from_host message)
-{
-    return message.client_id;
-};
-
-// Struct de player cuando se conecta
-struct network_message_player_connect
-{
-    uint32_t player_id;
-    uint32_t sprite_key_length;
-    char sprite_key[32];
-};
-
-inline network_message_player_connect create_player_connect_message(uint32_t id, std::string texture)
-{
-    network_message_player_connect player_connet;
-
-    SDLNet_Write32(id, &player_connet.player_id);
-
-    const size_t size = texture.size();
-    assert(size < sizeof(player_connet.sprite_key) && "error: string size exceeds sprite_key capacity");
-
-    SDLNet_Write32(static_cast<uint32_t>(size), &player_connet.sprite_key_length);
-
-    std::copy_n(texture.begin(), size, player_connet.sprite_key);
-    player_connet.sprite_key[size] = '\0';
-
-    return player_connet;
-}
 
 // Struct sincronizar player
 struct network_message_player_update
