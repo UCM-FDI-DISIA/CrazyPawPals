@@ -12,6 +12,7 @@ namespace ecs {
 class Manager;
 }
 class Scene;
+class WaveManagerFacade;
 class Game: public Singleton<Game>  {
 public:
 	enum State {
@@ -35,10 +36,12 @@ public:
 	void start();
 
 	ecs::Manager* get_mngr();
+	WaveManagerFacade*& get_wave_manager();
 	event_system::event_manager* get_event_mngr();
 	
 	Scene* get_currentScene();
-	void change_Scene(State);
+	void update_scene();
+	void queue_scene(State);
 	std::pair<int,int> get_world_half_size() const;
 
 	//bool para salir del bucle principal
@@ -48,6 +51,8 @@ public:
 
 
 private:
+	WaveManagerFacade* wave_manager;
+	int _next_scene_index = -1;
 	int _current_scene_index = -1;
 	std::vector<Scene*> _scenes;
 	std::vector<bool> _scene_inits;

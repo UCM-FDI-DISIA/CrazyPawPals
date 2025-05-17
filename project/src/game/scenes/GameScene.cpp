@@ -40,6 +40,7 @@
 #include "../../utils/Collisions.h"
 
 #include "../../our_scripts/components/WaveManager.h"
+#include "../../our_scripts/components/DumbWaveManager.h"
 #include "../../our_scripts/components/Fog.h"
 #include "../../our_scripts/components/weapons/enemies/WeaponMichiMafioso.h"
 #include "../../our_scripts/components/weapons/enemies/WeaponPlimPlim.h"
@@ -177,10 +178,6 @@ void GameScene::initScene()
 	auto &&manager = *Game::Instance()->get_mngr();
 	auto player = manager.getHandler(ecs::hdlr::PLAYER);
 	manager.addComponent<MythicComponent>(player);
-	if (!Game::Instance()->is_network_none()) {
-		manager.addComponent<PlayerSynchronize>(player, uint32_t{ Game::Instance()->client_id() });
-		manager.addComponent<MultiplayerHUD>(player);
-	}
 
 	manager.refresh();
 	// spawn_sarno_rata(Vector2D{5.0f, 0.0f});
@@ -211,11 +208,18 @@ void GameScene::enterScene()
 	manager.addComponent<KeyboardPlayerCtrl>(player);
 	manager.addComponent<GamePadPlayerCtrl>(player);
 	manager.addComponent<PlayerHUD>(player);
-	auto wm = manager.getComponent<WaveManager>(manager.getHandler(ecs::hdlr::WAVE));
-	wm->start_new_wave();
-	// get the current event
-	auto e = wm->get_current_event();
-	RewardScene::will_have_mythic(e != NONE || ((wm->get_current_wave() + 1) % 5 == 0));
+	if (Game::Instance()->is_host() || Game::Instance()->is_network_none()) {
+		auto wm = manager.getComponent<WaveManager>(manager.getHandler(ecs::hdlr::WAVE));
+		wm->start_new_wave();
+		// get the current event
+		auto e = wm->get_current_event();
+		RewardScene::will_have_mythic(e != NONE || ((wm->get_current_wave() + 1) % 5 == 0));
+	}
+	
+	if (!Game::Instance()->is_network_none()) {
+		manager.addComponent<PlayerSynchronize>(player, uint32_t{ Game::Instance()->client_id() });
+		manager.addComponent<MultiplayerHUD>(player);
+	}
 	manager.getComponent<HUD>(manager.getHandler(ecs::hdlr::HUD_ENTITY))->start_new_wave();
 	// spawn_catkuza(Vector2D{10.0f, 0.0f});
 	//  spawn_rata_basurera(Vector2D{5.0f, 0.0f});
@@ -230,7 +234,13 @@ void GameScene::enterScene()
 void GameScene::exitScene()
 {
 	auto &&manager = *Game::Instance()->get_mngr();
-	manager.getComponent<WaveManager>(manager.getHandler(ecs::hdlr::WAVE))->reset_wave_time();
+	Game::Instance()->get_wave_manager()->reset_wave_time();
+
+	if (!Game::Instance()->is_network_none()) {
+		auto player = manager.getHandler(ecs::hdlr::PLAYER);
+		manager.removeComponent<PlayerSynchronize>(player);
+		manager.removeComponent<MultiplayerHUD>(player);
+}
 #ifdef GENERATE_LOG
 	log_writer_to_csv::Instance()->add_new_log("EXIT GAME SCENE");
 	log_writer_to_csv::Instance()->add_new_log();
@@ -1381,11 +1391,25 @@ ecs::entity_t GameScene::create_hud(ecs::sceneId_t scene)
 #pragma region Waves
 void GameScene::spawn_wave_manager()
 {
-	auto ent = create_entity(
-		ecs::grp::DEFAULT,
-		ecs::scene::GAMESCENE,
-		new WaveManager());
+	ecs::entity_t ent;
+	if (Game::Instance()->is_host() || Game::Instance()->is_network_none()) {
+		auto wmf = new WaveManager();
+		ent = create_entity(
+			ecs::grp::DEFAULT,
+			ecs::scene::GAMESCENE,
+			wmf);
+		Game::Instance()->get_wave_manager() = wmf;
+	}
+	else {
+		auto wmf = new DumbWaveManager();
+		ent = create_entity(
+			ecs::grp::DEFAULT,
+			ecs::scene::GAMESCENE,
+			wmf);
+		Game::Instance()->get_wave_manager() = wmf;
+	}
 	Game::Instance()->get_mngr()->setHandler(ecs::hdlr::WAVE, ent);
+
 }
 void GameScene::spawn_fog()
 {
@@ -1481,7 +1505,7 @@ void GameScene::event_callback1(const event_system::event_receiver::Msg &m)
 	{
 		// sino se resetea al jugador y pasa al gameOver
 		reset_player();
-		Game::Instance()->change_Scene(Game::GAMEOVER);
+		Game::Instance()->queue_scene(Game::GAMEOVER);
 	}
 }
 
@@ -1542,7 +1566,7 @@ void GameScene::host_handle_menssage(network_context &ctx)
 						{
 							network_message_pack_send(
 								client,
-								network_message_pack_create(network_message_type_player_update, player));
+								network_message_pack_create(network_message_type_player_update, player_update_msg));
 						}
 					}
 					break;

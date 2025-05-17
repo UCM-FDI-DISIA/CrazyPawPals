@@ -62,7 +62,7 @@ Health::takeDamage(int damage)
 		*text,
 		*tr);
 	auto popup = new DamagePopup();
-	auto ent = Game::Instance()->get_mngr()->addEntity(ecs::scene::GAMESCENE, ecs::grp::DEFAULT);
+	auto ent = Game::Instance()->get_mngr()->addEntity(ecs::scene::GAMESCENE, ecs::grp::DAMAGE_POPUPS);
 	Game::Instance()->get_mngr()->addExistingComponent(ent, tr, img, popup,rect, new EraseTextureComponent(text));
 	
 	if (_shield <= damage) {

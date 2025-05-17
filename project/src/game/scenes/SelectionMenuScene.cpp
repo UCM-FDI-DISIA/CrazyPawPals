@@ -457,7 +457,7 @@ void SelectionMenuScene::create_enter_button() {
             }
             else {
                 imgComp->_filter = false;
-                Game::Instance()->change_Scene(Game::GAMESCENE);
+                Game::Instance()->queue_scene(Game::GAMESCENE);
                 imgComp->destination_rect.position.x = 10.0f;
             }
         }
@@ -526,7 +526,7 @@ void SelectionMenuScene::update(uint32_t delta_time) {
                 switch (type_h) {
                 case network_message_type_start_game: {
                     std::cout << "mensaje de ir al juego" << std::endl;
-                    Game::Instance()->change_Scene(Game::GAMESCENE);
+                    Game::Instance()->queue_scene(Game::GAMESCENE);
                     break;
                 }
                 default: break;
@@ -555,6 +555,6 @@ void SelectionMenuScene::checkAllPlayersReady()
                 );
             }
         }
-        Game::Instance()->change_Scene(Game::GAMESCENE);
+        Game::Instance()->queue_scene(Game::GAMESCENE);
     }
 }

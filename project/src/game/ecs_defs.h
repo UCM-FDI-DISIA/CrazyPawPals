@@ -54,7 +54,8 @@
 	WAVEMANAGER, \
 	MULTIPLAYER_HUD, \
 	DAMAGE_POPUP, \
-	ERASE_TEXTURE
+	ERASE_TEXTURE, \
+	DUMB_WAVE_MANAGER
 
 // Groups list - must have at least one element
 //
@@ -74,7 +75,8 @@
 	TUTORIALPOPUPS, \
 	UI, \
 	WEAPONBUTTON, \
-	WEAPONINFO
+	WEAPONINFO, \
+	DAMAGE_POPUPS
 
 // Scene list
 //

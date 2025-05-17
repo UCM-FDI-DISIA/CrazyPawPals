@@ -301,7 +301,7 @@ ecs::entity_t TutorialScene::create_change_scene_button(const GameStructs::Butto
 			Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA))->cam
 	);
 	buttonComp->connectClick([buttonComp, &mngr, nextScene]() {
-		Game::Instance()->change_Scene(nextScene);
+		Game::Instance()->queue_scene(nextScene);
 		});
 
 	buttonComp->connectHover([buttonComp, imgComp, this]() {

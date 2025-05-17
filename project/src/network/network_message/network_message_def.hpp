@@ -110,14 +110,10 @@ network_message_payload_dbg_print<ArgumentsSize> network_message_payload_dbg_pri
     std::copy(str.begin(), str.end(), msg.args.begin());
     return msg;
 }
-
-// Struct de eventos de oleada
-struct NetworkWaveEvent
-{
+struct NetworkNewWave {
     events event_type;
 };
-
-NetworkWaveEvent network_message_wave_event_create(events event_type);
+NetworkNewWave network_message_wave_event_create(events event_type);
 
 // Struct de BulletProperties que se envia por la red
 struct NetworkBulletProperties

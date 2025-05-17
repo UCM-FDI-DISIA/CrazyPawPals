@@ -3,6 +3,9 @@
 #include "game/Game.h"
 #include "ecs/Manager.h"
 #include "../../../sdlutils/SDLUtils.h"
+#include "../../components/WaveManagerFacade.h"
+#include "../../components/WaveManager.h"
+#include "../../components/DumbWaveManager.h"
 
 HUD::HUD():_camera(nullptr),_wm(nullptr)
 {
@@ -17,7 +20,7 @@ HUD::~HUD()
 
 void HUD::initComponent()
 {
-	_wm = Game::Instance()->get_mngr()->getComponent<WaveManager>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::WAVE));
+	_wm = Game::Instance()->get_wave_manager();
 	_camera = Game::Instance()->get_mngr()->getComponent<camera_component>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA));
 }
 
@@ -61,7 +64,7 @@ void HUD::render()
 		sdlutils().renderer(),
 		wavetime < 10 ? "0" + std::to_string(std::max(wavetime,0)) : std::to_string(wavetime),
 		sdlutils().fonts().at("RUBIK_MONO"),
-		SDL_Color(wavetime <= 0 ? 200 : 50,50,50,255) };
+		SDL_Color(wavetime <= 10 ? 200 : 50,50,50,255) };
 	timertex.render(timertrue);
 #pragma endregion
 
