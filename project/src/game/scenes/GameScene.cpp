@@ -1349,14 +1349,14 @@ ecs::entity_t GameScene::create_proyectile(const GameStructs::BulletProperties &
 			break;
 		case network_context_profile_status_client:
 			//Create NetworkBulletProperties
-			NetworkBulletProperties n_bp = network_message_bulletProperties_create<NetworkBulletProperties>(bp);
+			NetworkBulletProperties n_bp = network_message_bulletProperties_create(bp);
 			//Send 
 			network_message_pack_send(network.profile.client.socket_to_host,
 				network_message_pack_create(network_message_type_summon_true_bullet, n_bp));
 			break;
 		case network_context_profile_status_host:
 			//Create NetworkBulletProperties
-			NetworkBulletProperties n_bp = network_message_bulletProperties_create<NetworkBulletProperties>(bp);
+			NetworkBulletProperties n_bp = network_message_bulletProperties_create(bp);
 			//Send 
 			network_message_pack_send(network.profile.client.socket_to_host, 
 				network_message_pack_create(network_message_type_summon_dummy_bullet, n_bp));
