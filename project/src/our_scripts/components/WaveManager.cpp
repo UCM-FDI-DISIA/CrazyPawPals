@@ -10,10 +10,10 @@
 #include "../wave_events/no_event.hpp"
 #include "../wave_events/ice_skating_event.hpp"
 #include "../wave_events/star_shower_event.hpp"
-#include "../log_writer_to_csv.hpp"
 #include "../../network/network_message.hpp"
 
 #ifdef GENERATE_LOG
+#include "../log_writer_to_csv.hpp"
 #include "Health.h"
 #include "cards/Mana.h"
 #include "cards/Deck.hpp"
@@ -30,7 +30,7 @@ WaveManager::WaveManager() :
     _enemiesSpawned(0),
     _enemiesKilled(0),
     _numEnemies(0),
-    _current_wave_event(new no_event(this)),
+    _current_wave_event(new no_event()),
     _event_pity(0)
 {
     event_system::event_manager::Instance()->suscribe_to_event(event_system::enemy_dead, this, &event_system::event_receiver::event_callback0);
@@ -59,7 +59,7 @@ bool WaveManager::can_spawn_next_enemy()
 bool WaveManager::is_wave_finished()
 {
     //TODO: Necesitamos no notificar los enemigos que son creados por otros
-    //std::cout << "enemies_killed: " << _enemiesKilled << "   numEnemies: " << _numEnemies << "    enemies_spawned: " << _enemiesSpawned << std::endl;
+    //std::cout << "enemies_killed: " << _enemiesKilled << "   numEnemies: " << _numEnemies << "    everyone out: " << _all_enemies_already_spawned << std::endl;
     return _enemiesKilled >= _numEnemies && _all_enemies_already_spawned;
 }
 
@@ -86,7 +86,7 @@ void WaveManager::initialize_next_wave_params(bool normal_wave)
 {
 	tokens_for_this_wave = (_currentWave * spawn_tokens_gained_per_wave) * (nPlayers == 1 ? 1 : nPlayers / 1.3f) + spawn_tokens_at_wave_0;
 
-    uint8_t cheaper_enemy{(std::numeric_limits<uint8_t>::max)()};
+    float cheaper_enemy{(std::numeric_limits<uint8_t>::max)()};
     for (uint8_t i = 0; i < 3; ++i) {
         uint8_t j = 0;
         do {
@@ -99,9 +99,9 @@ void WaveManager::initialize_next_wave_params(bool normal_wave)
             ++j < i && //This is false for (i==1)
             _enemy_types_for_current_wave[j] != _enemy_types_for_current_wave[i]  //This is false if enemy chosen for index 2 is alredy taken in index 1
         );
-        cheaper_enemy = std::min(cheaper_enemy,enemy_spawn_data[_enemy_types_for_current_wave[i]].enemies_group_spawn_cost);
+        cheaper_enemy = std::min(cheaper_enemy,(float)enemy_spawn_data[_enemy_types_for_current_wave[i]].enemies_group_spawn_cost);
     }
-    time_max_between_enemy_spawns_on_this_wave = std::min(max_spawn_wave_time / (tokens_for_this_wave / cheaper_enemy),5000);
+    time_max_between_enemy_spawns_on_this_wave = std::min(max_spawn_wave_time / (tokens_for_this_wave / cheaper_enemy),5000.0f);
     _next_spawn_time = sdlutils().virtualTimer().currTime();// +time_max_between_enemy_spawns_on_this_wave;
     //Si no es normal wave spawnea tb un bos
 }
@@ -182,30 +182,28 @@ void WaveManager::spawn_next_group_of_enemies()
             break;
         }
     }
-    for (uint8_t i = 0; i < enemy_spawn_data[_enemy_types_for_current_wave[index]].number_of_enemies_simultaneous_spawn; ++i) {
-        GameStructs::DumbEnemyProperties dep;
-        auto aux = esc->spawn_callback();//returns initial pos Vector2D
-        if (Game::Instance()->is_network_none()) {
-            return;
-        }
-        if (Game::Instance()->is_host()) {
+    if (Game::Instance()->is_host() && Game::Instance()->get_network_state().connections.connected_users > 1) {
+        for (uint8_t i = 0; i < enemy_spawn_data[_enemy_types_for_current_wave[index]].number_of_enemies_simultaneous_spawn; ++i) {
+            GameStructs::DumbEnemyProperties dep;
+            auto aux = esc->spawn_callback();//returns initial pos Vector2D
+        
             dep._type = (enemyType)_enemy_types_for_current_wave[index]; //enemy ID
             dep._id = aux.second;
             dep._pos = aux.first;
-            if (Game::Instance()->get_network_state().connections.connected_users > 1) {
-                network_context& network = Game::Instance()->get_network();
-                //mandar a todos los clientes el mensaje de que el host a dado al boton de play
-                for (network_connection_size i = 0; i < network.profile.host.sockets_to_clients.connection_count; ++i) {
-                    TCPsocket& client = network.profile.host.sockets_to_clients.connections[i];
-                    network_message_pack_send(
-                        client,
-                        network_message_pack_create(network_message_type_create_enemy, create_enemy(dep))
-                    );
-			        std::cout << "Creando enemigo en el client: " << (int)i << " de tipo: "<< (enemyType)dep._type << std::endl;
-                    
-                }
+            network_context& network = Game::Instance()->get_network();
+            //mandar a todos los clientes el mensaje de que el host a dado al boton de play
+            for (network_connection_size i = 0; i < network.profile.host.sockets_to_clients.connection_count; ++i) {
+                TCPsocket& client = network.profile.host.sockets_to_clients.connections[i];
+                network_message_pack_send(
+                    client,
+                    network_message_pack_create(network_message_type_create_enemy, create_enemy(dep))
+                );
+	        std::cout << "Creando enemigo en el client: " << (int)i << " de tipo: "<< (enemyType)dep._type << std::endl;
             }
         }
+    }
+    else {
+        esc->spawn_callback();
     }
 #ifdef GENERATE_LOG
     log_writer_to_csv::Instance()->add_new_log("SPAWN ENEMIES", "TIPO", tipoEnemigo, "Numero", std::to_string(enemy_spawn_data[_enemy_types_for_current_wave[index]].number_of_enemies_simultaneous_spawn));
@@ -232,7 +230,7 @@ void WaveManager::update(uint32_t delta_time) {
 
         if (is_wave_finished())
             endwave();
-        else if (_currentWaveTime > 50 * 1000 && !is_wave_finished()) {
+        else if (_currentWaveTime > 50 * 1000) {
             activateFog();
         }
     }else{
@@ -248,12 +246,6 @@ void WaveManager::update(uint32_t delta_time) {
     // std::cout << _numEnemies << " vs " << _enemiesKilled << std::endl;
 }
 //---------------------------------------------------------------------------------------------------------------------------------
-
-//Verifica si todos los enemigos estan muertos
-bool 
-WaveManager::areAllEnemiesDead() {
-    return _enemiesKilled >= _numEnemies;
-}
 
 //Activa la niebla
 void 
@@ -296,6 +288,8 @@ void WaveManager::start_new_wave()
 
     if ((_currentWave + 1) % 5 == 0)
         _spawn_boss();
+
+    //START WAVE MESSAGE
 }
 
 void WaveManager::reset_wave_manager()
@@ -350,9 +344,9 @@ void WaveManager::endwave()
         _all_enemies_already_spawned = false;
         erase_all_bullets();
         erase_all_enemies();
-        //enterRewardsMenu();
-    }
 
+        //SEND END WAVE MESSAGE
+    }
 }
 
 void WaveManager::event_callback0(const Msg& m)
@@ -364,8 +358,13 @@ void WaveManager::event_callback0(const Msg& m)
 void WaveManager::event_callback1(const Msg& m)
 {
     _current_wave_event->end_wave_callback();
-    _current_wave_event = std::make_unique<no_event>(this);
+    _current_wave_event = std::make_unique<no_event>();
     fog->setFog(false);
+}
+
+void WaveManager::newEnemy()
+{
+    if (!Game::Instance()->is_client()) { _numEnemies++; _enemiesSpawned++; }
 }
 
 void WaveManager::select_event()
@@ -396,10 +395,10 @@ void WaveManager::choose_new_event()
 
     switch(_current_event) {
     case NONE:
-        _current_wave_event = (std::unique_ptr<wave_event>)new no_event(this);
+        _current_wave_event = (std::unique_ptr<wave_event>)new no_event();
         break;
     case ICE_SKATE:
-        _current_wave_event = (std::unique_ptr<wave_event>)new ice_skating_event(this);
+        _current_wave_event = (std::unique_ptr<wave_event>)new ice_skating_event();
         break;
     case STAR_SHOWER: {
         constexpr static const rect_f32 event_area = {
@@ -409,7 +408,6 @@ void WaveManager::choose_new_event()
         constexpr static const size_t min_drops_inclusive = 5;
         constexpr static const size_t max_drops_exclusive = 23;
         _current_wave_event = std::make_unique<star_shower_event>(
-            *this,
             event_area,
             star_drop_descriptor{
                 .drop_position = { 0.0f, 0.0f },
