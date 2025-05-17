@@ -297,7 +297,7 @@ void WaveManager::start_new_wave()
         TCPsocket& client = network.profile.host.sockets_to_clients.connections[i];
         network_message_pack_send(
             client,
-            network_message_pack_create(network_message_type_start_wave, create_start_wave_message(get_current_event()))
+            network_message_pack_create(network_message_type_start_wave, create_start_wave_message((uint16_t)get_current_event()))
         );
     }
 }
