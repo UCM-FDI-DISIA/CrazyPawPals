@@ -67,12 +67,17 @@ namespace GameStructs
 	struct DumbEnemyProperties
 	{
 		Vector2D _pos;
+		uint16_t _type;
+		int _health;
+		uint16_t _id;
 	};
 
 	struct EnemyProperties
 	{
 		// Sprite
 		std::string sprite_key;
+		uint8_t _id;
+
 		Vector2D start_pos;
 
 		// Weapon
@@ -104,6 +109,7 @@ namespace GameStructs
 		std::string sprite_key;
 		ecs::grpId_t ID;
 	};
+	
 	struct CardButtonProperties : public ButtonProperties
 	{
 		Card *iterator;

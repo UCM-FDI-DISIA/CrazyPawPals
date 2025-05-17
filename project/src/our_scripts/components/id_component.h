@@ -12,7 +12,8 @@ public:
 		ocuppied_ids.reset();
 		last_given_bit = 0;
 	}
-	id_component() : _id(get_next_free_id()) {}
+	id_component() : _id(get_next_free_id()) { ocuppied_ids[_id] = true; }
+	id_component(uint8_t _new_id) : _id(_new_id) {}
 	~id_component() {
 		ocuppied_ids[_id] = false;
 	}
@@ -22,7 +23,7 @@ public:
 		int aux = last_given_bit;
 		++last_given_bit;
 		while (ocuppied_ids[last_given_bit] && last_given_bit!=aux) last_given_bit = last_given_bit >= ocuppied_ids.size() ? 0 : ++last_given_bit;
-		//Si esto peta, se han llenado los ids y no se pueden dar más
+		//Si esto peta, se han llenado los ids y no se pueden dar mï¿½s
 		assert(aux != last_given_bit);
 		return last_given_bit;
 	}

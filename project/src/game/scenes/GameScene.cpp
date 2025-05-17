@@ -149,9 +149,8 @@ static game_scene_map_walls game_scene_create_map_walls(ecs::Manager &manager, c
 
 	for (size_t i = 0; i < wall_entities.size(); ++i)
 	{
-		manager.addExistingComponent(wall_entities[i],wall_transforms[i], wall_rects[i], wall_rigidbodies[i], wall_collisionables[i]);
+		manager.addExistingComponent(wall_entities[i], wall_transforms[i], wall_rects[i], wall_rigidbodies[i], wall_collisionables[i]);
 		manager.addComponent<render_ordering>(wall_entities[i], 0);
-		
 	}
 
 	return game_scene_map_walls{
@@ -216,12 +215,12 @@ void GameScene::enterScene()
 	wm->start_new_wave();
 	// get the current event
 	auto e = wm->get_current_event();
-	RewardScene::will_have_mythic(e != NONE || ((wm->get_current_wave()+1)%5 == 0));
+	RewardScene::will_have_mythic(e != NONE || ((wm->get_current_wave() + 1) % 5 == 0));
 	manager.getComponent<HUD>(manager.getHandler(ecs::hdlr::HUD_ENTITY))->start_new_wave();
-	//spawn_catkuza(Vector2D{10.0f, 0.0f});
-	// spawn_rata_basurera(Vector2D{5.0f, 0.0f});
-	// spawn_rey_basurero(Vector2D{-5.0f, 0.0f});
-	// spawn_super_michi_mafioso(Vector2D{5.0f, 0.0f});
+	// spawn_catkuza(Vector2D{10.0f, 0.0f});
+	//  spawn_rata_basurera(Vector2D{5.0f, 0.0f});
+	//  spawn_rey_basurero(Vector2D{-5.0f, 0.0f});
+	//  spawn_super_michi_mafioso(Vector2D{5.0f, 0.0f});
 #ifdef GENERATE_LOG
 	log_writer_to_csv::Instance()->add_new_log();
 	log_writer_to_csv::Instance()->add_new_log("ENTERED GAME SCENE");
@@ -242,19 +241,23 @@ void GameScene::update(uint32_t delta_time)
 {
 	Scene::update(delta_time);
 
-	network_context& network = Game::Instance()->get_network();
-	switch (network.profile_status) {
+	network_context &network = Game::Instance()->get_network();
+	switch (network.profile_status)
+	{
 	case network_context_profile_status_none:
 		break;
-	case network_context_profile_status_host: {
+	case network_context_profile_status_host:
+	{
 		host_handle_menssage(network);
 		break;
 	}
-	case network_context_profile_status_client: {
+	case network_context_profile_status_client:
+	{
 		client_handle_menssage(network);
 		break;
 	}
-	default: {
+	default:
+	{
 		assert(false && "unreachable: invalid network profile status");
 		std::exit(EXIT_FAILURE);
 	}
@@ -376,9 +379,55 @@ ecs::entity_t GameScene::create_enemy(GameStructs::EnemyProperties &ec, ecs::sce
 		&state,
 		&fll);
 
-	if (scene == ecs::scene::GAMESCENE)Game::Instance()->get_mngr()->getComponent<WaveManager>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::WAVE))->newEnemy();
-
+	if (scene == ecs::scene::GAMESCENE)
+		Game::Instance()->get_mngr()->getComponent<WaveManager>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::WAVE))->newEnemy();
+	// Si es online, agregar el componente de sincronizacion
+	online_enemy(e);
 	return e;
+}
+void GameScene::select_create_dumb_enemy(GameStructs::DumbEnemyProperties &ec)
+{
+	switch (ec._type)
+	{
+	case 0:
+		std::cout << "spawning sarno rata" << std::endl;
+		spawn_sarno_rata(ec._pos, ecs::scene::GAMESCENE, (uint8_t)ec._id);
+		break;
+	case 1:
+		std::cout << "spawning michi mafioso" << std::endl;
+		spawn_michi_mafioso(ec._pos, ecs::scene::GAMESCENE, ec._id);
+		break;
+	case 2:
+		std::cout << "spawning plim plim" << std::endl;
+		spawn_plim_plim(ec._pos, ecs::scene::GAMESCENE, ec._id);
+		break;
+	case 3:
+		std::cout << "spawning boom" << std::endl;
+		spawn_boom(ec._pos, ecs::scene::GAMESCENE, ec._id);
+		break;
+	case 4:
+		std::cout << "spawning ratatouille" << std::endl;
+		spawn_ratatouille(ec._pos, ecs::scene::GAMESCENE, ec._id);
+		break;
+	case 5:
+		std::cout << "spawning rata basurera" << std::endl;
+		spawn_rata_basurera(ec._pos, ecs::scene::GAMESCENE, ec._id);
+		break;
+	case 6:
+		std::cout << "spawning rey basurero" << std::endl;
+		spawn_rey_basurero(ec._pos, ecs::scene::GAMESCENE, ec._id);
+		break;
+	case 7:
+		std::cout << "spawning super michi mafioso" << std::endl;
+		spawn_super_michi_mafioso(ec._pos, ecs::scene::GAMESCENE, ec._id);
+		break;
+	case 8:
+		std::cout << "spawning cat kuza" << std::endl;
+		spawn_catkuza(ec._pos, ecs::scene::GAMESCENE, ec._id);
+		break;
+	default:
+		break;
+	}
 }
 ecs::entity_t GameScene::dumb_enemy(GameStructs::EnemyProperties &ec, ecs::sceneId_t scene)
 {
@@ -387,22 +436,45 @@ ecs::entity_t GameScene::dumb_enemy(GameStructs::EnemyProperties &ec, ecs::scene
 	float randSize = float(sdlutils().rand().nextInt(6, 10)) / 10.0f;
 	auto &&tr = *new Transform(ec.start_pos, ec.dir, ec.r, ec.s * randSize);
 	auto &&rect = *new rect_component{0, 0, ec.width * randSize, ec.height * randSize};
-	auto &&syn = *new EnemySynchronize();
+	auto &&rigidbody = *new rigidbody_component{rect_f32{{0.0f, -0.15f}, {0.5f, 0.6f}}, mass_f32{3.0f}, 0.05f};
+	auto &&col = *new collisionable{tr, rigidbody, rect, collisionable_option_none};
 
 	auto e = create_entity(
 		ecs::grp::ENEMY,
 		scene,
 		&tr,
 		&rect,
-		&syn,
 		new dyn_image(
 			rect_f32{{0, 0}, {1, 1}},
 			rect,
 			manager.getComponent<camera_component>(manager.getHandler(ecs::hdlr::CAMERA))->cam,
 			sdlutils().images().at(ec.sprite_key),
-			tr));
+			tr),
+		new Health(ec.health),
+		new id_component(ec._id),
+		&rigidbody,
+		new FlipXController(),
+		&col);
 
+	// Agregar el componente de sincronizacion
 	online_enemy(e);
+	return e;
+}
+ecs::entity_t GameScene::get_network_enemy(uint8_t _id)
+{
+	auto &&manager = *Game::Instance()->get_mngr();
+	auto e = nullptr;
+	auto &group = manager.getEntities(ecs::grp::ENEMY);
+	for (const auto &ent : group)
+	{
+		auto n = group.size();
+		auto _id_c = manager.getComponent<id_component>(ent);
+		if (_id_c != nullptr && _id_c->getId() == _id)
+		{
+			return ent;
+		}
+	}
+
 	return e;
 }
 void GameScene::online_enemy(ecs::entity_t ec)
@@ -410,26 +482,27 @@ void GameScene::online_enemy(ecs::entity_t ec)
 	if (Game::Instance()->is_host() || Game::Instance()->is_client())
 	{
 		auto &&manager = *Game::Instance()->get_mngr();
-		// manager.addComponent<EnemySynchronize>(ec);
+		manager.addComponent<EnemySynchronize>(ec);
 	}
 }
 #pragma endregion
 
 #pragma region Super Michi Mafioso
-void GameScene::spawn_super_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene)
+uint8_t GameScene::spawn_super_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene, uint8_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
 	GameStructs::EnemyProperties ec = GameStructs::EnemyProperties{
 		"super_michi_mafioso", // sprite_key
-		posVec,				   // start_pos
-		GameStructs::DEFAULT,  // enemy_type
-		25,					   // health
-		1.75f,				   // width
-		2.25f,				   // height
-		GameStructs::CLOSEST,  // target_strategy
-		{0.0f, 0.0f},		   // velocity
-		0.0f,				   // rotation
-		2.0f				   // scale
+		_id,
+		posVec,				  // start_pos
+		GameStructs::DEFAULT, // enemy_type
+		25,					  // health
+		1.75f,				  // width
+		2.25f,				  // height
+		GameStructs::CLOSEST, // target_strategy
+		{0.0f, 0.0f},		  // velocity
+		0.0f,				  // rotation
+		2.0f				  // scale
 	};
 
 	if (Game::Instance()->is_host() || Game::Instance()->is_network_none())
@@ -569,22 +642,25 @@ void GameScene::spawn_super_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene)
 
 		// Estado inicial
 		state->set_initial_state("Walking");
+		return Game::Instance()->get_mngr()->getComponent<id_component>(e)->getId();
 	}
 	else
 	{
 		dumb_enemy(ec, scene);
 	}
+	return 0;
 }
 #pragma endregion
 
 #pragma region Catkuza
-void GameScene::spawn_catkuza(Vector2D posVec, ecs::sceneId_t scene)
+uint8_t GameScene::spawn_catkuza(Vector2D posVec, ecs::sceneId_t scene, uint8_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
-	auto&& weapon = *new WeaponCatKuza();
+	auto &&weapon = *new WeaponCatKuza();
 
 	auto ec = GameStructs::EnemyProperties{
 		"catkuza",
+		_id,
 		posVec,
 		GameStructs::DEFAULT,
 		30,
@@ -593,7 +669,7 @@ void GameScene::spawn_catkuza(Vector2D posVec, ecs::sceneId_t scene)
 		GameStructs::CLOSEST,
 		{0.0f, 0.0f},
 		0.0f,
-		2.0f };
+		2.0f};
 
 	if (Game::Instance()->is_host() || Game::Instance()->is_network_none())
 	{
@@ -783,22 +859,24 @@ void GameScene::spawn_catkuza(Vector2D posVec, ecs::sceneId_t scene)
 
 		// Estado inicial
 		state->set_initial_state("Walking");
+		return Game::Instance()->get_mngr()->getComponent<id_component>(e)->getId();
 	}
 	else
 	{
 		dumb_enemy(ec, scene);
 	}
+	return 0;
 }
 #pragma endregion
 
 #pragma region Sarno Rata
-void GameScene::spawn_sarno_rata(Vector2D posVec, ecs::sceneId_t scene)
+uint8_t GameScene::spawn_sarno_rata(Vector2D posVec, ecs::sceneId_t scene, uint8_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
-
 	GameStructs::EnemyProperties ec =
 		GameStructs::EnemyProperties{
-			"sarno_rata",		  // sprite_key
+			"sarno_rata", // sprite_key
+			_id,
 			posVec,				  // start_pos
 			GameStructs::DEFAULT, // enemy_type
 			7,					  // health
@@ -818,7 +896,7 @@ void GameScene::spawn_sarno_rata(Vector2D posVec, ecs::sceneId_t scene)
 			ec,
 			scene,
 			static_cast<Weapon *>(&weapon));
-			
+
 		Transform *tr = manager.getComponent<Transform>(e);
 		MovementController *mc = manager.getComponent<MovementController>(e);
 		mc->set_max_speed(0.08);
@@ -844,21 +922,24 @@ void GameScene::spawn_sarno_rata(Vector2D posVec, ecs::sceneId_t scene)
 		state->set_initial_state("Walking");
 
 		online_enemy(e);
+		return Game::Instance()->get_mngr()->getComponent<id_component>(e)->getId();
 	}
 	else
 	{
 		dumb_enemy(ec, scene);
 	}
+	return 0;
 }
 #pragma endregion
 
 #pragma region Michi Mafioso
-void GameScene::spawn_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene)
+uint8_t GameScene::spawn_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene, uint8_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
 	GameStructs::EnemyProperties ec =
 		GameStructs::EnemyProperties{
-			"michi_mafioso",	  // sprite_key
+			"michi_mafioso", // sprite_key
+			_id,
 			posVec,				  // start_pos
 			GameStructs::DEFAULT, // enemy_type
 			5,					  // health
@@ -877,13 +958,12 @@ void GameScene::spawn_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene)
 			ec,
 			scene,
 			static_cast<Weapon *>(&weapon));
-			
+
 		Transform *tr = manager.getComponent<Transform>(e);
 		MovementController *mc = manager.getComponent<MovementController>(e);
 		mc->set_max_speed(0.05);
 		StateMachine *state = manager.getComponent<StateMachine>(e);
 		auto state_cm = state->getConditionManager();
-
 
 		Follow *fll = manager.getComponent<Follow>(e);
 		fll->act_follow();
@@ -895,7 +975,7 @@ void GameScene::spawn_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene)
 		state->add_state("Walking", walkingState);
 		state->add_state("Attacking", attackingState);
 		state->add_state("Backing", backingState);
-		
+
 		float dist_to_attack = 5.0f;
 		float dist_to_fallback = 4.5f;
 
@@ -919,22 +999,25 @@ void GameScene::spawn_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene)
 							  { return !state_cm->is_player_near(fll->get_act_follow(), tr, dist_to_fallback); });
 
 		state->set_initial_state("Walking");
+		return Game::Instance()->get_mngr()->getComponent<id_component>(e)->getId();
 	}
 	else
 	{
 		dumb_enemy(ec, scene);
 	}
+	return 0;
 }
 #pragma endregion
 
 #pragma region Plim Plim
-void GameScene::spawn_plim_plim(Vector2D posVec, ecs::sceneId_t scene)
+uint8_t GameScene::spawn_plim_plim(Vector2D posVec, ecs::sceneId_t scene, uint8_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
 
 	GameStructs::EnemyProperties ec =
 		GameStructs::EnemyProperties{
-			"plim_plim",		  // sprite_key
+			"plim_plim", // sprite_key
+			_id,
 			posVec,				  // start_pos
 			GameStructs::DEFAULT, // enemy_type
 			4,					  // health
@@ -976,21 +1059,24 @@ void GameScene::spawn_plim_plim(Vector2D posVec, ecs::sceneId_t scene)
 							  { return !state_cm->is_player_near(fll->get_act_follow(), tr, 6.0f); });
 
 		state->set_initial_state("Walking");
+		return Game::Instance()->get_mngr()->getComponent<id_component>(e)->getId();
 	}
 	else
 	{
 		dumb_enemy(ec, scene);
 	}
+	return 0;
 }
 #pragma endregion
 
 #pragma region Boom
-void GameScene::spawn_boom(Vector2D posVec, ecs::sceneId_t scene)
+uint8_t GameScene::spawn_boom(Vector2D posVec, ecs::sceneId_t scene, uint8_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
 	GameStructs::EnemyProperties ec =
 		GameStructs::EnemyProperties{
-			"boom",				  // sprite_key
+			"boom", // sprite_key
+			_id,
 			posVec,				  // start_pos
 			GameStructs::DEFAULT, // enemy_type
 			28,					  // health
@@ -1024,7 +1110,7 @@ void GameScene::spawn_boom(Vector2D posVec, ecs::sceneId_t scene)
 		auto attackingState = std::make_shared<AttackingState>(tr, fll, &weapon, false,
 															   std::function<bool()>([health]() -> bool
 																					 { health->takeDamage(health->getMaxHealth());
-														     return true; }));
+		return true; }));
 
 		state->add_state("Walking", walkingState);
 		state->add_state("Attacking", attackingState);
@@ -1033,21 +1119,24 @@ void GameScene::spawn_boom(Vector2D posVec, ecs::sceneId_t scene)
 							  { return state_cm->is_player_near(fll->get_act_follow(), tr, 1.0f); });
 
 		state->set_initial_state("Walking");
+		return Game::Instance()->get_mngr()->getComponent<id_component>(e)->getId();
 	}
 	else
 	{
 		dumb_enemy(ec, scene);
 	}
+	return 0;
 }
 #pragma endregion
 
 #pragma region Ratatouille
-void GameScene::spawn_ratatouille(Vector2D posVec, ecs::sceneId_t scene)
+uint8_t GameScene::spawn_ratatouille(Vector2D posVec, ecs::sceneId_t scene, uint8_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
 
 	GameStructs::EnemyProperties ec = GameStructs::EnemyProperties{
-		"ratatouille",		  // sprite_key
+		"ratatouille", // sprite_key
+		_id,
 		posVec,				  // start_pos
 		GameStructs::DEFAULT, // enemy_type (especial, no usa weapon)
 		2,					  // health
@@ -1069,7 +1158,7 @@ void GameScene::spawn_ratatouille(Vector2D posVec, ecs::sceneId_t scene)
 		auto &&tr_a = *new Transform(ec.start_pos, ec.dir, ec.r, ec.s * randSize);
 		auto &&fll = *new Follow(ec.follow);
 		auto &&col = *new collisionable{tr_a, rigidbody, rect, collisionable_option_trigger};
-		auto &&mc = *new MovementController(ec.max_speed*1.4, ec.acceleration, ec.decceleration * deccel_spawned_creatures_multi);
+		auto &&mc = *new MovementController(ec.max_speed * 1.4, ec.acceleration, ec.decceleration * deccel_spawned_creatures_multi);
 		auto &&state = *new StateMachine();
 
 		auto e = create_entity(
@@ -1118,6 +1207,7 @@ void GameScene::spawn_ratatouille(Vector2D posVec, ecs::sceneId_t scene)
 							 { return !state_cm->is_player_near(fll.get_act_follow(), tr, dist_to_rotate * 1.8f); });
 
 		state.set_initial_state("Walking");
+		return Game::Instance()->get_mngr()->getComponent<id_component>(e)->getId();
 	}
 	else
 	{
@@ -1125,19 +1215,19 @@ void GameScene::spawn_ratatouille(Vector2D posVec, ecs::sceneId_t scene)
 	}
 
 	Game::Instance()->get_mngr()->getComponent<WaveManager>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::WAVE))->newEnemy();
-
-	//Game::Instance()->get_mngr()->getHandler()
+	return 0;
 }
 #pragma endregion
 
 #pragma region Rata Basurera
-void GameScene::spawn_rata_basurera(Vector2D posVec, ecs::sceneId_t scene)
+uint8_t GameScene::spawn_rata_basurera(Vector2D posVec, ecs::sceneId_t scene, uint8_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
 
 	GameStructs::EnemyProperties ec =
 		GameStructs::EnemyProperties{
-			"basurero",			  // sprite_key
+			"basurero", // sprite_key
+			_id,
 			posVec,				  // start_pos
 			GameStructs::DEFAULT, // enemy_type
 			16,					  // health
@@ -1189,22 +1279,25 @@ void GameScene::spawn_rata_basurera(Vector2D posVec, ecs::sceneId_t scene)
 							  { return state_cm->is_player_near(fll->get_act_follow(), tr, 50.0f); });
 
 		state->set_initial_state("Walking");
+		return Game::Instance()->get_mngr()->getComponent<id_component>(e)->getId();
 	}
 	else
 	{
 		dumb_enemy(ec, scene);
+		return 0;
 	}
 }
 #pragma endregion
 
 #pragma region Rey Basurero
-void GameScene::spawn_rey_basurero(Vector2D posVec, ecs::sceneId_t scene)
+uint8_t GameScene::spawn_rey_basurero(Vector2D posVec, ecs::sceneId_t scene, uint8_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
 
 	GameStructs::EnemyProperties ec =
 		GameStructs::EnemyProperties{
-			"rey_basurero",		  // sprite_key
+			"rey_basurero", // sprite_key
+			_id,
 			posVec,				  // start_pos
 			GameStructs::DEFAULT, // enemy_type
 			14,					  // health
@@ -1264,11 +1357,13 @@ void GameScene::spawn_rey_basurero(Vector2D posVec, ecs::sceneId_t scene)
 							  { return !state_cm->is_player_near(fll->get_act_follow(), tr, dist_to_fallback); });
 
 		state->set_initial_state("Walking");
+		return Game::Instance()->get_mngr()->getComponent<id_component>(e)->getId();
 	}
 	else
 	{
 		dumb_enemy(ec, scene);
 	}
+	return 0;
 }
 #pragma endregion
 
@@ -1334,7 +1429,7 @@ ecs::entity_t GameScene::generate_proyectile(const GameStructs::BulletProperties
 	auto &&rect = *new rect_component{0, 0, bp.width, bp.height};
 	auto &&player_rigidbody = *new rigidbody_component{rect_f32{{0.15f, -0.125}, {0.5f, 0.75f}}, mass_f32{7.0f}, 1.0f};
 	auto &&player_collisionable = *new collisionable{transform, player_rigidbody, rect, collisionable_option_trigger};
-	
+
 	auto e = create_entity(
 		gid,
 		scene,
@@ -1352,9 +1447,9 @@ ecs::entity_t GameScene::generate_proyectile(const GameStructs::BulletProperties
 		&player_collisionable,
 		new bullet_collision_component(bp));
 
-	//if (bp.bitset != nullptr)
-		//manager->addComponent<collision_registration_by_id>(e, bp.bitset);
-	//else 
+	// if (bp.bitset != nullptr)
+	// manager->addComponent<collision_registration_by_id>(e, bp.bitset);
+	// else
 	if (bp.collision_filter == GameStructs::collide_with::enemy || bp.collision_filter == GameStructs::collide_with::all)
 		manager->addComponent<collision_registration_by_id>(e, bp.bitset);
 	return e;
@@ -1376,36 +1471,43 @@ void GameScene::event_callback1(const event_system::event_receiver::Msg &m)
 	mngr.getComponent<WaveManager>(mngr.getHandler(ecs::hdlr::WAVE))->reset_wave_manager();
 
 	// si es multiplayer hay que hacer add del componente fantastma
-	if (Game::Instance()->is_host() || Game::Instance()->is_client()) {
+	if (Game::Instance()->is_host() || Game::Instance()->is_client())
+	{
 		auto player = mngr.getHandler(ecs::hdlr::PLAYER);
-		if (!mngr.hasComponent<GhostStateComponent>(player)) mngr.addComponent<GhostStateComponent>(player);
+		if (!mngr.hasComponent<GhostStateComponent>(player))
+			mngr.addComponent<GhostStateComponent>(player);
 	}
-	else {
+	else
+	{
 		// sino se resetea al jugador y pasa al gameOver
 		reset_player();
 		Game::Instance()->change_Scene(Game::GAMEOVER);
 	}
 }
 
-
-void GameScene::host_handle_menssage(network_context& ctx)
+void GameScene::host_handle_menssage(network_context &ctx)
 {
-	if (SDLNet_CheckSockets(ctx.profile.host.clients_host_set, 0) > 0) {
-		for (network_connection_size i = 0; i < ctx.profile.host.sockets_to_clients.connection_count; ++i) {
-			TCPsocket& connection = ctx.profile.host.sockets_to_clients.connections[i];
-			if (SDLNet_SocketReady(connection)) {
+	if (SDLNet_CheckSockets(ctx.profile.host.clients_host_set, 0) > 0)
+	{
+		for (network_connection_size i = 0; i < ctx.profile.host.sockets_to_clients.connection_count; ++i)
+		{
+			TCPsocket &connection = ctx.profile.host.sockets_to_clients.connections[i];
+			if (SDLNet_SocketReady(connection))
+			{
 				network_message_dynamic_pack dyn_message = network_message_dynamic_pack_receive(connection);
-				const uint16_t type_n{ dyn_message->header.type_n };
-				const uint16_t type_h{ SDLNet_Read16(&type_n) };
-				switch (type_h) {
-				case network_message_type_player_update: {
+				const uint16_t type_n{dyn_message->header.type_n};
+				const uint16_t type_h{SDLNet_Read16(&type_n)};
+				switch (type_h)
+				{
+				case network_message_type_player_update:
+				{
 					auto message = network_message_dynamic_pack_into<network_message_player_update>(std::move(dyn_message));
-					auto&& payload = message->payload.content;
+					auto &&payload = message->payload.content;
 
 					GameStructs::NetPlayerData playerData;
 					playerData.id = SDLNet_Read32(&payload.player_id_n);
 
-					uint32_t  key_length = SDLNet_Read32(&payload.sprite_key_length);
+					uint32_t key_length = SDLNet_Read32(&payload.sprite_key_length);
 					playerData.sprite_key.assign(payload.sprite_key, key_length);
 
 					key_length = SDLNet_Read32(&payload.anim_key_length);
@@ -1423,10 +1525,12 @@ void GameScene::host_handle_menssage(network_context& ctx)
 
 					auto player_update_msg = create_player_update_message(playerData);
 
-					for (network_connection_size i = 0; i < ctx.profile.host.sockets_to_clients.connection_count; ++i) {
-						TCPsocket& client = ctx.profile.host.sockets_to_clients.connections[i];
+					for (network_connection_size i = 0; i < ctx.profile.host.sockets_to_clients.connection_count; ++i)
+					{
+						TCPsocket &client = ctx.profile.host.sockets_to_clients.connections[i];
 
-						if (client != connection) {
+						if (client != connection)
+						{
 							network_message_pack_send(
 								client,
 								network_message_pack_create(network_message_type_player_update, player));
@@ -1434,7 +1538,8 @@ void GameScene::host_handle_menssage(network_context& ctx)
 					}
 					break;
 				}
-				default: {
+				default:
+				{
 					break;
 				}
 				}
@@ -1444,23 +1549,26 @@ void GameScene::host_handle_menssage(network_context& ctx)
 	}
 }
 
-void GameScene::client_handle_menssage(network_context& ctx)
+void GameScene::client_handle_menssage(network_context &ctx)
 {
 	int active_sockets = SDLNet_CheckSockets(ctx.profile.client.client_set, 0);
-	if (active_sockets > 0 && SDLNet_SocketReady(ctx.profile.client.socket_to_host)) {
+	if (active_sockets > 0 && SDLNet_SocketReady(ctx.profile.client.socket_to_host))
+	{
 
 		auto dyn_message = network_message_dynamic_pack_receive(ctx.profile.client.socket_to_host);
-		const uint16_t type_n{ dyn_message->header.type_n };
-		const uint16_t type_h{ SDLNet_Read16(&type_n) };
-		switch (type_h) {
-		case network_message_type_player_update: {
+		const uint16_t type_n{dyn_message->header.type_n};
+		const uint16_t type_h{SDLNet_Read16(&type_n)};
+		switch (type_h)
+		{
+		case network_message_type_player_update:
+		{
 			auto message = network_message_dynamic_pack_into<network_message_player_update>(std::move(dyn_message));
-			auto&& payload = message->payload.content;
+			auto &&payload = message->payload.content;
 
 			GameStructs::NetPlayerData playerData;
 			playerData.id = SDLNet_Read32(&payload.player_id_n);
 
-			uint32_t  key_length = SDLNet_Read32(&payload.sprite_key_length);
+			uint32_t key_length = SDLNet_Read32(&payload.sprite_key_length);
 			playerData.sprite_key.assign(payload.sprite_key, key_length);
 
 			key_length = SDLNet_Read32(&payload.anim_key_length);
@@ -1475,14 +1583,48 @@ void GameScene::client_handle_menssage(network_context& ctx)
 			Game::Instance()->get_mngr()->getComponent<PlayerSynchronize>(player)->updatePlayer(playerData);
 			break;
 		}
-		default: {
+		case network_message_type_create_enemy:
+		{
+			auto message = network_message_dynamic_pack_into<network_message_enemy_create>(std::move(dyn_message));
+			auto &&payload = message->payload.content;
+
+			GameStructs::DumbEnemyProperties _enemy_properties;
+			_enemy_properties._id = SDLNet_Read16(&payload._enemy_id);
+			_enemy_properties._type = SDLNet_Read16(&payload._type);
+
+			_enemy_properties._pos.setX(static_cast<int16_t>(SDLNet_Read16(&payload._pos[0])) / static_cast<float>(fact_float_int));
+			_enemy_properties._pos.setY(static_cast<int16_t>(SDLNet_Read16(&payload._pos[1])) / static_cast<float>(fact_float_int));
+			std::cout << "Creando client enemigo con ID: " << (int)_enemy_properties._id << std::endl;
+
+			select_create_dumb_enemy(_enemy_properties);
+			break;
+		}
+		case network_message_type_enemy_update:
+		{
+			auto message = network_message_dynamic_pack_into<network_message_enemy_update>(std::move(dyn_message));
+			auto &&payload = message->payload.content;
+
+			GameStructs::DumbEnemyProperties _enemy_properties;
+			_enemy_properties._id = SDLNet_Read16(&payload._enemy_id);
+			_enemy_properties._health = SDLNet_Read16(&payload._health_n);
+			_enemy_properties._pos.setX(static_cast<int16_t>(SDLNet_Read16(&payload._pos[0])) / static_cast<float>(fact_float_int));
+			_enemy_properties._pos.setY(static_cast<int16_t>(SDLNet_Read16(&payload._pos[1])) / static_cast<float>(fact_float_int));
+			//std::cout << "Actualizando enemigo con ID: " << (int)_enemy_properties._id << std::endl;
+
+			auto enemy = get_network_enemy(_enemy_properties._id);
+			if(enemy != nullptr)
+				Game::Instance()->get_mngr()->getComponent<EnemySynchronize>(enemy)->update_enemy(_enemy_properties);
+			break;
+		}
+		default:
+		{
 			break;
 		}
 		}
 	}
 }
 
-bool GameScene::change_player_tex(uint32_t playerId, const std::string& key_name)
+bool GameScene::change_player_tex(uint32_t playerId, const std::string &key_name)
 {
 	auto player = Game::Instance()->get_network_state().game_state.user_players.at(playerId);
 	auto&& manager = *Game::Instance()->get_mngr();
@@ -1507,17 +1649,17 @@ bool GameScene::change_player_filter(uint32_t playerId, filter filter)
 
 ecs::entity_t GameScene::create_dumb_player(ecs::sceneId_t scene, uint32_t playerId, std::string tex_name)
 {
-	auto&& manager = *Game::Instance()->get_mngr();
-	auto&& camera = manager.getComponent<camera_component>(manager.getHandler(ecs::hdlr::CAMERA))->cam;
+	auto &&manager = *Game::Instance()->get_mngr();
+	auto &&camera = manager.getComponent<camera_component>(manager.getHandler(ecs::hdlr::CAMERA))->cam;
 
-	auto&& player_transform = *new Transform({ 1.0f, 2.0f }, { 0.0f, 0.0f }, 0.0f, 2.0f);
-	auto&& player_rect = *new rect_component{ 0, 0, 1.125f, 1.5f };
+	auto &&player_transform = *new Transform({1.0f, 2.0f}, {0.0f, 0.0f}, 0.0f, 2.0f);
+	auto &&player_rect = *new rect_component{0, 0, 1.125f, 1.5f};
 	ecs::entity_t player = create_entity(
 		ecs::grp::PLAYER,
 		scene,
 		&player_transform,
 		new dyn_image_with_frames(
-			rect_f32{ {0, 0}, {0.2, 1} },
+			rect_f32{{0, 0}, {0.2, 1}},
 			player_rect,
 			camera,
 			sdlutils().images().at(tex_name),
@@ -1525,7 +1667,7 @@ ecs::entity_t GameScene::create_dumb_player(ecs::sceneId_t scene, uint32_t playe
 		new render_ordering{1},
 		new Health(100, true));
 
-	auto* anim = manager.addComponent<AnimationComponent>(player);
+	auto *anim = manager.addComponent<AnimationComponent>(player);
 	anim->add_animation("andar", 1, 5, 100);
 	anim->add_animation("idle", 0, 0, 100);
 

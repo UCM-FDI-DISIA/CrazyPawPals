@@ -16,14 +16,24 @@
       "size": 100
     },
     {
-      "id": "ALFA_SLAB",
+      "id": "ALFA_SLAB_200",
       "file": "resources/fonts/AlfaSlabOne-Regular.ttf",
       "size": 200
+    },
+    {
+      "id": "ALFA_SLAB",
+      "file": "resources/fonts/AlfaSlabOne-Regular.ttf",
+      "size": 16
     },
     {
       "id": "RUBIK_MONO",
       "file": "resources/fonts/RubikMonoOne-Regular.ttf",
       "size": 200
+    },
+    {
+      "id": "RUBIK_MONO_16",
+      "file": "resources/fonts/RubikMonoOne-Regular.ttf",
+      "size": 16
     },
     {
       "id": "CAL_SANS",
@@ -259,6 +269,26 @@
     {
       "id": "ratatouille",
       "file": "resources/images/enemies/ratatouille.png"
+    },
+    {
+      "id": "claw1",
+      "file": "resources/images/ui/decoration/claw.png"
+    },
+    {
+      "id": "claw2",
+      "file": "resources/images/ui/decoration/claw_1.png"
+    },
+    {
+      "id": "claw3",
+      "file": "resources/images/ui/decoration/claw_2.png"
+    },
+    {
+      "id": "curtain_reaper_title",
+      "file": "resources/images/ui/decoration/curtain_reaper.png"
+    },
+    {
+      "id": "ui_star",
+      "file": "resources/images/ui/decoration/stars.png"
     },
     {
       "id": "manaorb",

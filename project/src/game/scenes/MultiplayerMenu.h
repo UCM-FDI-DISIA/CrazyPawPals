@@ -27,4 +27,7 @@ private:
 	Texture ip_input;
 	std::string _ipHost;
 	bool input_field_has_focus;
+
+	ImageForButton* _lastChosenSkin;
+	ImageForButton* _playButton;
 };

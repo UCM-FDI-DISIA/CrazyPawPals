@@ -4,23 +4,72 @@
 #include "../../../game/Game.h"
 #include <algorithm>
 #include "../movement/Transform.h"
+#include "../rendering/dyn_image.hpp"
+#include "../Health.h"
+#include "../id_component.h"
+#include "../../../network/network_message.hpp"
 
-
-EnemySynchronize::EnemySynchronize() 
-	: _tr(nullptr) {};
-
+EnemySynchronize::EnemySynchronize()
+	: _enemy_id(-1), _ht(nullptr), _tr(nullptr) {};
 
 EnemySynchronize::~EnemySynchronize() {};
 
 void EnemySynchronize::initComponent()
 {
-	_tr = Game::Instance()->get_mngr()->getComponent<Transform>(_ent);
-	
+	auto &&mngr = Game::Instance()->get_mngr();
+
+	_tr = mngr->getComponent<Transform>(_ent);
+	assert(_tr != nullptr);
+	_ht = mngr->getComponent<Health>(_ent);
+	assert(_ht != nullptr);
+	auto id_comp = mngr->getComponent<id_component>(_ent);
+	_enemy_id = id_comp->getId();
+	std::cout << "Enemy ID en syncronize: " << (int)_enemy_id << std::endl;
+
+	_dy = Game::Instance()->get_mngr()->getComponent<dyn_image>(_ent);
+	assert(_dy != nullptr);
+
+	assert(_enemy_id != -1);
 }
 
-void
-EnemySynchronize::update(uint32_t delta_time) {
+void EnemySynchronize::update(uint32_t delta_time)
+{
 	(void)delta_time;
-	
+	if (Game::Instance()->is_host())
+		send_enemy_update();
 }
 
+void EnemySynchronize::send_enemy_update()
+{
+	auto &network = Game::Instance()->get_network();
+
+	GameStructs::DumbEnemyProperties enemyData;
+	enemyData._id = _enemy_id;
+	std::cout << "Enemy ID en syncronize: " << (int)enemyData._id << std::endl;
+
+	enemyData._pos = _tr->getPos();
+	enemyData._health = _ht->getHealth();
+
+	auto msg = create_update_enemy_message(enemyData);
+	network_message_pack_send(
+		network.profile.client.socket_to_host,
+		network_message_pack_create(network_message_type_enemy_update, msg));
+}
+
+void EnemySynchronize::update_enemy(GameStructs::DumbEnemyProperties &data)
+{
+	auto &&mngr = Game::Instance()->get_mngr();
+
+	auto id_comp = mngr->getComponent<id_component>(_ent);
+
+	_enemy_id = id_comp->getId();
+	std::cout << "Enemy ID en syncronize: " << (int)_enemy_id << std::endl;
+
+	Vector2D _last_pos = _tr->getPos();
+	_tr->setPos(data._pos);
+	Vector2D delta = _tr->getPos() - _last_pos;
+
+	_dy->flip = (delta.getX() >= 0) ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
+
+	_ht->setHeatlh(data._health);
+}

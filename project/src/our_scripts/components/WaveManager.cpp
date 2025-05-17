@@ -11,6 +11,7 @@
 #include "../wave_events/ice_skating_event.hpp"
 #include "../wave_events/star_shower_event.hpp"
 #include "../log_writer_to_csv.hpp"
+#include "../../network/network_message.hpp"
 
 #ifdef GENERATE_LOG
 #include "Health.h"
@@ -110,10 +111,10 @@ void WaveManager::_spawn_boss()
     enemy_spawn_caller* esc;
     switch (sdlutils().rand().nextInt(0, 2)) {
     case 0:
-        esc = new enemy_spawn_caller([](Vector2D v) {GameScene::spawn_catkuza(v); });
+        esc = new enemy_spawn_caller([](Vector2D v)->uint8_t{return GameScene::spawn_catkuza(v); });
         break;
     case 1:
-        esc = new enemy_spawn_caller([](Vector2D v) {GameScene::spawn_super_michi_mafioso(v); });
+        esc = new enemy_spawn_caller([](Vector2D v)->uint8_t{return GameScene::spawn_super_michi_mafioso(v); });
         break;
     default:
         assert(false && "unreachable");
@@ -144,35 +145,35 @@ void WaveManager::spawn_next_group_of_enemies()
     switch ((enemyType)_enemy_types_for_current_wave[index])
     {
         case sarno_rata:
-            esc = new enemy_spawn_caller([](Vector2D v) {GameScene::spawn_sarno_rata(v); });
+            esc = new enemy_spawn_caller([](Vector2D v) ->uint8_t{return GameScene::spawn_sarno_rata(v); });
             tipoEnemigo = "sarno rata";
             break;
         case michi_mafioso:
-            esc = new enemy_spawn_caller([](Vector2D v) {GameScene::spawn_michi_mafioso(v); });
+            esc = new enemy_spawn_caller([](Vector2D v) ->uint8_t {return GameScene::spawn_michi_mafioso(v); });
             tipoEnemigo = "michi mafioso";
             break;
         case plim_plim:
-            esc = new enemy_spawn_caller([](Vector2D v) {GameScene::spawn_plim_plim(v); });
+            esc = new enemy_spawn_caller([](Vector2D v) ->uint8_t {return GameScene::spawn_plim_plim(v); });
             tipoEnemigo = "plim plim";
             break;
         case boom:
-            esc = new enemy_spawn_caller([](Vector2D v) {GameScene::spawn_boom(v); });
+            esc = new enemy_spawn_caller([](Vector2D v) ->uint8_t {return GameScene::spawn_boom(v); });
             tipoEnemigo = "boom";
             break;
         case ratatouille:
-            esc = new enemy_spawn_caller([](Vector2D v) {GameScene::spawn_ratatouille(v); });
+            esc = new enemy_spawn_caller([](Vector2D v) ->uint8_t {return GameScene::spawn_ratatouille(v); });
             tipoEnemigo = "ratatouille";
             break;
         case catkuza:
-            esc = new enemy_spawn_caller([](Vector2D v) {GameScene::spawn_catkuza(v); });
+            esc = new enemy_spawn_caller([](Vector2D v) ->uint8_t {return  GameScene::spawn_catkuza(v); });
             tipoEnemigo = "catkuza";
             break;
         case super_michi_mafioso:
-            esc = new enemy_spawn_caller([](Vector2D v) {GameScene::spawn_super_michi_mafioso(v); });
+            esc = new enemy_spawn_caller([](Vector2D v) ->uint8_t {return GameScene::spawn_super_michi_mafioso(v); });
             tipoEnemigo = "super michi mafioso";
             break;
         case rata_basurera:
-            esc = new enemy_spawn_caller([](Vector2D v) {GameScene::spawn_rata_basurera(v); });
+            esc = new enemy_spawn_caller([](Vector2D v) ->uint8_t {return GameScene::spawn_rata_basurera(v); });
             tipoEnemigo = "rata basurera";
             break;
         default: {
@@ -182,7 +183,29 @@ void WaveManager::spawn_next_group_of_enemies()
         }
     }
     for (uint8_t i = 0; i < enemy_spawn_data[_enemy_types_for_current_wave[index]].number_of_enemies_simultaneous_spawn; ++i) {
-        esc->spawn_callback();
+        GameStructs::DumbEnemyProperties dep;
+        auto aux = esc->spawn_callback();//returns initial pos Vector2D
+        if (Game::Instance()->is_network_none()) {
+            return;
+        }
+        if (Game::Instance()->is_host()) {
+            dep._type = (enemyType)_enemy_types_for_current_wave[index]; //enemy ID
+            dep._id = aux.second;
+            dep._pos = aux.first;
+            if (Game::Instance()->get_network_state().connections.connected_users > 1) {
+                network_context& network = Game::Instance()->get_network();
+                //mandar a todos los clientes el mensaje de que el host a dado al boton de play
+                for (network_connection_size i = 0; i < network.profile.host.sockets_to_clients.connection_count; ++i) {
+                    TCPsocket& client = network.profile.host.sockets_to_clients.connections[i];
+                    network_message_pack_send(
+                        client,
+                        network_message_pack_create(network_message_type_create_enemy, create_enemy(dep))
+                    );
+			        std::cout << "Creando enemigo en el client: " << (int)i << " de tipo: "<< (enemyType)dep._type << std::endl;
+                    
+                }
+            }
+        }
     }
 #ifdef GENERATE_LOG
     log_writer_to_csv::Instance()->add_new_log("SPAWN ENEMIES", "TIPO", tipoEnemigo, "Numero", std::to_string(enemy_spawn_data[_enemy_types_for_current_wave[index]].number_of_enemies_simultaneous_spawn));
@@ -422,7 +445,7 @@ void WaveManager::choose_new_event()
     //TODO elegir evento y llamar a la función de iniciar
 }
 
-void enemy_spawn_caller::spawn_callback()
+std::pair<Vector2D,uint8_t> enemy_spawn_caller::spawn_callback()
 {
     //Choose random spawn pos
     std::random_device rd;
@@ -431,5 +454,7 @@ void enemy_spawn_caller::spawn_callback()
     float rAng = rAngGen(gen); // (0, 360)
     Vector2D posVec = Vector2D(cos(rAng) * Game::Instance()->get_world_half_size().first, Game::Instance()->get_world_half_size().second * sin(rAng));
     //spawn
-    spawn_call(posVec);
+    uint8_t aux = spawn_call(posVec);
+
+    return std::make_pair(posVec,aux);
 }
