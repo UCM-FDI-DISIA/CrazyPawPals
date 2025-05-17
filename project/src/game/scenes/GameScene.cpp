@@ -1550,7 +1550,7 @@ void GameScene::host_handle_menssage(network_context &ctx)
 						{
 							network_message_pack_send(
 								client,
-								network_message_pack_create(network_message_type_player_update, player));
+								network_message_pack_create(network_message_type_player_update, player_update_msg));
 						}
 					}
 					break;
