@@ -394,7 +394,7 @@ static void multiplayer_menu_client_loop(network_context& ctx) {
             state.game_state.ready_users.set(id, true);
             bool local_player_ready = state.game_state.ready_users.test(state.connections.local_user_index);
             if (id == 0 && local_player_ready) {
-                Game::Instance()->change_Scene(Game::SELECTIONMENU);
+                Game::Instance()->queue_scene(Game::SELECTIONMENU);
             }
             break;
         }
@@ -650,7 +650,7 @@ void MultiplayerMenu::create_play_button(const GameStructs::ButtonProperties& bp
                             network_message_type_player_ready,
                             create_player_id_message(0)));
                 }
-                Game::Instance()->change_Scene(Game::SELECTIONMENU);
+                Game::Instance()->queue_scene(Game::SELECTIONMENU);
             }
             else {
                 show_message("Espera a que lleguen los otros michis!", 5 * 1000);
@@ -670,7 +670,7 @@ void MultiplayerMenu::create_play_button(const GameStructs::ButtonProperties& bp
             );
 
             if (network_state.game_state.ready_users.test(0)) {
-                Game::Instance()->change_Scene(Game::SELECTIONMENU);
+                Game::Instance()->queue_scene(Game::SELECTIONMENU);
             }
             else {
                 show_message("Esperando instrucciones del michi operador...", 5 * 1000);
@@ -969,7 +969,7 @@ void MultiplayerMenu::create_back_button(const GameStructs::ButtonProperties& bp
         imgComp->_filter = false;
         imgComp->swap_textures();
 
-        Game::Instance()->change_Scene(Game::MAINMENU);
+        Game::Instance()->queue_scene(Game::MAINMENU);
 
         // TODO: if they back out they should really disconnect
         multiplayer_menu_destroy_network_context(Game::Instance()->get_network());

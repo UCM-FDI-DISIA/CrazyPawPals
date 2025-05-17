@@ -178,10 +178,6 @@ void GameScene::initScene()
 	auto &&manager = *Game::Instance()->get_mngr();
 	auto player = manager.getHandler(ecs::hdlr::PLAYER);
 	manager.addComponent<MythicComponent>(player);
-	if (!Game::Instance()->is_network_none()) {
-		manager.addComponent<PlayerSynchronize>(player, uint32_t{ Game::Instance()->client_id() });
-		manager.addComponent<MultiplayerHUD>(player);
-	}
 
 	manager.refresh();
 	// spawn_sarno_rata(Vector2D{5.0f, 0.0f});
@@ -219,6 +215,11 @@ void GameScene::enterScene()
 		auto e = wm->get_current_event();
 		RewardScene::will_have_mythic(e != NONE || ((wm->get_current_wave() + 1) % 5 == 0));
 	}
+	
+	if (!Game::Instance()->is_network_none()) {
+		manager.addComponent<PlayerSynchronize>(player, uint32_t{ Game::Instance()->client_id() });
+		manager.addComponent<MultiplayerHUD>(player);
+	}
 	manager.getComponent<HUD>(manager.getHandler(ecs::hdlr::HUD_ENTITY))->start_new_wave();
 	// spawn_catkuza(Vector2D{10.0f, 0.0f});
 	//  spawn_rata_basurera(Vector2D{5.0f, 0.0f});
@@ -234,6 +235,12 @@ void GameScene::exitScene()
 {
 	auto &&manager = *Game::Instance()->get_mngr();
 	Game::Instance()->get_wave_manager()->reset_wave_time();
+
+	if (!Game::Instance()->is_network_none()) {
+		auto player = manager.getHandler(ecs::hdlr::PLAYER);
+		manager.removeComponent<PlayerSynchronize>(player);
+		manager.removeComponent<MultiplayerHUD>(player);
+}
 #ifdef GENERATE_LOG
 	log_writer_to_csv::Instance()->add_new_log("EXIT GAME SCENE");
 	log_writer_to_csv::Instance()->add_new_log();

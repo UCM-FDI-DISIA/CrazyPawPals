@@ -159,7 +159,7 @@ void MainMenuScene::create_multiplayer_button(const GameStructs::ButtonPropertie
     buttonComp->connectClick([buttonComp, imgComp, mngr]() {
         imgComp->_filter = false;
         imgComp->swap_textures();
-        Game::Instance()->change_Scene(Game::MULTIPLAYERMENU);
+        Game::Instance()->queue_scene(Game::MULTIPLAYERMENU);
         });
 
     buttonComp->connectHover([buttonComp, imgComp]() {
