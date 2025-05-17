@@ -40,6 +40,7 @@
 #include "../../utils/Collisions.h"
 
 #include "../../our_scripts/components/WaveManager.h"
+#include "../../our_scripts/components/DumbWaveManager.h"
 #include "../../our_scripts/components/Fog.h"
 #include "../../our_scripts/components/weapons/enemies/WeaponMichiMafioso.h"
 #include "../../our_scripts/components/weapons/enemies/WeaponPlimPlim.h"
@@ -211,11 +212,13 @@ void GameScene::enterScene()
 	manager.addComponent<KeyboardPlayerCtrl>(player);
 	manager.addComponent<GamePadPlayerCtrl>(player);
 	manager.addComponent<PlayerHUD>(player);
-	auto wm = manager.getComponent<WaveManager>(manager.getHandler(ecs::hdlr::WAVE));
-	wm->start_new_wave();
-	// get the current event
-	auto e = wm->get_current_event();
-	RewardScene::will_have_mythic(e != NONE || ((wm->get_current_wave() + 1) % 5 == 0));
+	if (Game::Instance()->is_host() || Game::Instance()->is_network_none()) {
+		auto wm = manager.getComponent<WaveManager>(manager.getHandler(ecs::hdlr::WAVE));
+		wm->start_new_wave();
+		// get the current event
+		auto e = wm->get_current_event();
+		RewardScene::will_have_mythic(e != NONE || ((wm->get_current_wave() + 1) % 5 == 0));
+	}
 	manager.getComponent<HUD>(manager.getHandler(ecs::hdlr::HUD_ENTITY))->start_new_wave();
 	// spawn_catkuza(Vector2D{10.0f, 0.0f});
 	//  spawn_rata_basurera(Vector2D{5.0f, 0.0f});
@@ -1381,10 +1384,19 @@ ecs::entity_t GameScene::create_hud(ecs::sceneId_t scene)
 #pragma region Waves
 void GameScene::spawn_wave_manager()
 {
-	auto ent = create_entity(
-		ecs::grp::DEFAULT,
-		ecs::scene::GAMESCENE,
-		new WaveManager());
+	ecs::entity_t ent;
+	if (Game::Instance()->is_host() || Game::Instance()->is_network_none()) {
+		ent = create_entity(
+			ecs::grp::DEFAULT,
+			ecs::scene::GAMESCENE,
+			new WaveManager());
+	}
+	else {
+		ent = create_entity(
+			ecs::grp::DEFAULT,
+			ecs::scene::GAMESCENE,
+			new DumbWaveManager());
+	}
 	Game::Instance()->get_mngr()->setHandler(ecs::hdlr::WAVE, ent);
 }
 void GameScene::spawn_fog()

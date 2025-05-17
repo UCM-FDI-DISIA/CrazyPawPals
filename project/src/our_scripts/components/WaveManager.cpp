@@ -59,7 +59,7 @@ bool WaveManager::can_spawn_next_enemy()
 bool WaveManager::is_wave_finished()
 {
     //TODO: Necesitamos no notificar los enemigos que son creados por otros
-    //std::cout << "enemies_killed: " << _enemiesKilled << "   numEnemies: " << _numEnemies << "    enemies_spawned: " << _enemiesSpawned << std::endl;
+    //std::cout << "enemies_killed: " << _enemiesKilled << "   numEnemies: " << _numEnemies << "    everyone out: " << _all_enemies_already_spawned << std::endl;
     return _enemiesKilled >= _numEnemies && _all_enemies_already_spawned;
 }
 
@@ -182,30 +182,28 @@ void WaveManager::spawn_next_group_of_enemies()
             break;
         }
     }
-    for (uint8_t i = 0; i < enemy_spawn_data[_enemy_types_for_current_wave[index]].number_of_enemies_simultaneous_spawn; ++i) {
-        GameStructs::DumbEnemyProperties dep;
-        auto aux = esc->spawn_callback();//returns initial pos Vector2D
-        if (Game::Instance()->is_network_none()) {
-            return;
-        }
-        if (Game::Instance()->is_host()) {
+    if (Game::Instance()->is_host() && Game::Instance()->get_network_state().connections.connected_users > 1) {
+        for (uint8_t i = 0; i < enemy_spawn_data[_enemy_types_for_current_wave[index]].number_of_enemies_simultaneous_spawn; ++i) {
+            GameStructs::DumbEnemyProperties dep;
+            auto aux = esc->spawn_callback();//returns initial pos Vector2D
+        
             dep._type = (enemyType)_enemy_types_for_current_wave[index]; //enemy ID
             dep._id = aux.second;
             dep._pos = aux.first;
-            if (Game::Instance()->get_network_state().connections.connected_users > 1) {
-                network_context& network = Game::Instance()->get_network();
-                //mandar a todos los clientes el mensaje de que el host a dado al boton de play
-                for (network_connection_size i = 0; i < network.profile.host.sockets_to_clients.connection_count; ++i) {
-                    TCPsocket& client = network.profile.host.sockets_to_clients.connections[i];
-                    network_message_pack_send(
-                        client,
-                        network_message_pack_create(network_message_type_create_enemy, create_enemy(dep))
-                    );
-			        std::cout << "Creando enemigo en el client: " << (int)i << " de tipo: "<< (enemyType)dep._type << std::endl;
-                    
-                }
+            network_context& network = Game::Instance()->get_network();
+            //mandar a todos los clientes el mensaje de que el host a dado al boton de play
+            for (network_connection_size i = 0; i < network.profile.host.sockets_to_clients.connection_count; ++i) {
+                TCPsocket& client = network.profile.host.sockets_to_clients.connections[i];
+                network_message_pack_send(
+                    client,
+                    network_message_pack_create(network_message_type_create_enemy, create_enemy(dep))
+                );
+	        std::cout << "Creando enemigo en el client: " << (int)i << " de tipo: "<< (enemyType)dep._type << std::endl;
             }
         }
+    }
+    else {
+        esc->spawn_callback();
     }
 #ifdef GENERATE_LOG
     log_writer_to_csv::Instance()->add_new_log("SPAWN ENEMIES", "TIPO", tipoEnemigo, "Numero", std::to_string(enemy_spawn_data[_enemy_types_for_current_wave[index]].number_of_enemies_simultaneous_spawn));
@@ -232,7 +230,7 @@ void WaveManager::update(uint32_t delta_time) {
 
         if (is_wave_finished())
             endwave();
-        else if (_currentWaveTime > 50 * 1000 && !is_wave_finished()) {
+        else if (_currentWaveTime > 50 * 1000) {
             activateFog();
         }
     }else{
@@ -248,12 +246,6 @@ void WaveManager::update(uint32_t delta_time) {
     // std::cout << _numEnemies << " vs " << _enemiesKilled << std::endl;
 }
 //---------------------------------------------------------------------------------------------------------------------------------
-
-//Verifica si todos los enemigos estan muertos
-bool 
-WaveManager::areAllEnemiesDead() {
-    return _enemiesKilled >= _numEnemies;
-}
 
 //Activa la niebla
 void 
