@@ -36,7 +36,7 @@ void EnemySynchronize::update(uint32_t delta_time)
 {
 	_last_update += delta_time;
 
-	if (_last_update >= 100) { 
+	if (_last_update >= 500) { 
 		send_enemy_update();
 		_last_update = 0;
 	}

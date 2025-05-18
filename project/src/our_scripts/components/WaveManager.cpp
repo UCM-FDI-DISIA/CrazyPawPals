@@ -199,7 +199,7 @@ void WaveManager::spawn_next_group_of_enemies()
                         client,
                         network_message_pack_create(network_message_type_create_enemy, create_enemy(dep))
                     );
-                    std::cout << "Creando enemigo en el client: " << (int)i << " de tipo: " << (enemyType)dep._type << std::endl;
+                    std::cout << "Creando enemigo en el client: " << (int)i << " de tipo: " << (enemyType)dep._type << "con id: " << (enemyType)dep._id << std::endl;
                 }
             }
         }
