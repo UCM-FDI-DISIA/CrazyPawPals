@@ -67,11 +67,32 @@ void PlayerSynchronize::sendPlayerUpdate()
     playerData.current_anim = _anim->get_current_Anim();
     
 
-    auto msg = create_player_update_message(playerData);
-    network_message_pack_send(
-       network.profile.client.socket_to_host,
-       network_message_pack_create(network_message_type_player_update,msg)
+    const auto payload = create_player_update_message(playerData);
+    const auto message = network_message_pack_create(
+        network_message_type_player_update,
+        payload
     );
+    switch (network.profile_status)
+    {
+    case network_context_profile_status_none: {
+        assert(false && "unreachable: invalid network profile status");
+        std::exit(EXIT_FAILURE);
+    }
+    case network_context_profile_status_host: {
+        for (network_connection_size i = 0; i < network.profile.host.sockets_to_clients.connection_count; ++i) {
+            TCPsocket& connection = network.profile.host.sockets_to_clients.connections[i];
+            network_message_pack_send(connection, message);
+        }
+    }
+    case network_context_profile_status_client: {
+        network_message_pack_send(network.profile.client.socket_to_host, message);
+        break;
+    }
+    default: {
+        assert(false && "unreachable: invalid network profile status");
+        std::exit(EXIT_FAILURE);
+    }
+    }
 }
 
 void PlayerSynchronize::updatePlayer(GameStructs::NetPlayerData& data) {
