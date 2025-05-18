@@ -224,11 +224,11 @@ Si al comenzar una nueva oleada no se ha escogido recompensa, empezarán a parpa
 **Distribución de recompensas**
 
 *En una oleada normal:*
-- Curación (40% vida).
+- Curación (50% vida).
 - Nuevas cartas.
 
 *En una oleada con Eventos:*
-- Mejorar carta.
+- Mejorar carta. (NO IMPLEMENTADO)
   
 *En una oleada de Boss:*
 
@@ -237,7 +237,7 @@ Aparecerán 3 recompensas de Boss adicionales con otro color. En este caso podem
 **Tipos de recompensas**
 - *Curación:* Se aplica instantáneamente al jugador sin poder sobrepasar su vida máxima.
 - *Nuevas cartas:* El jugador puede añadir una carta a su mazo. Sin embargo, si el mazo ha alcanzado su límite máximo, deberá elegir entre no coger la nueva carta o sustituir una carta antigua por ella.
-- *Mejorar carta:*  Modifica el comportamiento de la carta en cierta medida, puede modificar solo una de las estadísticas o una combinación de varias (algunas de ellas puede considerarse nociva).
+- *Mejorar carta:*  Modifica el comportamiento de la carta en cierta medida, puede modificar solo una de las estadísticas o una combinación de varias (algunas de ellas puede considerarse nociva). (NO IMPLEMENTADO)
   - Coste: Reduce el coste de la carta.
   - Daño: Aumenta el daño.
   - Plano: aumenta el daño en 1 o 2, favorece a ataques multi hit.
@@ -387,7 +387,8 @@ El personaje del jugador aparece en el **campo de batalla** sin nada a su alrede
 - **Contador de maná**: Un indicador numérico y una barra de progreso que muestra el maná disponible.
 - **Barra de vida**: Representa la salud del jugador.
 - **Temporizador de oleada**: Un contador regresivo que indica **10 segundos"**.
-
+- **HUD multijugador (en caso de jugar el modo multijugador)**: Para cada jugador un icono, una barra de vida y el id del jugador.
+- 
 La música cambia a un tono más intenso, señalando el inicio de la acción. Hay efectos sonidos para señalar si son oleadas normales o de eventos. Los enemigos comienzan a aparecer en los bordes del mapa y se acercan al jugador.
 
 *Acciones del Jugador*
