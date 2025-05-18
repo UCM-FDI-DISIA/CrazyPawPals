@@ -407,6 +407,7 @@ inline network_message_start_wave create_start_wave_message(uint16_t wave_event)
 };
 
 struct network_message_end_wave {
+    bool mythics_reward;
 };
 inline network_message_end_wave create_end_wave_message() {
     network_message_end_wave ew;
