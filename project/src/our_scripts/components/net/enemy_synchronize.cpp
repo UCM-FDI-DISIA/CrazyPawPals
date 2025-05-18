@@ -10,7 +10,7 @@
 #include "../../../network/network_message.hpp"
 
 EnemySynchronize::EnemySynchronize()
-	: _enemy_id(-1), _ht(nullptr), _tr(nullptr) {};
+	: _enemy_id(-1), _ht(nullptr), _tr(nullptr), _last_update(0) {};
 
 EnemySynchronize::~EnemySynchronize() {};
 
@@ -34,26 +34,29 @@ void EnemySynchronize::initComponent()
 
 void EnemySynchronize::update(uint32_t delta_time)
 {
-	// (void)delta_time;
-	// if (Game::Instance()->is_host())
-	// 	send_enemy_update();
+	_last_update += delta_time;
+
+	if (_last_update >= 100) { 
+		send_enemy_update();
+		_last_update = 0;
+	}
 }
 
 void EnemySynchronize::send_enemy_update()
 {
-	// auto &network = Game::Instance()->get_network();
+	auto &network = Game::Instance()->get_network();
 
-	// GameStructs::DumbEnemyProperties enemyData;
-	// enemyData._id = _enemy_id;
-	// // std::cout << "Enemy ID en syncronize: " << (int)enemyData._id << std::endl;
+	GameStructs::DumbEnemyProperties enemyData;
+	enemyData._id = _enemy_id;
+	//std::cout << "Enemy ID en syncronize: " << (int)enemyData._id << std::endl;
 
-	// enemyData._pos = _tr->getPos();
-	// enemyData._health = _ht->getHealth();
-
-	// auto msg = create_update_enemy_message(enemyData);
-	// network_message_pack_send(
-	// 	network.profile.client.socket_to_host,
-	// 	network_message_pack_create(network_message_type_enemy_update, msg));
+	enemyData._pos = _tr->getPos();
+	enemyData._health = _ht->getHealth();
+	
+	auto msg = create_update_enemy_message(enemyData);
+	network_message_pack_send(
+		network.profile.client.socket_to_host,
+		network_message_pack_create(network_message_type_enemy_update, msg));
 }
 
 void EnemySynchronize::update_enemy(GameStructs::DumbEnemyProperties &data)
@@ -69,7 +72,7 @@ void EnemySynchronize::update_enemy(GameStructs::DumbEnemyProperties &data)
 	_tr->setPos(data._pos);
 	Vector2D delta = _tr->getPos() - _last_pos;
 
-	_dy->flip = (delta.getX() >= 0) ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
+	//_dy->flip = (delta.getX() >= 0) ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
 
 	_ht->setHeatlh(data._health);
 }
