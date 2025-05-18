@@ -223,6 +223,10 @@ void GameScene::enterScene()
 	//}
 	manager.getComponent<HUD>(manager.getHandler(ecs::hdlr::HUD_ENTITY))->start_new_wave();
 
+	// spawn_catkuza(Vector2D{10.0f, 0.0f});
+	//  spawn_rata_basurera(Vector2D{5.0f, 0.0f});
+	//  spawn_rey_basurero(Vector2D{-5.0f, 0.0f});
+	//  spawn_super_michi_mafioso(Vector2D{5.0f, 0.0f});
 #ifdef GENERATE_LOG
 	log_writer_to_csv::Instance()->add_new_log();
 	log_writer_to_csv::Instance()->add_new_log("ENTERED GAME SCENE");
@@ -384,7 +388,7 @@ ecs::entity_t GameScene::create_enemy(GameStructs::EnemyProperties &ec, ecs::sce
 		new Health(ec.health),
 		new FlipXController(),
 		new enemy_collision_triggerer(),
-		new id_component(),
+		new id_component(3),
 		weapon,
 		&rigidbody,
 		&col,
@@ -1551,8 +1555,8 @@ void GameScene::host_handle_menssage(network_context &ctx)
 
 					playerData.health = SDLNet_Read16(&payload.health_n);
 					playerData.is_ghost = SDLNet_Read16(&payload.is_ghost_n);
-					playerData.pos.setX(static_cast<int16_t>(SDLNet_Read16(&payload.pos_n[0])) / static_cast<float>(fact_float_int));
-					playerData.pos.setY(static_cast<int16_t>(SDLNet_Read16(&payload.pos_n[1])) / static_cast<float>(fact_float_int));
+					playerData.pos.setX(static_cast<int16_t>(SDLNet_Read32(&payload.pos_n[0])) / static_cast<float>(fact_float_int));
+					playerData.pos.setY(static_cast<int16_t>(SDLNet_Read32(&payload.pos_n[1])) / static_cast<float>(fact_float_int));
 
 					auto &&game = *Game::Instance(); 
 					const Game::network_users_state &state = game.get_network_state();
@@ -1612,8 +1616,8 @@ void GameScene::client_handle_menssage(network_context &ctx)
 
 			playerData.health = SDLNet_Read16(&payload.health_n);
 			playerData.is_ghost = SDLNet_Read16(&payload.is_ghost_n);
-			playerData.pos.setX(static_cast<int16_t>(SDLNet_Read16(&payload.pos_n[0])) / static_cast<float>(fact_float_int));
-			playerData.pos.setY(static_cast<int16_t>(SDLNet_Read16(&payload.pos_n[1])) / static_cast<float>(fact_float_int));
+			playerData.pos.setX(static_cast<int32_t>(SDLNet_Read32(&payload.pos_n[0])) / static_cast<float>(fact_float_int));
+			playerData.pos.setY(static_cast<int32_t>(SDLNet_Read32(&payload.pos_n[1])) / static_cast<float>(fact_float_int));
 
 			auto player = Game::Instance()->get_network_state().game_state.user_players.at(playerData.id);
 			Game::Instance()->get_mngr()->getComponent<PlayerSynchronize>(player)->updatePlayer(playerData);
@@ -1629,8 +1633,8 @@ void GameScene::client_handle_menssage(network_context &ctx)
 			_enemy_properties._id = SDLNet_Read16(&payload._enemy_id);
 			_enemy_properties._type = SDLNet_Read16(&payload._type);
 
-			_enemy_properties._pos.setX(static_cast<int16_t>(SDLNet_Read16(&payload._pos[0])) / static_cast<float>(fact_float_int));
-			_enemy_properties._pos.setY(static_cast<int16_t>(SDLNet_Read16(&payload._pos[1])) / static_cast<float>(fact_float_int));
+			_enemy_properties._pos.setX(static_cast<int32_t>(SDLNet_Read32(&payload._pos[0])) / static_cast<float>(fact_float_int));
+			_enemy_properties._pos.setY(static_cast<int32_t>(SDLNet_Read32(&payload._pos[1])) / static_cast<float>(fact_float_int));
 			std::cout << "Creando client enemigo con ID: " << (int)_enemy_properties._id << std::endl;
 
 			select_create_dumb_enemy(_enemy_properties);
@@ -1644,8 +1648,8 @@ void GameScene::client_handle_menssage(network_context &ctx)
 			GameStructs::DumbEnemyProperties _enemy_properties;
 			_enemy_properties._id = SDLNet_Read16(&payload._enemy_id);
 			_enemy_properties._health = SDLNet_Read16(&payload._health_n);
-			_enemy_properties._pos.setX(static_cast<int16_t>(SDLNet_Read16(&payload._pos[0])) / static_cast<float>(fact_float_int));
-			_enemy_properties._pos.setY(static_cast<int16_t>(SDLNet_Read16(&payload._pos[1])) / static_cast<float>(fact_float_int));
+			_enemy_properties._pos.setX(static_cast<int32_t>(SDLNet_Read16(&payload._pos[0])) / static_cast<float>(fact_float_int));
+			_enemy_properties._pos.setY(static_cast<int32_t>(SDLNet_Read16(&payload._pos[1])) / static_cast<float>(fact_float_int));
 			//std::cout << "Actualizando enemigo con ID: " << (int)_enemy_properties._id << std::endl;
 
 			auto enemy = get_network_enemy(_enemy_properties._id);
