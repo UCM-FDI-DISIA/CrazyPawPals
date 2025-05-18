@@ -10,6 +10,7 @@
 #include "../../game/GameStructs.h"
 //#include "../src/our_scripts/components/WaveManager.h"
 #include "../network_state.hpp"
+#include "../../sdlutils/SDLUtils.h"
 
 constexpr int fixed_point_fraction_bits = 12; // 12 bits para la fracción (parte decimal)
 constexpr float fact_float_int = 1 << fixed_point_fraction_bits;
@@ -396,16 +397,10 @@ struct network_message_enemy_update
 inline network_message_enemy_update create_update_enemy_message(GameStructs::DumbEnemyProperties &ep)
 {
     network_message_enemy_update n_ep;
-
-    SDLNet_Write16(ep._id, &n_ep._enemy_id);
-
-    // Vector2D init_pos
     SDLNet_Write32(ep._pos.getX() * fact_float_int, &n_ep._pos[0]);
     SDLNet_Write32(ep._pos.getY() * fact_float_int, &n_ep._pos[1]);
-
-    // int health
     SDLNet_Write16(ep._health, &n_ep._health_n);
-
+    SDLNet_Write16(ep._id, &n_ep._enemy_id);
     return n_ep;
 };
 

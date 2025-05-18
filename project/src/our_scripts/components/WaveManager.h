@@ -9,7 +9,7 @@
 #include "../../utils/EventsSystem.hpp"
 #include "WaveManagerFacade.h"
 
-enum events : uint16_t {
+enum events : int16_t {
     NONE = -1, // 0xffffffffff
     ICE_SKATE = 0,  // 0x00000000
     STAR_SHOWER = 1,

@@ -468,7 +468,7 @@ void MultiplayerMenu::update(uint32_t delta_time) {
             ip_input = Texture{
                 sdlutils().renderer(),
                 _ipHost.empty() ? std::string{"Ip..."} : _ipHost,
-                sdlutils().fonts().at("RUBIK_MONO_16"),
+                sdlutils().fonts().at("RUBIK_MONO_12"),
                 SDL_Color{0, 16, 24, 255},
                 SDL_Color{255, 255, 255, 0},
             };

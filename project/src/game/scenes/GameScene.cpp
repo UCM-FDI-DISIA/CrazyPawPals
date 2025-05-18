@@ -74,6 +74,8 @@
 #include "../../our_scripts/components/net/player_synchronize.h"
 #include "../../our_scripts/components/ui/MultiplayerHUD.h"
 #include "RewardScene.h"
+#include "../../our_scripts/components/WaveManager.h"
+
 #ifdef GENERATE_LOG
 #include "../../our_scripts/log_writer_to_csv.hpp"
 #endif
@@ -209,17 +211,19 @@ void GameScene::enterScene()
 	manager.addComponent<GamePadPlayerCtrl>(player);
 	manager.addComponent<PlayerHUD>(player);
 	auto wm = Game::Instance()->get_wave_manager();
-	if (Game::Instance()->is_host() || Game::Instance()->is_network_none()) {
-		dynamic_cast<WaveManager*>(wm)->start_new_wave();
+	if (Game::Instance()->is_host() || Game::Instance()->is_network_none())
+	{
+		dynamic_cast<WaveManager *>(wm)->start_new_wave();
 	}
-	
-	if (!Game::Instance()->is_network_none()) {
-		manager.addComponent<PlayerSynchronize>(player, uint32_t{ Game::Instance()->client_id() });
+
+	if (!Game::Instance()->is_network_none())
+	{
+		manager.addComponent<PlayerSynchronize>(player, uint32_t{Game::Instance()->client_id()});
 		manager.addComponent<MultiplayerHUD>(player);
 	}
 	// get the current event
-	//auto e = wm->get_current_event();
-	//RewardScene::will_have_mythic(e != NONE || ((wm->get_current_wave() + 1) % 5 == 0));
+	// auto e = wm->get_current_event();
+	// RewardScene::will_have_mythic(e != NONE || ((wm->get_current_wave() + 1) % 5 == 0));
 	//}
 	manager.getComponent<HUD>(manager.getHandler(ecs::hdlr::HUD_ENTITY))->start_new_wave();
 
@@ -238,15 +242,16 @@ void GameScene::exitScene()
 	auto &&manager = *Game::Instance()->get_mngr();
 	Game::Instance()->get_wave_manager()->reset_wave_time();
 
-	if (!Game::Instance()->is_network_none()) {
+	if (!Game::Instance()->is_network_none())
+	{
 		auto player = manager.getHandler(ecs::hdlr::PLAYER);
 		manager.removeComponent<PlayerSynchronize>(player);
 		manager.removeComponent<MultiplayerHUD>(player);
-}
+	}
 
 	auto wm = Game::Instance()->get_wave_manager();
 	auto e = wm->get_current_event();
-	RewardScene::will_have_mythic(e != NONE || ((wm->get_current_wave()+1) % 5 == 0));
+	RewardScene::will_have_mythic(e != events::NONE || ((wm->get_current_wave() + 1) % 5 == 0));
 	wm->reset_wave_time();
 #ifdef GENERATE_LOG
 	log_writer_to_csv::Instance()->add_new_log("EXIT GAME SCENE");
@@ -1399,7 +1404,8 @@ ecs::entity_t GameScene::create_hud(ecs::sceneId_t scene)
 void GameScene::spawn_wave_manager()
 {
 	ecs::entity_t ent;
-	if (Game::Instance()->is_host() || Game::Instance()->is_network_none()) {
+	if (Game::Instance()->is_host() || Game::Instance()->is_network_none())
+	{
 		auto wmf = new WaveManager();
 		ent = create_entity(
 			ecs::grp::DEFAULT,
@@ -1407,7 +1413,8 @@ void GameScene::spawn_wave_manager()
 			wmf);
 		Game::Instance()->get_wave_manager() = wmf;
 	}
-	else {
+	else
+	{
 		auto wmf = new DumbWaveManager();
 		ent = create_entity(
 			ecs::grp::DEFAULT,
@@ -1416,7 +1423,6 @@ void GameScene::spawn_wave_manager()
 		Game::Instance()->get_wave_manager() = wmf;
 	}
 	Game::Instance()->get_mngr()->setHandler(ecs::hdlr::WAVE, ent);
-
 }
 void GameScene::spawn_fog()
 {
@@ -1548,9 +1554,12 @@ void GameScene::event_callback1(const event_system::event_receiver::Msg &m)
 
 void GameScene::host_handle_menssage(network_context &ctx)
 {
-	if (SDLNet_CheckSockets(ctx.profile.host.clients_host_set, 0) > 0)
+	size_t count{0};
+	while (SDLNet_CheckSockets(ctx.profile.host.clients_host_set, 0) > 0)
 	{
-		if (SDLNet_SocketReady(ctx.profile.host.host_socket)) {
+		++count;
+		if (SDLNet_SocketReady(ctx.profile.host.host_socket))
+		{
 			network_message_dynamic_pack dyn_message = network_message_dynamic_pack_receive(ctx.profile.host.host_socket);
 			const uint16_t type_n{dyn_message->header.type_n};
 			const uint16_t type_h{SDLNet_Read16(&type_n)};
@@ -1585,10 +1594,10 @@ void GameScene::host_handle_menssage(network_context &ctx)
 
 					playerData.health = SDLNet_Read16(&payload.health_n);
 					playerData.is_ghost = SDLNet_Read16(&payload.is_ghost_n);
-					playerData.pos.setX(static_cast<int16_t>(SDLNet_Read32(&payload.pos_n[0])) / static_cast<float>(fact_float_int));
-					playerData.pos.setY(static_cast<int16_t>(SDLNet_Read32(&payload.pos_n[1])) / static_cast<float>(fact_float_int));
+					playerData.pos.setX(static_cast<int32_t>(SDLNet_Read32(&payload.pos_n[0])) / static_cast<float>(fact_float_int));
+					playerData.pos.setY(static_cast<int32_t>(SDLNet_Read32(&payload.pos_n[1])) / static_cast<float>(fact_float_int));
 
-					auto &&game = *Game::Instance(); 
+					auto &&game = *Game::Instance();
 					const Game::network_users_state &state = game.get_network_state();
 					auto player = state.game_state.user_players.at(playerData.id);
 					game.get_mngr()->getComponent<PlayerSynchronize>(player)->updatePlayer(playerData);
@@ -1597,7 +1606,7 @@ void GameScene::host_handle_menssage(network_context &ctx)
 
 					for (network_connection_size j = 0; j < ctx.profile.host.sockets_to_clients.connection_count; ++j)
 					{
-						TCPsocket& client = ctx.profile.host.sockets_to_clients.connections[j];
+						TCPsocket &client = ctx.profile.host.sockets_to_clients.connections[j];
 
 						if (client != connection)
 						{
@@ -1639,14 +1648,20 @@ void GameScene::host_handle_menssage(network_context &ctx)
 			}
 		}
 	}
+	(void)count;
+	// std::cout << "message: host received " << count << " messages" << std::endl;
 }
 
 void GameScene::client_handle_menssage(network_context &ctx)
 {
-	int active_sockets = SDLNet_CheckSockets(ctx.profile.client.client_set, 0);
-	if (active_sockets > 0 && SDLNet_SocketReady(ctx.profile.client.socket_to_host))
-	{
+	//std::unordered_map<uint8_t, GameStructs::DumbEnemyProperties> latest_enemy_updates;
 
+	size_t count{0};
+	while (
+		(SDLNet_CheckSockets(ctx.profile.client.client_set, 0) > 0)
+		&& SDLNet_SocketReady(ctx.profile.client.socket_to_host)
+	) {
+		++count;
 		auto dyn_message = network_message_dynamic_pack_receive(ctx.profile.client.socket_to_host);
 		const uint16_t type_n{dyn_message->header.type_n};
 		const uint16_t type_h{SDLNet_Read16(&type_n)};
@@ -1697,30 +1712,30 @@ void GameScene::client_handle_menssage(network_context &ctx)
 			auto message = network_message_dynamic_pack_into<network_message_enemy_update>(std::move(dyn_message));
 			auto &&payload = message->payload.content;
 
+			uint8_t id = SDLNet_Read16(&payload._enemy_id);
+
 			GameStructs::DumbEnemyProperties _enemy_properties;
-			_enemy_properties._id = SDLNet_Read16(&payload._enemy_id);
+			_enemy_properties._id = id;
 			_enemy_properties._health = SDLNet_Read16(&payload._health_n);
 			_enemy_properties._pos.setX(static_cast<int32_t>(SDLNet_Read16(&payload._pos[0])) / static_cast<float>(fact_float_int));
 			_enemy_properties._pos.setY(static_cast<int32_t>(SDLNet_Read16(&payload._pos[1])) / static_cast<float>(fact_float_int));
-			//std::cout << "Actualizando enemigo con ID: " << (int)_enemy_properties._id << std::endl;
-
 			auto enemy = get_network_enemy(_enemy_properties._id);
-			if(enemy != nullptr)
+			if (enemy != nullptr)
 				Game::Instance()->get_mngr()->getComponent<EnemySynchronize>(enemy)->update_enemy(_enemy_properties);
 			break;
 		}
 		case network_message_type_start_wave:
 		{
 			auto message = network_message_dynamic_pack_into<network_message_start_wave>(std::move(dyn_message));
-			auto&& payload = message->payload.content;
-			dynamic_cast<DumbWaveManager*>(Game::Instance()->get_wave_manager())->start_wave(SDLNet_Read16(&payload.wave_event));
+			auto &&payload = message->payload.content;
+			dynamic_cast<DumbWaveManager *>(Game::Instance()->get_wave_manager())->start_wave(SDLNet_Read16(&payload.wave_event));
 			break;
 		}
 		case network_message_type_end_wave:
 		{
 			auto message = network_message_dynamic_pack_into<network_message_end_wave>(std::move(dyn_message));
-			auto&& payload = message->payload.content;
-			dynamic_cast<DumbWaveManager*>(Game::Instance()->get_wave_manager())->end_wave();
+			auto &&payload = message->payload.content;
+			dynamic_cast<DumbWaveManager *>(Game::Instance()->get_wave_manager())->end_wave();
 			break;
 		}
 		case network_message_type_summon_dummy_bullet:
@@ -1739,13 +1754,29 @@ void GameScene::client_handle_menssage(network_context &ctx)
 			break;
 		}
 	}
+	(void)count;
+	// std::cout << "message: client received " << count << " messages" << std::endl;
+
+	//for (auto &[id, data] : latest_enemy_updates)
+	//{
+	//	auto enemy = get_network_enemy(id);
+	//	if (enemy != nullptr)
+	//	{
+	//		//std::cout << "Enemy ID en synchronize: " << (int)id << std::endl;
+	//		Game::Instance()->get_mngr()->getComponent<EnemySynchronize>(enemy)->update_enemy(data);
+	//	}else
+	//	{
+	//		std::cout << "No se encontro el enemigo ID: " << (int)id << std::endl;
+	//	}
+	//}
 }
 
 bool GameScene::change_player_tex(uint32_t playerId, const std::string &key_name)
 {
 	auto player = Game::Instance()->get_network_state().game_state.user_players.at(playerId);
-	auto&& manager = *Game::Instance()->get_mngr();
-	if (auto&& dy = manager.getComponent<dyn_image_with_frames>(player)) {
+	auto &&manager = *Game::Instance()->get_mngr();
+	if (auto &&dy = manager.getComponent<dyn_image_with_frames>(player))
+	{
 		dy->texture = &sdlutils().images().at(key_name);
 		dy->texture_name = key_name;
 		return true;
@@ -1756,8 +1787,9 @@ bool GameScene::change_player_tex(uint32_t playerId, const std::string &key_name
 bool GameScene::change_player_filter(uint32_t playerId, filter filter)
 {
 	auto player = Game::Instance()->get_network_state().game_state.user_players.at(playerId);
-	auto&& manager = *Game::Instance()->get_mngr();
-	if (auto&& dy = manager.getComponent<dyn_image_with_frames>(player)) {
+	auto &&manager = *Game::Instance()->get_mngr();
+	if (auto &&dy = manager.getComponent<dyn_image_with_frames>(player))
+	{
 		dy->_current_filter = filter;
 		return true;
 	}

@@ -21,6 +21,6 @@ protected:
 
 	Health* _ht;
 	uint8_t _enemy_id;
-
+	uint32_t _last_update;
 	void send_enemy_update();
 };
