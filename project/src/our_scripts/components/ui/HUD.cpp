@@ -107,7 +107,7 @@ void HUD::start_new_wave()
 {
 	_current_event = _wm->get_current_event();
 	_current_wave_event_time = 0;
-	if (int(_current_event != -1)) {
+	if (int(_current_event != events::NONE)) {
 		
 		_current_wave_event_time = sdlutils().currRealTime() + _wave_event_timeout;
 		_displaying_wave_event = true;

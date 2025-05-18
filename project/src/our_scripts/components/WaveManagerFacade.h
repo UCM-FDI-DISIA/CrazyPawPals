@@ -1,5 +1,5 @@
 #pragma once
-enum events;
+enum events : uint16_t;
 
 class WaveManagerFacade {
 public:

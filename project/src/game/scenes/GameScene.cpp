@@ -208,18 +208,19 @@ void GameScene::enterScene()
 	manager.addComponent<KeyboardPlayerCtrl>(player);
 	manager.addComponent<GamePadPlayerCtrl>(player);
 	manager.addComponent<PlayerHUD>(player);
+	auto wm = Game::Instance()->get_wave_manager();
 	if (Game::Instance()->is_host() || Game::Instance()->is_network_none()) {
-		auto wm = manager.getComponent<WaveManager>(manager.getHandler(ecs::hdlr::WAVE));
-		wm->start_new_wave();
-		// get the current event
-		auto e = wm->get_current_event();
-		RewardScene::will_have_mythic(e != NONE || ((wm->get_current_wave() + 1) % 5 == 0));
+		dynamic_cast<WaveManager*>(wm)->start_new_wave();
 	}
 	
 	if (!Game::Instance()->is_network_none()) {
 		manager.addComponent<PlayerSynchronize>(player, uint32_t{ Game::Instance()->client_id() });
 		manager.addComponent<MultiplayerHUD>(player);
 	}
+	// get the current event
+	//auto e = wm->get_current_event();
+	//RewardScene::will_have_mythic(e != NONE || ((wm->get_current_wave() + 1) % 5 == 0));
+	//}
 	manager.getComponent<HUD>(manager.getHandler(ecs::hdlr::HUD_ENTITY))->start_new_wave();
 
 #ifdef GENERATE_LOG
@@ -238,6 +239,11 @@ void GameScene::exitScene()
 		manager.removeComponent<PlayerSynchronize>(player);
 		manager.removeComponent<MultiplayerHUD>(player);
 }
+
+	auto wm = Game::Instance()->get_wave_manager();
+	auto e = wm->get_current_event();
+	RewardScene::will_have_mythic(e != NONE || ((wm->get_current_wave()+1) % 5 == 0));
+	wm->reset_wave_time();
 #ifdef GENERATE_LOG
 	log_writer_to_csv::Instance()->add_new_log("EXIT GAME SCENE");
 	log_writer_to_csv::Instance()->add_new_log();
@@ -1647,10 +1653,22 @@ void GameScene::client_handle_menssage(network_context &ctx)
 				Game::Instance()->get_mngr()->getComponent<EnemySynchronize>(enemy)->update_enemy(_enemy_properties);
 			break;
 		}
-		default:
+		case network_message_type_start_wave:
 		{
+			auto message = network_message_dynamic_pack_into<network_message_start_wave>(std::move(dyn_message));
+			auto&& payload = message->payload.content;
+			dynamic_cast<DumbWaveManager*>(Game::Instance()->get_wave_manager())->start_wave(SDLNet_Read16(&payload.wave_event));
 			break;
 		}
+		case network_message_type_end_wave:
+		{
+			auto message = network_message_dynamic_pack_into<network_message_end_wave>(std::move(dyn_message));
+			auto&& payload = message->payload.content;
+			dynamic_cast<DumbWaveManager*>(Game::Instance()->get_wave_manager())->end_wave();
+			break;
+		}
+		default:
+			break;
 		}
 	}
 }

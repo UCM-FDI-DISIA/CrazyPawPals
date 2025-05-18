@@ -69,7 +69,7 @@ void network_message_header_send(TCPsocket socket, const network_message_header 
     }
 }
 
-NetworkNewWave network_message_wave_event_create(events event_type) {
+NetworkNewWave network_message_wave_event_create(uint16_t event_type) {
 	NetworkNewWave nne;
 
 	SDLNet_Write32(event_type, &nne.event_type);

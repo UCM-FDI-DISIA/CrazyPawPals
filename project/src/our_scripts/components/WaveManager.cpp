@@ -81,13 +81,6 @@ void WaveManager::erase_all_bullets()
         manager->setAlive(e, false);
 }
 
-void WaveManager::erase_all_popups()
-{
-    auto manager = Game::Instance()->get_mngr();
-    for (auto e : manager->getEntities(ecs::grp::DAMAGE_POPUPS))
-        manager->setAlive(e, false);
-}
-
 //Chooses enemies in _enemy_types_for_current_wave
 void WaveManager::initialize_next_wave_params(bool normal_wave)
 {
@@ -138,10 +131,9 @@ void WaveManager::spawn_next_group_of_enemies()
     //ONLY ENTERS HERE IF TOKENS LEFT > 0 
     //rest tokens
     uint8_t index = sdlutils().rand().nextInt(0, 3);
-    uint8_t i = 0;
     //tokens can only be -1 at worst at end of the round (cause I know that there will always be at least a 2 cost enemy on the group)
-    while ((tokens_for_this_wave - enemy_spawn_data[_enemy_types_for_current_wave[(index+i)%3]].enemies_group_spawn_cost) < -1 && i<3U) {
-        i++;
+    while ((tokens_for_this_wave - enemy_spawn_data[_enemy_types_for_current_wave[index]].enemies_group_spawn_cost) < -1) {
+        index = ++index % 3;
         //std::cout << (tokens_for_this_wave - enemy_spawn_data[_enemy_types_for_current_wave[index]].enemies_group_spawn_cost) << std::endl;
     }
     tokens_for_this_wave -= enemy_spawn_data[_enemy_types_for_current_wave[index]].enemies_group_spawn_cost;
@@ -190,23 +182,25 @@ void WaveManager::spawn_next_group_of_enemies()
             break;
         }
     }
-    if (Game::Instance()->is_host() && Game::Instance()->get_network_state().connections.connected_users > 1) {
-        for (uint8_t i = 0; i < enemy_spawn_data[_enemy_types_for_current_wave[index]].number_of_enemies_simultaneous_spawn; ++i) {
-            GameStructs::DumbEnemyProperties dep;
-            auto aux = esc->spawn_callback();//returns initial pos Vector2D
-        
-            dep._type = (enemyType)_enemy_types_for_current_wave[index]; //enemy ID
-            dep._id = aux.second;
-            dep._pos = aux.first;
-            network_context& network = Game::Instance()->get_network();
-            //mandar a todos los clientes el mensaje de que el host a dado al boton de play
-            for (network_connection_size i = 0; i < network.profile.host.sockets_to_clients.connection_count; ++i) {
-                TCPsocket& client = network.profile.host.sockets_to_clients.connections[i];
-                network_message_pack_send(
-                    client,
-                    network_message_pack_create(network_message_type_create_enemy, create_enemy(dep))
-                );
-	        std::cout << "Creando enemigo en el client: " << (int)i << " de tipo: "<< (enemyType)dep._type << std::endl;
+    if(Game::Instance()->is_host()) {
+        if (Game::Instance()->get_network_state().connections.connected_users > 1) {
+            for (uint8_t i = 0; i < enemy_spawn_data[_enemy_types_for_current_wave[index]].number_of_enemies_simultaneous_spawn; ++i) {
+                GameStructs::DumbEnemyProperties dep;
+                auto aux = esc->spawn_callback();//returns initial pos Vector2D
+
+                dep._type = (enemyType)_enemy_types_for_current_wave[index]; //enemy ID
+                dep._id = aux.second;
+                dep._pos = aux.first;
+                network_context& network = Game::Instance()->get_network();
+                //mandar a todos los clientes el mensaje de que el host a dado al boton de play
+                for (network_connection_size i = 0; i < network.profile.host.sockets_to_clients.connection_count; ++i) {
+                    TCPsocket& client = network.profile.host.sockets_to_clients.connections[i];
+                    network_message_pack_send(
+                        client,
+                        network_message_pack_create(network_message_type_create_enemy, create_enemy(dep))
+                    );
+                    std::cout << "Creando enemigo en el client: " << (int)i << " de tipo: " << (enemyType)dep._type << std::endl;
+                }
             }
         }
     }
@@ -265,7 +259,7 @@ WaveManager::activateFog() {
 
 void 
 WaveManager::enterRewardsMenu() {
-    Game::Instance()->queue_scene(Game::REWARDSCENE);
+    Game::Instance()->change_Scene(Game::REWARDSCENE);
 }
 
 void WaveManager::start_new_wave()
@@ -297,15 +291,21 @@ void WaveManager::start_new_wave()
     if ((_currentWave + 1) % 5 == 0)
         _spawn_boss();
 
-    erase_all_popups();
+    //START WAVE MESSAGE
+    network_context& network = Game::Instance()->get_network();
+    for (network_connection_size i = 0; i < network.profile.host.sockets_to_clients.connection_count; ++i) {
+        TCPsocket& client = network.profile.host.sockets_to_clients.connections[i];
+        network_message_pack_send(
+            client,
+            network_message_pack_create(network_message_type_start_wave, create_start_wave_message((uint16_t)get_current_event()))
+        );
+    }
 }
 
 void WaveManager::reset_wave_manager()
 {
     _currentWave = -1;
-    _event_pity = 0;        
-    erase_all_bullets();
-    erase_all_enemies();
+    _event_pity = 0;
 }
 
 void WaveManager::endwave()
@@ -344,7 +344,7 @@ void WaveManager::endwave()
 
 #endif
     if (_currentWave == 9) {
-        Game::Instance()->queue_scene(Game::State::VICTORY);
+        Game::Instance()->change_Scene(Game::State::VICTORY);
     }
     else {
         fog->setFog(false);
@@ -356,6 +356,14 @@ void WaveManager::endwave()
         erase_all_enemies();
 
         //SEND END WAVE MESSAGE
+        network_context& network = Game::Instance()->get_network();
+        for (network_connection_size i = 0; i < network.profile.host.sockets_to_clients.connection_count; ++i) {
+            TCPsocket& client = network.profile.host.sockets_to_clients.connections[i];
+            network_message_pack_send(
+                client,
+                network_message_pack_create(network_message_type_end_wave, create_end_wave_message())
+            );
+        }
     }
 }
 
