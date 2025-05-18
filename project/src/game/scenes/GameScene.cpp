@@ -1602,7 +1602,7 @@ void GameScene::host_handle_menssage(network_context &ctx)
 
 void GameScene::client_handle_menssage(network_context &ctx)
 {
-	std::unordered_map<uint8_t, GameStructs::DumbEnemyProperties> latest_enemy_updates;
+	//std::unordered_map<uint8_t, GameStructs::DumbEnemyProperties> latest_enemy_updates;
 
 	size_t count{0};
 	while (
@@ -1667,9 +1667,9 @@ void GameScene::client_handle_menssage(network_context &ctx)
 			_enemy_properties._health = SDLNet_Read16(&payload._health_n);
 			_enemy_properties._pos.setX(static_cast<int32_t>(SDLNet_Read16(&payload._pos[0])) / static_cast<float>(fact_float_int));
 			_enemy_properties._pos.setY(static_cast<int32_t>(SDLNet_Read16(&payload._pos[1])) / static_cast<float>(fact_float_int));
-
-			latest_enemy_updates[id] = _enemy_properties;
-
+			auto enemy = get_network_enemy(_enemy_properties._id);
+			if (enemy != nullptr)
+				Game::Instance()->get_mngr()->getComponent<EnemySynchronize>(enemy)->update_enemy(_enemy_properties);
 			break;
 		}
 		case network_message_type_start_wave:
@@ -1693,18 +1693,18 @@ void GameScene::client_handle_menssage(network_context &ctx)
 	(void)count;
 	// std::cout << "message: client received " << count << " messages" << std::endl;
 
-	for (auto &[id, data] : latest_enemy_updates)
-	{
-		auto enemy = get_network_enemy(id);
-		if (enemy != nullptr)
-		{
-			//std::cout << "Enemy ID en synchronize: " << (int)id << std::endl;
-			Game::Instance()->get_mngr()->getComponent<EnemySynchronize>(enemy)->update_enemy(data);
-		}else
-		{
-			std::cout << "No se encontro el enemigo ID: " << (int)id << std::endl;
-		}
-	}
+	//for (auto &[id, data] : latest_enemy_updates)
+	//{
+	//	auto enemy = get_network_enemy(id);
+	//	if (enemy != nullptr)
+	//	{
+	//		//std::cout << "Enemy ID en synchronize: " << (int)id << std::endl;
+	//		Game::Instance()->get_mngr()->getComponent<EnemySynchronize>(enemy)->update_enemy(data);
+	//	}else
+	//	{
+	//		std::cout << "No se encontro el enemigo ID: " << (int)id << std::endl;
+	//	}
+	//}
 }
 
 bool GameScene::change_player_tex(uint32_t playerId, const std::string &key_name)
