@@ -259,7 +259,7 @@ WaveManager::activateFog() {
 
 void 
 WaveManager::enterRewardsMenu() {
-    Game::Instance()->change_Scene(Game::REWARDSCENE);
+    Game::Instance()->queue_scene(Game::REWARDSCENE);
 }
 
 void WaveManager::start_new_wave()
@@ -344,7 +344,7 @@ void WaveManager::endwave()
 
 #endif
     if (_currentWave == 9) {
-        Game::Instance()->change_Scene(Game::State::VICTORY);
+        Game::Instance()->queue_scene(Game::State::VICTORY);
     }
     else {
         fog->setFog(false);

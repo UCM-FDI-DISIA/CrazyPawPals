@@ -33,7 +33,7 @@ enum network_message_type
     network_message_type_enemy_update,
     network_message_type_create_enemy,
     network_message_type_start_wave,
-    network_message_type_end_wave,
+    network_message_type_end_wave
 };
 using network_message_type_option = uint16_t;
 using network_message_header_size = uint16_t;
