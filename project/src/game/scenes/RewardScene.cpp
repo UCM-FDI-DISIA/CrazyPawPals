@@ -436,10 +436,10 @@ void RewardScene::create_my_deck_cards() {
     auto _m_deck = mngr->getComponent<Deck>(player);
     auto& pDeck = _m_deck->move_discard_to_draw(true).card_list();
 
-    float umbral = 0.11f;
+    float umbral = 0.09f;
     auto iterator = pDeck.begin();
     GameStructs::CardButtonProperties propTemplate = {
-        { {0.01f, 0.8f}, {0.1f, 0.175f} },
+        { {0.01f, 0.8f}, {0.075f, 0.135f} },
         0.0f, "", ecs::grp::REWARDDECK, *iterator
     };
 
