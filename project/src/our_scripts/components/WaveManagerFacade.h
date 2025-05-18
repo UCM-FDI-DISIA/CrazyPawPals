@@ -1,5 +1,7 @@
 #pragma once
-enum events : uint16_t;
+
+#include <cstdint>
+enum events : int16_t;
 
 class WaveManagerFacade {
 public:

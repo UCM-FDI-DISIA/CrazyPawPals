@@ -74,6 +74,8 @@
 #include "../../our_scripts/components/net/player_synchronize.h"
 #include "../../our_scripts/components/ui/MultiplayerHUD.h"
 #include "RewardScene.h"
+#include "../../our_scripts/components/WaveManager.h"
+
 #ifdef GENERATE_LOG
 #include "../../our_scripts/log_writer_to_csv.hpp"
 #endif
@@ -249,7 +251,7 @@ void GameScene::exitScene()
 
 	auto wm = Game::Instance()->get_wave_manager();
 	auto e = wm->get_current_event();
-	RewardScene::will_have_mythic(e != NONE || ((wm->get_current_wave() + 1) % 5 == 0));
+	RewardScene::will_have_mythic(e != events::NONE || ((wm->get_current_wave() + 1) % 5 == 0));
 	wm->reset_wave_time();
 #ifdef GENERATE_LOG
 	log_writer_to_csv::Instance()->add_new_log("EXIT GAME SCENE");
@@ -1522,8 +1524,10 @@ void GameScene::event_callback1(const event_system::event_receiver::Msg &m)
 
 void GameScene::host_handle_menssage(network_context &ctx)
 {
-	if (SDLNet_CheckSockets(ctx.profile.host.clients_host_set, 0) > 0)
+	size_t count{0};
+	while (SDLNet_CheckSockets(ctx.profile.host.clients_host_set, 0) > 0)
 	{
+		++count;
 		if (SDLNet_SocketReady(ctx.profile.host.host_socket))
 		{
 			network_message_dynamic_pack dyn_message = network_message_dynamic_pack_receive(ctx.profile.host.host_socket);
@@ -1592,16 +1596,20 @@ void GameScene::host_handle_menssage(network_context &ctx)
 			}
 		}
 	}
+
+	std::cout << "message: host received " << count << " messages" << std::endl;
 }
 
 void GameScene::client_handle_menssage(network_context &ctx)
 {
 	std::unordered_map<uint8_t, GameStructs::DumbEnemyProperties> latest_enemy_updates;
 
-	int active_sockets = SDLNet_CheckSockets(ctx.profile.client.client_set, 0);
-	if (active_sockets > 0 && SDLNet_SocketReady(ctx.profile.client.socket_to_host))
-	{
-
+	size_t count{0};
+	while (
+		(SDLNet_CheckSockets(ctx.profile.client.client_set, 0) > 0)
+		&& SDLNet_SocketReady(ctx.profile.client.socket_to_host)
+	) {
+		++count;
 		auto dyn_message = network_message_dynamic_pack_receive(ctx.profile.client.socket_to_host);
 		const uint16_t type_n{dyn_message->header.type_n};
 		const uint16_t type_h{SDLNet_Read16(&type_n)};
@@ -1682,6 +1690,7 @@ void GameScene::client_handle_menssage(network_context &ctx)
 			break;
 		}
 	}
+	std::cout << "message: client received " << count << " messages" << std::endl;
 
 	for (auto &[id, data] : latest_enemy_updates)
 	{
