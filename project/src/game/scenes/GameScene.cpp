@@ -1564,8 +1564,8 @@ void GameScene::host_handle_menssage(network_context &ctx)
 
 					playerData.health = SDLNet_Read16(&payload.health_n);
 					playerData.is_ghost = SDLNet_Read16(&payload.is_ghost_n);
-					playerData.pos.setX(static_cast<int16_t>(SDLNet_Read32(&payload.pos_n[0])) / static_cast<float>(fact_float_int));
-					playerData.pos.setY(static_cast<int16_t>(SDLNet_Read32(&payload.pos_n[1])) / static_cast<float>(fact_float_int));
+					playerData.pos.setX(static_cast<int32_t>(SDLNet_Read32(&payload.pos_n[0])) / static_cast<float>(fact_float_int));
+					playerData.pos.setY(static_cast<int32_t>(SDLNet_Read32(&payload.pos_n[1])) / static_cast<float>(fact_float_int));
 
 					auto &&game = *Game::Instance();
 					const Game::network_users_state &state = game.get_network_state();
