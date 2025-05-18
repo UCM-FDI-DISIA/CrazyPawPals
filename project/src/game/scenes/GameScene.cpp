@@ -1596,8 +1596,8 @@ void GameScene::host_handle_menssage(network_context &ctx)
 			}
 		}
 	}
-
-	std::cout << "message: host received " << count << " messages" << std::endl;
+	(void)count;
+	// std::cout << "message: host received " << count << " messages" << std::endl;
 }
 
 void GameScene::client_handle_menssage(network_context &ctx)
@@ -1690,7 +1690,8 @@ void GameScene::client_handle_menssage(network_context &ctx)
 			break;
 		}
 	}
-	std::cout << "message: client received " << count << " messages" << std::endl;
+	(void)count;
+	// std::cout << "message: client received " << count << " messages" << std::endl;
 
 	for (auto &[id, data] : latest_enemy_updates)
 	{
