@@ -34,26 +34,26 @@ void EnemySynchronize::initComponent()
 
 void EnemySynchronize::update(uint32_t delta_time)
 {
-	(void)delta_time;
-	if (Game::Instance()->is_host())
-		send_enemy_update();
+	// (void)delta_time;
+	// if (Game::Instance()->is_host())
+	// 	send_enemy_update();
 }
 
 void EnemySynchronize::send_enemy_update()
 {
-	auto &network = Game::Instance()->get_network();
+	// auto &network = Game::Instance()->get_network();
 
-	GameStructs::DumbEnemyProperties enemyData;
-	enemyData._id = _enemy_id;
-	// std::cout << "Enemy ID en syncronize: " << (int)enemyData._id << std::endl;
+	// GameStructs::DumbEnemyProperties enemyData;
+	// enemyData._id = _enemy_id;
+	// // std::cout << "Enemy ID en syncronize: " << (int)enemyData._id << std::endl;
 
-	enemyData._pos = _tr->getPos();
-	enemyData._health = _ht->getHealth();
+	// enemyData._pos = _tr->getPos();
+	// enemyData._health = _ht->getHealth();
 
-	auto msg = create_update_enemy_message(enemyData);
-	network_message_pack_send(
-		network.profile.client.socket_to_host,
-		network_message_pack_create(network_message_type_enemy_update, msg));
+	// auto msg = create_update_enemy_message(enemyData);
+	// network_message_pack_send(
+	// 	network.profile.client.socket_to_host,
+	// 	network_message_pack_create(network_message_type_enemy_update, msg));
 }
 
 void EnemySynchronize::update_enemy(GameStructs::DumbEnemyProperties &data)
