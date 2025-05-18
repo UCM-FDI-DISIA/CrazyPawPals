@@ -209,12 +209,12 @@ void GameScene::enterScene()
 	manager.addComponent<GamePadPlayerCtrl>(player);
 	manager.addComponent<PlayerHUD>(player);
 	auto wm = Game::Instance()->get_wave_manager();
-		if (Game::Instance()->is_host() || Game::Instance()->is_network_none()) {
-			dynamic_cast<WaveManager*>(wm)->start_new_wave();
-		}
-		// get the current event
-	auto e = wm->get_current_event();
-	RewardScene::will_have_mythic(e != NONE || ((wm->get_current_wave() + 1) % 5 == 0));
+	if (Game::Instance()->is_host() || Game::Instance()->is_network_none()) {
+		dynamic_cast<WaveManager*>(wm)->start_new_wave();
+	}
+	// get the current event
+	//auto e = wm->get_current_event();
+	//RewardScene::will_have_mythic(e != NONE || ((wm->get_current_wave() + 1) % 5 == 0));
 	//}
 	manager.getComponent<HUD>(manager.getHandler(ecs::hdlr::HUD_ENTITY))->start_new_wave();
 	// spawn_catkuza(Vector2D{10.0f, 0.0f});
@@ -230,7 +230,11 @@ void GameScene::enterScene()
 void GameScene::exitScene()
 {
 	auto &&manager = *Game::Instance()->get_mngr();
-	Game::Instance()->get_wave_manager()->reset_wave_time();
+
+	auto wm = Game::Instance()->get_wave_manager();
+	auto e = wm->get_current_event();
+	RewardScene::will_have_mythic(e != NONE || ((wm->get_current_wave()+1) % 5 == 0));
+	wm->reset_wave_time();
 #ifdef GENERATE_LOG
 	log_writer_to_csv::Instance()->add_new_log("EXIT GAME SCENE");
 	log_writer_to_csv::Instance()->add_new_log();
