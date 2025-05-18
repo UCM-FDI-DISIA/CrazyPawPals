@@ -12,6 +12,7 @@ class DumbWaveManager : /*public event_system::event_receiver,*/ public ecs::Com
 	uint8_t _currentWave = 0;
 	std::unique_ptr<wave_event> _current_wave_event;
 	bool _wave_active = true;
+	bool _has_changed_to_rewards = false;
 	events _current_event = NONE;
 private:
 	void erase_all_bullets();

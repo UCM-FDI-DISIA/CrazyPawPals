@@ -11,6 +11,7 @@
 #include "../wave_events/ice_skating_event.hpp"
 #include "../wave_events/star_shower_event.hpp"
 #include "../../network/network_message.hpp"
+#include "../components/net/GhostStateComponent.h"
 
 #ifdef GENERATE_LOG
 #include "../log_writer_to_csv.hpp"
@@ -286,6 +287,8 @@ void WaveManager::start_new_wave()
         mngr.setAlive(e, false);
     }
 
+    auto player = mngr.getHandler(ecs::hdlr::PLAYER);
+    if (mngr.hasComponent<GhostStateComponent>(player))mngr.removeComponent<GhostStateComponent>(player);
     choose_new_event();
 
     if ((_currentWave + 1) % 5 == 0)

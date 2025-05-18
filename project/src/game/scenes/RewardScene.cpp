@@ -66,6 +66,8 @@ void RewardScene::enterScene()
 
 void RewardScene::exitScene()
 {
+    showing_message = false;
+
     change_pos(false);
     auto* mngr = Game::Instance()->get_mngr();
     auto cb = mngr->getHandler(ecs::hdlr::CONFIRMREWARD);
@@ -771,7 +773,10 @@ void RewardScene::update(uint32_t delta_time) {
                            state.game_state.ready_users.set(id, true);
                            state.game_state.ready_user_count++;
 
-                           if (checkAllPlayersReady())Game::Instance()->queue_scene(Game::GAMESCENE);
+                           if (checkAllPlayersReady()) {
+                               if (_mythic) Game::Instance()->queue_scene(Game::MYTHICSCENE);
+                               else Game::Instance()->queue_scene(Game::GAMESCENE);
+                           }
                            break;
                        }
                        default: {
@@ -790,8 +795,9 @@ void RewardScene::update(uint32_t delta_time) {
                const uint16_t type_h{ SDLNet_Read16(&type_n) };
                switch (type_h) {
                case network_message_type_start_game: {
-                   std::cout << "mensaje de ir al juego" << std::endl;
-                   Game::Instance()->queue_scene(Game::GAMESCENE);
+
+                   if (_mythic) Game::Instance()->queue_scene(Game::MYTHICSCENE);
+                   else Game::Instance()->queue_scene(Game::GAMESCENE);
                    break;
                }
                default: break;
@@ -818,8 +824,6 @@ void RewardScene::create_next_round_button(const GameStructs::ButtonProperties& 
 
     buttonComp->connectClick([buttonComp, mngr, imgComp, this]() { if (_selected) {
         _lr->swap_textures();
-
-        if (_mythic) Game::Instance()->queue_scene(Game::MYTHICSCENE);
         
         if (!Game::Instance()->is_network_none()) {
             network_context& network = Game::Instance()->get_network();
@@ -828,7 +832,10 @@ void RewardScene::create_next_round_button(const GameStructs::ButtonProperties& 
             if (Game::Instance()->is_host()) {
                 state.game_state.ready_users.set(0, true);
                 state.game_state.ready_user_count++;
-                checkAllPlayersReady();
+                if (checkAllPlayersReady()) {
+                    if (_mythic) Game::Instance()->queue_scene(Game::MYTHICSCENE);
+                    else Game::Instance()->queue_scene(Game::GAMESCENE);
+                }
             }
             else if (!state.game_state.ready_users.test(id)) {
                 std::cout << "Player id ready: " << std::to_string(id) << std::endl;

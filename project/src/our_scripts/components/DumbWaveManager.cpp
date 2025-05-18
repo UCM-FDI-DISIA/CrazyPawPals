@@ -30,10 +30,12 @@ void DumbWaveManager::update(uint32_t dt) {
     if (_wave_active) {
         _currentWaveTime = sdlutils().virtualTimer().currRealTime() - _currentWaveInitTime;
         _current_wave_event->update(dt);
+        _has_changed_to_rewards = false;
     }
     else {
         //RENDER WIN WAVE BUTTON
-        if (change_to_rewards_time < sdlutils().virtualTimer().currRealTime()) {
+        if (!_has_changed_to_rewards&&change_to_rewards_time < sdlutils().virtualTimer().currRealTime()) {
+            _has_changed_to_rewards = true;
             Game::Instance()->queue_scene(Game::REWARDSCENE);
         }
     }

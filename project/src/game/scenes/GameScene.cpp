@@ -226,11 +226,6 @@ void GameScene::enterScene()
 	// RewardScene::will_have_mythic(e != NONE || ((wm->get_current_wave() + 1) % 5 == 0));
 	//}
 	manager.getComponent<HUD>(manager.getHandler(ecs::hdlr::HUD_ENTITY))->start_new_wave();
-
-	// spawn_catkuza(Vector2D{10.0f, 0.0f});
-	//  spawn_rata_basurera(Vector2D{5.0f, 0.0f});
-	//  spawn_rey_basurero(Vector2D{-5.0f, 0.0f});
-	//  spawn_super_michi_mafioso(Vector2D{5.0f, 0.0f});
 #ifdef GENERATE_LOG
 	log_writer_to_csv::Instance()->add_new_log();
 	log_writer_to_csv::Instance()->add_new_log("ENTERED GAME SCENE");
@@ -1677,6 +1672,10 @@ void GameScene::client_handle_menssage(network_context &ctx)
 			auto message = network_message_dynamic_pack_into<network_message_start_wave>(std::move(dyn_message));
 			auto &&payload = message->payload.content;
 			dynamic_cast<DumbWaveManager *>(Game::Instance()->get_wave_manager())->start_wave(SDLNet_Read16(&payload.wave_event));
+			
+			auto mngr = Game::Instance()->get_mngr();
+			auto player =mngr->getHandler(ecs::hdlr::PLAYER);
+			if (mngr->hasComponent<GhostStateComponent>(player))mngr->removeComponent<GhostStateComponent>(player);
 			break;
 		}
 		case network_message_type_end_wave:

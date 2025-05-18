@@ -58,6 +58,8 @@ void MythicScene::enterScene()
 
 void MythicScene::exitScene()
 {
+    showing_message = false;
+
     _lm->resize(1.0f/1.1f);
 
     _lm = nullptr;
@@ -435,6 +437,26 @@ void MythicScene::refresh_my_mythics(const std::vector<MythicItem*>& cl) {
         }
     }
 }
+void MythicScene::render()
+{
+    Scene::render();
+    if (showing_message) {
+        auto camera = Game::Instance()->get_mngr()->getComponent<camera_component>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA));
+        rect_f32 message_rect = rect_f32_screen_rect_from_viewport(rect_f32({ { 0.4,0.7 }, { 0.2,0.05 } }), camera->cam.screen);
+        SDL_Rect message_true{
+            int(message_rect.position.x),
+            int(message_rect.position.y),
+            int(message_rect.size.x),
+            int(message_rect.size.y)
+        };
+        Texture message_tex{
+        sdlutils().renderer(),
+        message,
+        sdlutils().fonts().at("RUBIK_MONO"),
+        SDL_Color({128, 0, 32, 255}) };
+        message_tex.render(message_true);
+    }
+}
 
 void MythicScene::update(uint32_t delta_time) {
     Scene::update(delta_time);
@@ -524,7 +546,7 @@ void MythicScene::create_next_round_button(const GameStructs::ButtonProperties& 
             if (Game::Instance()->is_host()) {
                 state.game_state.ready_users.set(0, true);
                 state.game_state.ready_user_count++;
-                checkAllPlayersReady();
+                if (checkAllPlayersReady())Game::Instance()->queue_scene(Game::GAMESCENE);
             }
             else if (!state.game_state.ready_users.test(id)) {
                 state.game_state.ready_users.set(id, true);

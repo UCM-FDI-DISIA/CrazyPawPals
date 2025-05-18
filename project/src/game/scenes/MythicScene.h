@@ -18,6 +18,7 @@ public:
 	void initScene() override;
 	void enterScene() override;
 	void exitScene() override;
+	void render() override;
 	void update(uint32_t delta_time) override;
 private:
     ecs::entity_t create_mythic_button(const GameStructs::MythicButtonProperties& bp);
