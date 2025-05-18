@@ -19,9 +19,6 @@
 #include "../../our_scripts/components/rendering/Image.h"
 #include "../../our_scripts/components/rendering/ImageForButton.h"
 
-
-#include "../../network/network_utility.hpp"
-#include "../../network/network_message.hpp"
 #ifdef GENERATE_LOG
 #include "../../our_scripts/log_writer_to_csv.hpp"
 #endif
@@ -156,7 +153,7 @@ void SelectionMenuScene::enterScene()
     log_writer_to_csv::Instance()->add_new_log("ENTERED SELECTION MENU SCENE");
 #endif
     reset();
-    if (Game::Instance()->is_host()) {
+    if (!Game::Instance()->is_network_none()) {
         Game::network_users_state& state = Game::Instance()->get_network_state();
         state.game_state.ready_users.reset();
         state.game_state.ready_user_count = 0;
@@ -442,11 +439,11 @@ void SelectionMenuScene::create_enter_button() {
                 if (Game::Instance()->is_host()) {
                     state.game_state.ready_users.set(0, true);
                     state.game_state.ready_user_count++;
-                    checkAllPlayersReady();
+                    if (checkAllPlayersReady())Game::Instance()->queue_scene(Game::GAMESCENE);
                 }
                 else if(!state.game_state.ready_users.test(id)){
                     state.game_state.ready_users.set(id, true);
-                    uint32_t id = Game::Instance()->client_id();
+
                     network_message_pack_send(
                         network.profile.client.socket_to_host,
                         network_message_pack_create(network_message_type_player_ready,
@@ -506,7 +503,7 @@ void SelectionMenuScene::update(uint32_t delta_time) {
                             state.game_state.ready_users.set(id, true);
                             state.game_state.ready_user_count++;
 
-                            checkAllPlayersReady();
+                            if (checkAllPlayersReady())Game::Instance()->queue_scene(Game::GAMESCENE);
                             break;
                         }
                         default: {
@@ -535,26 +532,5 @@ void SelectionMenuScene::update(uint32_t delta_time) {
 
         }
        
-    }
-}
-
-void SelectionMenuScene::checkAllPlayersReady()
-{
-    Game::network_users_state& state = Game::Instance()->get_network_state();
-    if (!Game::Instance()->is_host() || !state.game_state.ready_users.test(0)) return;
-    
-    if (state.game_state.ready_users.count() == state.connections.connected_users) {
-        network_context& network = Game::Instance()->get_network();
-        // enviar start a todos los clientes
-        for (auto& client : network.profile.host.sockets_to_clients.connections) {
-            if (client) {
-                network_message_pack_send(
-                    client,
-                    network_message_pack_create(network_message_type_start_game, 
-                        create_payload_empty_message())
-                );
-            }
-        }
-        Game::Instance()->queue_scene(Game::GAMESCENE);
     }
 }

@@ -44,6 +44,4 @@ private:
 	bool _activate_play_button;
 
 	void reset();
-
-	void checkAllPlayersReady();
 };

@@ -18,6 +18,7 @@ public:
 	void initScene() override;
 	void enterScene() override;
 	void exitScene() override;
+	void render() override;
 	void update(uint32_t delta_time) override;
 	static void will_have_mythic(bool state) { 
 		_mythic = state; };

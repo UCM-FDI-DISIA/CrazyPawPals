@@ -7,6 +7,9 @@
 #include "../../ecs/ecs.h"
 #include "../Game.h"
 
+#include "../../network/network_utility.hpp"
+#include "../../network/network_message.hpp"
+
 class Transform;
 class Texture;
 class Scene {
@@ -56,6 +59,8 @@ protected:
 	ecs::entity_t create_button(const GameStructs::ButtonProperties& bp);
 	ecs::entity_t create_decoration_image(const GameStructs::ButtonProperties& ip);
 	void create_static_background(Texture* bg);
+
+	bool checkAllPlayersReady();
 
 	std::string message{};
 	uint32_t message_time{5 * 1000};

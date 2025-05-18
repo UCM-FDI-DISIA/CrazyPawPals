@@ -105,6 +105,28 @@ void Scene::create_static_background(Texture *bg)
                                               bg));
 }
 
+bool Scene::checkAllPlayersReady()
+{
+    Game::network_users_state& state = Game::Instance()->get_network_state();
+    if (!Game::Instance()->is_host() || !state.game_state.ready_users.test(0)) return false;
+
+    if (state.game_state.ready_users.count() == state.connections.connected_users) {
+        network_context& network = Game::Instance()->get_network();
+        // enviar start a todos los clientes
+        for (auto& client : network.profile.host.sockets_to_clients.connections) {
+            if (client) {
+                network_message_pack_send(
+                    client,
+                    network_message_pack_create(network_message_type_start_game,
+                        create_payload_empty_message())
+                );
+            }
+        }
+        return true;
+    }
+    else return false;
+}
+
 void Scene::update(uint32_t delta_time)
 {
     Game::Instance()->get_mngr()->update(_scene_ID, delta_time);

@@ -355,6 +355,8 @@ void WaveManager::endwave()
         erase_all_bullets();
         erase_all_enemies();
 
+        std::cout << "mensaje fin de oleada" << std::endl;
+
         //SEND END WAVE MESSAGE
         network_context& network = Game::Instance()->get_network();
         for (network_connection_size i = 0; i < network.profile.host.sockets_to_clients.connection_count; ++i) {

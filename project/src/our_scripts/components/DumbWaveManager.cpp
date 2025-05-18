@@ -20,6 +20,7 @@ void DumbWaveManager::start_wave(uint16_t ev)
 void DumbWaveManager::end_wave()
 {
     _wave_active = false;
+    change_to_rewards_time = sdlutils().virtualTimer().currTime() + 3000;
     ++_currentWave;
     _current_wave_event->end_wave_callback();
     erase_all_bullets();

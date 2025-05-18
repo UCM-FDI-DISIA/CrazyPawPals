@@ -8,7 +8,7 @@
 class DumbWaveManager : /*public event_system::event_receiver,*/ public ecs::Component, public WaveManagerFacade {
 	uint32_t change_to_rewards_time= 0;
 	uint32_t _currentWaveTime = 0; //tiempo actual (post calculo, inicial en constructor)
-	uint32_t _currentWaveInitTime; // cuándo empezó la oleada
+	uint32_t _currentWaveInitTime; // cuándo empez?la oleada
 	uint8_t _currentWave = 0;
 	std::unique_ptr<wave_event> _current_wave_event;
 	bool _wave_active = true;
