@@ -121,21 +121,21 @@ NetworkNewWave network_message_wave_event_create(uint16_t event_type);
 // Struct de BulletProperties que se envia por la red
 struct NetworkBulletProperties
 {
-    int init_pos[2];
-    int dir[2];
-    int speed = 0.0f;
-    int damage = 0;
-    int pierce_number = 0;
-    float life_time = 1.0f;
-    float width = 40;
-    float height = 40;
+    int32_t init_pos[2];
+    int32_t dir[2];
+    uint32_t speed = 0.0f;
+    uint32_t damage = 0;
+    uint32_t pierce_number = 0;
+    uint32_t life_time = 1.0f;
+    uint32_t width = 40;
+    uint32_t height = 40;
     GameStructs::WeaponType weapon_type = GameStructs::DEFAULT;
     GameStructs::collide_with collision_filter;
     uint8_t sprite_key_length;
     char sprite_key[32];
 };
 
-// Constructor del struct de NetworkBulletProperties
+// Transformador de struct: BulletProperties -> NetworkBulletProperties
 inline NetworkBulletProperties network_message_bulletProperties_create(GameStructs::BulletProperties bp)
 {
     NetworkBulletProperties n_bp;
@@ -143,36 +143,86 @@ inline NetworkBulletProperties network_message_bulletProperties_create(GameStruc
     // Vector2D init_pos
     SDLNet_Write32(bp.init_pos.getX() * fact_float_int, &n_bp.init_pos[0]);
     SDLNet_Write32(bp.init_pos.getY() * fact_float_int, &n_bp.init_pos[1]);
-
+    std::cout << bp.init_pos.getX() * fact_float_int << " " << n_bp.init_pos[0] << std::endl;
+    std::cout << bp.init_pos.getY() * fact_float_int << " " << n_bp.init_pos[1] << std::endl;
     // Vector2D dir
     SDLNet_Write32(bp.dir.getX() * fact_float_int, &n_bp.dir[0]);
     SDLNet_Write32(bp.dir.getY() * fact_float_int, &n_bp.dir[1]);
-
+    std::cout << bp.dir.getX() * fact_float_int << " " << n_bp.dir[0] << std::endl;
+    std::cout << bp.dir.getY() * fact_float_int << " " << n_bp.dir[1] << std::endl;
     // ints
     SDLNet_Write32(bp.speed * fact_float_int, &n_bp.speed);
     SDLNet_Write32(bp.damage, &n_bp.damage);
     SDLNet_Write32(bp.pierce_number, &n_bp.pierce_number);
-
+    std::cout << bp.speed * fact_float_int << " " << n_bp.speed << std::endl;
+    std::cout << bp.damage << " " << n_bp.damage << std::endl;
+    std::cout << bp.pierce_number << " " << n_bp.pierce_number << std::endl;
     // floats
     SDLNet_Write32(bp.life_time * fact_float_int, &n_bp.life_time);
     SDLNet_Write32(bp.width * fact_float_int, &n_bp.width);
     SDLNet_Write32(bp.height * fact_float_int, &n_bp.height);
+    std::cout << bp.life_time << " " << n_bp.life_time << std::endl;
+    std::cout << bp.width << " " << n_bp.width << std::endl;
+    std::cout << bp.height << " " << n_bp.height << std::endl;
 
     // ints
     SDLNet_Write32(bp.weapon_type, &n_bp.weapon_type);
     SDLNet_Write32(bp.collision_filter, &n_bp.collision_filter);
+    std::cout << bp.weapon_type << " " << n_bp.weapon_type << std::endl;
+    std::cout << bp.collision_filter << " " << n_bp.collision_filter << std::endl;
 
     // strings
     const size_t size = bp.sprite_key.size();
     assert(
-        size < 32 && "error: string size exceeds 32");
-    SDLNet_Write32(32, &n_bp.sprite_key_length);
+        size < 64 && "error: string size exceeds 32");
+    SDLNet_Write32(64, &n_bp.sprite_key_length);
 
     std::copy(bp.sprite_key.begin(), bp.sprite_key.end(), n_bp.sprite_key);
+    std::cout << bp.sprite_key << " " << n_bp.sprite_key << std::endl;
 
     return n_bp;
 }
+// Transformador de struct: NetworkBulletProperties -> BulletProperties
+inline GameStructs::BulletProperties network_message_bulletProperties_receive(NetworkBulletProperties n_bp)
+{
+    GameStructs::BulletProperties bp;
+    
+    //Vector2D init_pos
+    bp.init_pos.setX(SDLNet_Read32(&n_bp.init_pos[0]) / fact_float_int);
+    bp.init_pos.setY(SDLNet_Read32(&n_bp.init_pos[1]) / fact_float_int);
+    std::cout << n_bp.init_pos[0] << " " << bp.init_pos.getX() << std::endl;
+    std::cout << n_bp.init_pos[1] << " " << bp.init_pos.getY() << std::endl;
+    //Vector2D dir
+    bp.dir.setX(SDLNet_Read32(&n_bp.dir[0]) / fact_float_int);
+    bp.dir.setY(SDLNet_Read32(&n_bp.dir[1]) / fact_float_int);
+    std::cout << n_bp.dir[0] << " " << bp.dir.getX() << std::endl;
+    std::cout << n_bp.dir[1] << " " << bp.dir.getY() << std::endl;
+    //ints
+    bp.speed = SDLNet_Read32(&n_bp.speed) / fact_float_int;
+    bp.damage = SDLNet_Read32(&n_bp.damage);
+    bp.pierce_number = SDLNet_Read32(&n_bp.pierce_number);
+    std::cout << n_bp.speed << " " << bp.speed << std::endl;
+    std::cout << n_bp.damage << " " << bp.damage << std::endl;
+    std::cout << n_bp.pierce_number << " " << bp.pierce_number << std::endl;
+    //floats
+    bp.life_time = SDLNet_Read32(&n_bp.life_time) / fact_float_int;
+    bp.width = SDLNet_Read32(&n_bp.width) / fact_float_int;
+    bp.height = SDLNet_Read32(&n_bp.height) / fact_float_int;
+    std::cout << n_bp.life_time << " " << bp.life_time << std::endl;
+    std::cout << n_bp.width << " " << bp.width << std::endl;
+    std::cout << n_bp.height << " " << bp.height << std::endl;
+    //ints
+    bp.weapon_type = (GameStructs::WeaponType)(int)SDLNet_Read32(&n_bp.weapon_type);
+    bp.collision_filter = (GameStructs::collide_with)(int)SDLNet_Read32(&n_bp.collision_filter);
+    std::cout << n_bp.weapon_type << " " << bp.weapon_type << std::endl;
+    std::cout << n_bp.collision_filter << " " << bp.collision_filter << std::endl;
+    //strings
+    n_bp.sprite_key[n_bp.sprite_key_length] = '\0';
+    bp.sprite_key = std::string{n_bp.sprite_key};
+    std::cout << n_bp.sprite_key << " " << bp.sprite_key << std::endl;
 
+    return bp;
+}
 
 //si esta preparado para empezar el juego (si ha eleigo mazo y arma)
 struct network_message_player_id {

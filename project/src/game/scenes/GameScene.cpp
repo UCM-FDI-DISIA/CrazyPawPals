@@ -1455,7 +1455,7 @@ ecs::entity_t GameScene::generate_proyectile(const GameStructs::BulletProperties
 {
 	auto manager = Game::Instance()->get_mngr();
 	(void)gid;
-
+	std::cout << bp.init_pos << std::endl;
 	auto &&transform = *new Transform(bp.init_pos, bp.dir, (atan2(-bp.dir.getY(), bp.dir.getX()) + M_PI / 2) * 180.0f / M_PI, bp.speed);
 	auto &&rect = *new rect_component{0, 0, bp.width, bp.height};
 	auto &&player_rigidbody = *new rigidbody_component{rect_f32{{0.15f, -0.125}, {0.5f, 0.75f}}, mass_f32{7.0f}, 1.0f};
@@ -1487,7 +1487,37 @@ ecs::entity_t GameScene::generate_proyectile(const GameStructs::BulletProperties
 }
 ecs::entity_t GameScene::create_proyectile(const GameStructs::BulletProperties &bp, ecs::grpId_t gid)
 {
-	return generate_proyectile(bp, gid);
+	auto network = Game::Instance()->get_network();
+	switch (network.profile_status){
+		case network_context_profile_status_none:
+		{
+			//Create normal bullet as usual
+			return generate_proyectile(bp, gid);
+			break;
+		}
+		case network_context_profile_status_client:
+		{
+			//Create NetworkBulletProperties
+			NetworkBulletProperties n_bp = network_message_bulletProperties_create(bp);
+			//Send 
+			std::cout << "Client shoots" << std::endl;
+			network_message_pack_send(network.profile.client.socket_to_host,
+				network_message_pack_create(network_message_type_summon_true_bullet, n_bp));
+			break;
+		}
+		case network_context_profile_status_host:
+		{
+			//Create NetworkBulletProperties
+			NetworkBulletProperties n_bp = network_message_bulletProperties_create(bp);
+			std::cout << "Host shoots" << std::endl;
+			//Send 
+			network_message_pack_send(network.profile.client.socket_to_host, 
+				network_message_pack_create(network_message_type_summon_dummy_bullet, n_bp));
+			//Summon true bullet
+			return generate_proyectile(bp, gid);
+			break;
+		}
+	}
 }
 #pragma endregion
 
@@ -1574,6 +1604,28 @@ void GameScene::host_handle_menssage(network_context &ctx)
 							network_message_pack_send(
 								client,
 								network_message_pack_create(network_message_type_player_update, player_update_msg));
+						}
+					}
+					break;
+				}
+				case network_message_type_summon_true_bullet:
+				{
+					std::cout << "Client shot received by host" << std::endl;
+					//Receives NetworkBulletProperties
+					auto msg = network_message_pack_receive<NetworkBulletProperties>(connection);
+					auto&& payload = msg.payload.content;
+					std::cout << payload.init_pos[0] << std::endl;
+					//Creates BulletProperties from NetworkBulletProperties and generates the proyectile
+					generate_proyectile(
+						network_message_bulletProperties_receive(payload),
+						ecs::grp::BULLET);
+					//Sends "network_message_type_summon_dummy_bullet" to all clients
+					for (network_connection_size i = 0; i < ctx.profile.host.sockets_to_clients.connection_count; ++i) {
+						TCPsocket& client = ctx.profile.host.sockets_to_clients.connections[i];
+						if (client != connection) {
+							network_message_pack_send(
+								client,
+								network_message_pack_create(network_message_type_summon_dummy_bullet, payload));
 						}
 					}
 					break;
@@ -1669,6 +1721,18 @@ void GameScene::client_handle_menssage(network_context &ctx)
 			auto message = network_message_dynamic_pack_into<network_message_end_wave>(std::move(dyn_message));
 			auto&& payload = message->payload.content;
 			dynamic_cast<DumbWaveManager*>(Game::Instance()->get_wave_manager())->end_wave();
+			break;
+		}
+		case network_message_type_summon_dummy_bullet:
+		{
+			std::cout << "Host shot received by client" << std::endl;
+			//Receives NetworkBulletProperties
+			auto msg = network_message_pack_receive<NetworkBulletProperties>(ctx.profile.client.socket_to_host);
+			auto&& payload = msg.payload.content;
+			//Creates BulletProperties from NetworkBulletProperties and generates the proyectile
+			generate_proyectile(
+				network_message_bulletProperties_receive(payload),
+				ecs::grp::BULLET);
 			break;
 		}
 		default:
