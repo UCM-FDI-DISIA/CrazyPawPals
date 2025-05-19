@@ -201,13 +201,19 @@ void SelectionMenuScene::enterScene()
 void SelectionMenuScene::exitScene()
 {
     auto* mngr = Game::Instance()->get_mngr();
-    if(_activate_play_button)mngr->getComponent<ImageForButton>(mngr->getHandler(ecs::hdlr::TOGAMEBUTTON))->swap_textures();
+    //if(_activate_play_button)mngr->getComponent<ImageForButton>(mngr->getHandler(ecs::hdlr::TOGAMEBUTTON))->swap_textures();
 
     auto playB = mngr->getHandler(ecs::hdlr::TOGAMEBUTTON);
     auto playImg = mngr->getComponent<ImageForButton>(playB);
     playImg->_filter = false;
     sdlutils().musics().at("main_menu_bgm").haltMusic();
     sdlutils().musics().at("game_bgm").play();
+
+    auto imgComp = mngr->getComponent<ImageForButton>(mngr->getHandler(ecs::hdlr::TOGAMEBUTTON));
+    imgComp->set_texture(&sdlutils().images().at("ready"));
+    imgComp->destination_rect.position.x = 10.4f;
+
+
 #ifdef GENERATE_LOG
     log_writer_to_csv::Instance()->add_new_log("EXIT SELECTION MENU SCENE");
     log_writer_to_csv::Instance()->add_new_log();

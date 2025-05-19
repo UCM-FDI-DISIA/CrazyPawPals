@@ -182,7 +182,6 @@ void GameScene::initScene()
 	manager.addComponent<MythicComponent>(player);
 
 	manager.refresh();
-
 	spawn_fog();
 	spawn_wave_manager();
 	auto hud = create_hud();
@@ -1469,7 +1468,7 @@ ecs::entity_t GameScene::generate_proyectile(const GameStructs::BulletProperties
 	auto &&rect = *new rect_component{0, 0, bp.width, bp.height};
 	auto &&player_rigidbody = *new rigidbody_component{rect_f32{{0.15f, -0.125}, {0.5f, 0.75f}}, mass_f32{7.0f}, 1.0f};
 	auto &&player_collisionable = *new collisionable{transform, player_rigidbody, rect, collisionable_option_trigger};
-
+	
 	auto e = create_entity(
 		gid,
 		scene,
