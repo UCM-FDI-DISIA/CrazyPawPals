@@ -81,6 +81,14 @@
       "file": "resources/images/projectiles/p_card_lighting.png"
     },
     {
+      "id": "p_fulgur",
+      "file": "resources/images/projectiles/p_card_fulgur.png"
+    },
+    {
+      "id": "p_commune",
+      "file": "resources/images/projectiles/p_card_commune.png"
+    },
+    {
       "id": "p_eldritch_blast",
       "file": "resources/images/projectiles/p_card_eldritch_blast.png"
     },
