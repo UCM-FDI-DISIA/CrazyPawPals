@@ -288,7 +288,7 @@ void Commune::on_play(Deck& d, const Vector2D* player_position, const Vector2D* 
 	bp.height = 1.0 + (amp * 1.5);
 	bp.width = 1.0 + (amp * 1.5);
 	bp.life_time = 0.2;
-	bp.sprite_key = "card_commune";
+	bp.sprite_key = "p_commune";
 	bp.collision_filter = GameStructs::collide_with::enemy;
 	bp.damage = amp * 6+6;
 	Game::Instance()->get_currentScene()->create_proyectile(bp, ecs::grp::BULLET);
@@ -316,7 +316,7 @@ Fulgur::Fulgur() : Card("card_fulgur", Resources(3)), _playing(false),_time_sinc
 	_bullets_properties.width = 2;
 	_bullets_properties.life_time = 0.1f;
 	_bullets_properties.dir = (Vector2D(0, 1));
-	_bullets_properties.sprite_key = "p_lighting";
+	_bullets_properties.sprite_key = "p_fulgur";
 	_bullets_properties.collision_filter = GameStructs::collide_with::enemy;
 }
 void Fulgur::on_play(Deck& d, const Vector2D* player_position, const Vector2D* target_position)
@@ -331,7 +331,7 @@ void Fulgur::on_play(Deck& d, const Vector2D* player_position, const Vector2D* t
 	bp.width = 3.8;
 	bp.life_time = 0.5;
 	bp.collision_filter = GameStructs::collide_with::enemy;
-	bp.sprite_key = "p_lighting";
+	bp.sprite_key = "p_fulgur";
 	bp.damage = 5;
 	Game::Instance()->get_currentScene()->create_proyectile(bp, ecs::grp::BULLET);
 
