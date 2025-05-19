@@ -306,7 +306,7 @@ Esto puede tomar la forma de armas que reciben una mejora directa en la presenci
 Tiene fijado al personaje en el centro y hace movimientos según el cursor, pero cuando el jugador se acerque a las esquinas del mapa, la cámara se quedará fija antes de poder ver fuera del mapa. Como si se moviese con el jugador pero tuviese puntos máximos y mínimos hasta los que se puede mover.
 
 ### 4.3. HUD  
-![Boceto HUD](https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/hud.png)
+![HUD](https://github.com/user-attachments/assets/e073c4be-d053-49c8-a3bf-f36cc0248d82)
 
 ### 4.4. Menús  
 - **Menú principal**
@@ -320,18 +320,20 @@ Tiene fijado al personaje en el centro y hace movimientos según el cursor, pero
     - Escoger arma (pulsando izquierda o derecha).
     - Escoger mazo inicial (pulsando izquierda o derecha)/
     - Comenzar.
-![Boceto HUD](https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/selection_menu.png)
+![playmenu](https://github.com/user-attachments/assets/5eb4eb98-7bea-48ee-8b0c-ff2a0b27fc01)
 
 - **Menú de objetos míticos**
     - Elegir entre tres objetos.
     - Continuar.
-![Boceto HUD](https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/mythic_menu.png)
+![mythicmenu](https://github.com/user-attachments/assets/87f65276-d155-4bdc-bf3a-8d15f60cc176)
+
 
 - **Menú de recompensa**
     - Recompensa de cartas.
     - Cambio de cartas.
     - Previa de mazo actual.
-![Boceto HUD](https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/reward_menu.png)
+![rewardmenu](https://github.com/user-attachments/assets/14dd5d3b-9c85-4b03-8cf7-c34e9e8b6939)
+
 
 - **Menú de Fin de Juego**
     - Menú principal.
@@ -347,7 +349,8 @@ Tiene fijado al personaje en el centro y hace movimientos según el cursor, pero
     - Escribir ip cuando es cliente.
     - Elegir skin.
 ![Boceto HUD](https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/multiplayer_menu1.png)
-![Boceto HUD](https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/multiplayer_menu2.png)
+![HUD](https://github.com/user-attachments/assets/192b10f9-a240-4843-ab51-4bd74f032983)
+
 
 - **HUD Multijugador**
     - ID del jugador local.
