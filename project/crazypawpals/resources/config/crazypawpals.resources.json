@@ -125,6 +125,10 @@
       "file": "resources/images/projectiles/catkuza_dash_attack.png"
     },
     {
+      "id": "p_area_catkuza",
+      "file": "resources/images/projectiles/p_catkuza_area.png"
+    },
+    {
       "id": "attack_warning",
       "file": "resources/images/projectiles/attack_warning.png"
     },

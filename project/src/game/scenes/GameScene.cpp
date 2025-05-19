@@ -212,7 +212,7 @@ void GameScene::enterScene()
 	auto e = wm->get_current_event();
 	RewardScene::will_have_mythic(e != NONE || ((wm->get_current_wave()+1)%5 == 0));
 	manager.getComponent<HUD>(manager.getHandler(ecs::hdlr::HUD_ENTITY))->start_new_wave();
-	//spawn_catkuza(Vector2D{10.0f, 0.0f});
+	spawn_catkuza(Vector2D{10.0f, 0.0f});
 	//spawn_rata_basurera(Vector2D{5.0f, 0.0f});
 	//spawn_rey_basurero(Vector2D{-5.0f, 0.0f});
 	//spawn_super_michi_mafioso(Vector2D{5.0f, 0.0f});
