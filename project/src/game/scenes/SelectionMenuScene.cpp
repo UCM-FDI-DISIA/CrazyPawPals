@@ -344,16 +344,16 @@ void SelectionMenuScene::create_deck_button(GameStructs::DeckType dt, const Game
         switch (dt)
         {
         case GameStructs::ONE:
-            cl = { new Evoke(), new Recover(), new Kunai(), new Commune()};
+            cl = { new Evoke(), new Fireball(), new Minigun(), new Commune()};
             break;
         case GameStructs::TWO: 
             cl = { new Fireball(), new CardSpray(), new Lighting(), new Minigun()};
             break;
         case GameStructs::THREE:
-            cl = { new CardSpray(), new Lighting(), new Minigun(), new Kunai()};
+            cl = { new Fulgur(), new Fireball(), new Minigun(), new Kunai()};
             break;
         case GameStructs::FOUR:
-            cl = { new Kunai(), new EldritchBlast(), new QuickFeet (), new Fulgur()};
+            cl = { new Kunai(), new EldritchBlast(), new QuickFeet (), new CardSpray()};
             break;
         default:
             break;

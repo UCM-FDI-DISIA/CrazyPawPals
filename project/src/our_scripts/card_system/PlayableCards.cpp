@@ -9,7 +9,7 @@
 #define PI 3.14159265358979323846
 
 #pragma region fireball
-Fireball::Fireball() :Card("card_fireball", Resources(1))
+Fireball::Fireball() :Card("card_fireball", Resources(2))
 {
 	//Game::Instance()->get_event_mngr()->suscribe_to_event(event_system::mill,this, &event_system::event_receiver::event_callback0);
 }
