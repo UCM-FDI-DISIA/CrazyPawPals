@@ -7,15 +7,15 @@
 ### Equipo de desarrollo: Curtain Reaper
 
 **Integrantes:**  
-- Izan de Vega López  
 - Haoshuang Hou  
-- María Eduarda Beckers  
+- José Narciso Robles Durán
+- María Eduarda Beckers 
+- Izan de Vega López   
 - Bingcheng Wang  
 - Denisa Juarranz Berindea  
 - Óscar Melquiades Durán Narganes  
 - Amiel Ramos Juez  
 - Javier Fueyo López  
-- José Narciso Robles Durán
   
 ## ÍNDICE  
 1. [Resumen](#1-resumen)  
@@ -148,7 +148,7 @@ El jugador podrá usar la carta en su mano, consumiendo maná equivalente a su c
 
 **Descartar cartas**
 
-El jugador colocará la carta de su mano en descartes sin consumir maná ni ejecutar ninguno de sus efectos. Al hacer esto ejecutará el ataque de arma del que disponga. Esto se puede hacer siempre y cuando el ataque de arma del jugador esté disponible.Tener una velocidad de descartes.
+El jugador colocará la carta de su mano en descartes sin consumir maná ni ejecutar ninguno de sus efectos. Al hacer esto ejecutará el ataque de arma del que disponga. Esto se puede hacer siempre y cuando el ataque de arma del jugador esté disponible. Las armas tiene una velocidad de disparo que limita la velocidad con la q se puede tomar está acción.
 
 **Nuestras cartas**
 <table style="margin: auto;">
@@ -206,27 +206,25 @@ El juego dispondrá en total de 10 oleadas. La duración aproximada de cada una 
 Al comenzar una oleada, los enemigos irán apareciendo en los bordes del escenario durante los 10 primeros segundos de la oleada.
 
 Cada oleada tendrá un cronómetro de 1 min. Cuando queden 10 segundos, el mapa comenzará a cubrirse de niebla, y al llegar a cero, estará completamente cubierto.
-La niebla hará daño poco a poco (5% de vida por segundo) al tocar al jugador. Sin embargo, los enemigos no serán afectados por la niebla.
+La niebla hará daño poco a poco (8% de vida por segundo) al tocar al jugador. Sin embargo, los enemigos no serán afectados por la niebla.
 
 **Fin de Oleada**
 
-Al finalizar una oleada, el mazo se recarga instantáneamente y  comienza un periodo entre oleadas de 10 segundos. Durante este el jugador tendrá una elección entre varias recompensas distintas. Y al acabar los 10 segundos comenzará la siguiente oleada.
-Durante esta fase el cooldown del disparo del jugador se vuelve 0 y la recarga del mazo dura tan solo medio segundo.
+Al finalizar una oleada, el mazo se recarga instantáneamente y  comienza un periodo entre oleadas de 3 segundos antes de pasar al menú de recompensas. En este el jugador tendrá una elección entre varias artas distintas. Y al seleccionar una comenzará la siguiente oleada.
 
 **Eventos de Oleadas**
 
-En algunas ocasiones las oleadas mostrarán antes de comenzar un sprite con un texto y una imagen que evoquen a un evento de oleadas. Esto hace que las recompensas de esta oleada sean de mayor rareza o calidad, y esta oleada además dispondrá de un modificador en el campo de batalla, el jugador y/o los enemigos.
+En algunas ocasiones las oleadas mostrarán antes de comenzar un sprite con un texto y una imagen que evoquen a un evento de oleadas. Esto hace que las recompensas de esta oleada otorguen además un objeto mítico, y esta oleada además dispondrá de un modificador en el campo de batalla, el jugador y/o los enemigos.
 
 
 ### 3.7. Recompensas  
 
-Al completar una oleada, aparecerá un menú de recompensas. Este menú mostrará varias opciones, cada una con una descripción que se revelará al pasar sobre ella. El jugador podrá elegir solo una de las recompensas disponibles. Al elegir cualquiera de las recompensas el resto desaparecerán. 
-Si al comenzar una nueva oleada no se ha escogido recompensa, empezarán a parpadear y 5 segundos después desaparecerán.
+Al completar una oleada, aparecerá un menú de recompensas. Este menú mostrará varias opciones, cada una con una descripción que se revelará al pasar sobre ella. El jugador podrá elegir solo una de las recompensas disponibles. Al elegir cualquiera de las recompensas el resto se bloquearán. 
 
 **Distribución de recompensas**
 
 *En una oleada normal:*
-- Curación (50% vida).
+- Curación (50% vida). Solo si vida < 20%
 - Nuevas cartas.
 
 *En una oleada con Eventos:*
@@ -247,16 +245,15 @@ Aparecerán 3 recompensas de Boss adicionales con otro color. En este caso podem
   - Número Proyectiles: aumenta el número de proyectiles. Si lo hace en gran medida puede modificar la dispersión.
   - Dispersión: en grados.
   - Lanzamiento Doble: Aumenta el coste en 1 para lanzarlo 2 veces.
-- *Objetos Míticos:* Otorga estadísticas o pasivas que modifican en gran medida como funcionará la build del jugador. Se consiguen como recompensas al eliminar a un Boss.
+- *Objetos Míticos:* Otorga estadísticas o pasivas que modifican en gran medida como funcionará la build del jugador. Se consiguen como recompensas al eliminar a un Boss o tras completar un evento.
 
 
 ### 3.8. Objetos Míticos
 Los objetos míticos pueden modificar el playstyle del jugador en gran medida
-Los objetos míticos se consiguen al superar una oleada especial con eventos o bosses.
+Los objetos míticos se consiguen al superar una oleada especial con eventos y/o bosses.
 Siempre tienen un efecto positivo y uno perjudicial similar a los objetos lunares del RoR 2.
 Algunos ejemplos de objetos míticos podrían ser:
 - Cada vez que millees gana como maná el coste de la carta, a cambio reduce tu regeneración de maná a 1/2 o 1/4
-- Reduce el cd de tu artefacto a la mitad. Cada vez que salga de enfriamiento se recargará manualmente de inmediato usandolo en el proceso
 - Reduce tu vida a la mitad. Cada vez que elimines a un enemigo ganas el 20% de su vida como escudo.
 
 - **Nuestros Objetos Míticos**
@@ -369,8 +366,8 @@ Tiene fijado al personaje en el centro y hace movimientos según el cursor, pero
 
 | Nombre | Imagen | Descripción |
 |--------|--------|-------------|
-| **SarnoRata**  | <img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/sarno_rata.png" alt="sarno_rata" width="100" /> | Se acerca al jugador y ataca en un área circular. El modo de seguimiento es aleatorio en el multijugador. |
-| **MichiMafioso**  | <img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/michi_mafioso.png" alt="michi_mafioso.png" width="100" /> | Se aleja y dispara un proyectil. El modo de seguimiento es hacia el jugador más lejano en el multijugador. |
+| **SarnoRata**  | <img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/sarno_rata.png" alt="sarno_rata" width="100" /> | Se acerca al jugador y ataca en un área circular después de un breve retraso. El modo de seguimiento es aleatorio en el multijugador. |
+| **MichiMafioso**  | <img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/michi_mafioso.png" alt="michi_mafioso.png" width="100" /> | Se aleja y dispara un proyectil q apunta a la posición de hace un segundo del jugador al que tiene como objetivo. El modo de seguimiento es hacia el jugador más lejano en el multijugador. |
 | **PlimPlim**  | <img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/plim_plim.png" alt="plim_plim" width="100" /> | Dispara tres proyectiles en arco. El modo de seguimiento es hacia el jugador más cercano en el multijugador. |
 | **Boom**  | <img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/boom.png" alt="Boom" width="100" /> | Se acerca y explota. El modo de seguimiento es hacia el jugador con menos vida en el multijugador. |
 | **Ratatouille**  | <img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/ratatouille.png" alt="ratatouille" width="100" /> | Da vueltas alrededor del jugador, causando daño al chocar. El modo de seguimiento es aleatorio en el multijugador. |
