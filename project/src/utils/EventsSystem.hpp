@@ -48,9 +48,11 @@ namespace event_system {
 		//add more in case its needed, 
 		virtual void event_callback0(const Msg& m) = 0;
 		//recommended to only declare the first abstract, in order for the rest of the program to not explode when adding new ones
-		virtual void event_callback1(const Msg& m) {};
+		virtual void event_callback1(const Msg& m) {
+			(void)m;
+		}
 	protected:
-		~event_receiver() {};
+		~event_receiver() {}
 	};
 
 	typedef void(event_receiver::* ev_rec_func)(const event_receiver::Msg&);

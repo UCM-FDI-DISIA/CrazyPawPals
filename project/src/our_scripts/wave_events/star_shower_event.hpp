@@ -49,13 +49,12 @@ class star_shower_event : public wave_event {
 
 public:
     inline star_shower_event(
-        WaveManager &wave_manager,
         const rect_f32 event_area,
         const star_drop_descriptor drop_lower_bound,
         const star_drop_descriptor drop_upper_bound,
         const size_t min_drops_inclusive,
         const size_t max_drops_exclusive
-    ) : wave_event(&wave_manager),
+    ) : wave_event(),
         event_area(event_area),
         drop_lower_bound(drop_lower_bound),
         drop_upper_bound(drop_upper_bound),

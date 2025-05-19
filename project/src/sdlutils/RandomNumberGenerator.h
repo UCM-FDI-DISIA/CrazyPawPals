@@ -15,7 +15,7 @@ public:
 	RandomNumberGenerator& operator=(RandomNumberGenerator&) = delete;
 
 	RandomNumberGenerator() :
-		RandomNumberGenerator(static_cast<unsigned int>(std::time(0))) {
+		RandomNumberGenerator(static_cast<unsigned int>(std::time(nullptr))) {
 	}
 
 	RandomNumberGenerator(unsigned seed) :

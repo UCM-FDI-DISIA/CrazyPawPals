@@ -5,5 +5,4 @@ out/
 .vs/
 
 user/
-
 CMakeUserPresets.json

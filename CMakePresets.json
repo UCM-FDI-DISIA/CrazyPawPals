@@ -11,6 +11,27 @@
             "binaryDir": "${sourceDir}/build/${presetName}",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug"
+            },
+            "environment": {
+                "DBG_NETWORK": "false"
+            }
+        },
+        {
+            "name": "x64-Debug-Host",
+            "inherits": "x64-Debug",
+            "environment": {
+                "DBG_NETWORK": "true",
+                "DBG_NETWORK_HOST": "true",
+                "DBG_NETWORK_CLIENT": "false"
+            }
+        },
+        {
+            "name": "x64-Debug-Client",
+            "inherits": "x64-Debug",
+            "environment": {
+                "DBG_NETWORK": "true",
+                "DBG_NETWORK_HOST": "false",
+                "DBG_NETWORK_CLIENT": "true"
             }
         },
         {
@@ -18,14 +39,10 @@
             "binaryDir": "${sourceDir}/build/${presetName}",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release"
+            },
+            "environment": {
+                "DBG_NETWORK": "false"
             }
-        },
-        {
-            "name": "x64-Debug-Clang",
-            "inherits": "x64-Debug",
-            "toolset": "ClangCL,host=x64",
-            "architecture": "x64",
-            "toolchainFile": "${sourceDir}/user/clang-win-x64.cmake"
         }
     ],
     "buildPresets": [
@@ -34,12 +51,16 @@
             "configurePreset": "x64-Debug"
         },
         {
-            "name": "x64-Release",
-            "configurePreset": "x64-Release"
+            "name": "x64-Debug-Host",
+            "configurePreset": "x64-Debug-Host"
         },
         {
-            "name": "x64-Debug-Clang",
-            "configurePreset": "x64-Debug-Clang"
+            "name": "x64-Debug-Client",
+            "configurePreset": "x64-Debug-Client"
+        },
+        {
+            "name": "x64-Release",
+            "configurePreset": "x64-Release"
         }
     ]
 }

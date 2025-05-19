@@ -426,7 +426,7 @@ static void manager_update_collisions(Manager &manager, const std::vector<ecs::e
 	case 1:
 		break;
 	default: {
-		const float delta_time_seconds = delta_time_milliseconds / 1000.0f;
+		const float delta_time_seconds = float(delta_time_milliseconds) / 1000.0f;
 
 		
 		struct collision_check {

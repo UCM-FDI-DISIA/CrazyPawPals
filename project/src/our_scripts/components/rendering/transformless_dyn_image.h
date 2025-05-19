@@ -65,4 +65,11 @@ struct transformless_dyn_image : public ecs::Component {
 	inline void resize(float value) { 
 		destination_rect.size = { destination_rect.size.x * value, destination_rect.size.y * value };
 	};
+
+	inline Texture &get_texture() {
+		return *texture;
+	}
+	inline const Texture &get_texture() const {
+		return *texture;
+	}
 };

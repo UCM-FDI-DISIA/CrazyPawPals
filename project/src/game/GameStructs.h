@@ -55,6 +55,7 @@ namespace GameStructs
 		collide_with collision_filter;
 		std::bitset<256> bitset;
 	};
+
 	enum EnemyFollow
 	{
 		CLOSEST,
@@ -62,12 +63,23 @@ namespace GameStructs
 		LOWREST_LIFE,
 		HIGHEST_LIFE,
 	};
+
+	struct DumbEnemyProperties
+	{
+		Vector2D _pos;
+		uint16_t _type;
+		int _health;
+		uint16_t _id;
+	};
+
 	struct EnemyProperties
 	{
 		// Sprite
 		std::string sprite_key;
+		uint8_t _id;
+
 		Vector2D start_pos;
-		
+
 		// Weapon
 		WeaponType weapon_type = DEFAULT;
 
@@ -89,6 +101,7 @@ namespace GameStructs
 		float acceleration = 5.0f;
 		float decceleration = 20.0f;
 	};
+
 	struct ButtonProperties
 	{
 		rect_f32 rect;
@@ -96,6 +109,7 @@ namespace GameStructs
 		std::string sprite_key;
 		ecs::grpId_t ID;
 	};
+
 	struct CardButtonProperties : public ButtonProperties
 	{
 		Card *iterator;
@@ -140,11 +154,27 @@ namespace GameStructs
 		LAST_MYTHIC,
 	};
 
-	struct PlayerData {
+	struct PlayerData
+	{
 		int weapon_damage;
 		float max_speed;
 		float cooldown;
 		int reload;
 		int mana_regen;
+		int health;
+	};
+
+	struct NetPlayerData
+	{
+		uint32_t id;
+		Vector2D pos;
+		int health;
+		bool is_ghost;
+		std::string sprite_key;
+		std::string current_anim;
+	};
+	struct filter
+	{
+		int r, g, b, a;
 	};
 }

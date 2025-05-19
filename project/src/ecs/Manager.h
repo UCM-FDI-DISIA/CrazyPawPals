@@ -267,7 +267,6 @@ public:
 		//Quitar de escena actual
 		
 		//anyadir a la cola de otra escena
-
 		e->_sId = new_scene_id;
 		_pendingEntities.push_back(e);
 	}

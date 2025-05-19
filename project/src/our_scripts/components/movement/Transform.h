@@ -31,7 +31,7 @@ public:
 		setSpeed(s);
 	}
 
-	virtual ~Transform() {
+	virtual ~Transform() override {
 	}
 
 	Vector2D& getPos() {

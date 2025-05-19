@@ -7,15 +7,16 @@
 #include "../wave_events/wave_event.hpp"
 #include "rendering/transformless_dyn_image.h"
 #include "../../utils/EventsSystem.hpp"
+#include "WaveManagerFacade.h"
 
-enum events {
+enum events : int16_t {
     NONE = -1, // 0xffffffffff
     ICE_SKATE = 0,  // 0x00000000
     STAR_SHOWER = 1,
     EVENTS_MAX
 };
 
-enum enemyType {
+enum enemyType : uint16_t {
     sarno_rata = 0,
     michi_mafioso = 1,
     plim_plim = 2,
@@ -42,10 +43,10 @@ constexpr enemy_spawn_definition enemy_spawn_data[8] = {
     {1,3}  //7
 };
 class enemy_spawn_caller {
-    std::function<void(Vector2D)> spawn_call;
+    std::function<uint8_t(Vector2D)> spawn_call;
 public:
-    enemy_spawn_caller(std::function<void(Vector2D)> c): spawn_call(c) {}
-    void spawn_callback();
+    enemy_spawn_caller(std::function<uint8_t(Vector2D)> c): spawn_call(c) {}
+    std::pair<Vector2D, uint8_t> spawn_callback();
 };
 
 class Fog;
@@ -53,12 +54,11 @@ constexpr int max_spawn_wave_time = 40 * 1000; //30 sec
 constexpr int spawn_tokens_gained_per_wave = 3; 
 constexpr int spawn_tokens_at_wave_0 = 3;
 
-class WaveManager : public event_system::event_receiver, public ecs::Component {
+class WaveManager : public event_system::event_receiver, public WaveManagerFacade, public ecs::Component {
 private:
     void choose_new_event();
     void endwave();
     void activateFog();
-    bool areAllEnemiesDead();
     void enterRewardsMenu();
     bool can_spawn_next_enemy();
     bool is_wave_finished();
@@ -116,14 +116,14 @@ public:
     void start_new_wave();
     void reset_wave_manager();
 
-    inline Uint32 get_wave_time() { return _currentWaveTime; }
-    inline void reset_wave_time() { _currentWaveTime = 0; }
-    inline int get_current_wave() { return _currentWave; }
-    inline events get_current_event() { return _current_event; }
-    inline bool wave_completed() { return !_wave_active; }
+    Uint32 get_wave_time() override { return _currentWaveTime; }
+    void reset_wave_time() override { _currentWaveTime = 0; }
+    int get_current_wave() override { return _currentWave; }
+    events get_current_event() override { return _current_event; }
+    bool wave_completed() override { return !_wave_active; }
     void event_callback0(const Msg& m) override;
     void event_callback1(const Msg& m) override;
-    void newEnemy() { _numEnemies++; _enemiesSpawned++; };
+    void newEnemy();
 #ifdef GENERATE_LOG
     static inline uint32_t get_ticks_on_wave() {
         return _ticks_on_wave;

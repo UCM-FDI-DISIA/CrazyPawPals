@@ -7,11 +7,11 @@
 #include "../cards/Deck.hpp"
 #include "../movement/Transform.h"
 #include "../rendering/camera_component.hpp"
-#include "../WaveManager.h"
+#include "../WaveManagerFacade.h"
 
 class HUD : public ecs::Component {
 private:
-	WaveManager* _wm;
+	WaveManagerFacade* _wm;
 	const camera_component* _camera;
 	std::vector<Texture*> _event_textures;
 

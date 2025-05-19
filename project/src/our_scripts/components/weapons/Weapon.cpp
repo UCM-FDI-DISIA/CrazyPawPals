@@ -53,6 +53,7 @@ Weapon::shoot(float shootDirectionX, float shootDirectionY) {
 		Vector2D shootPos = { pos.getX(), pos.getY() };
 		Vector2D shootDir = Vector2D(shootDirectionX,shootDirectionY).normalize();
 		callback(shootPos, shootDir);
+		
 		_lastShoot = sdlutils().virtualTimer().currTime();
 	}
 

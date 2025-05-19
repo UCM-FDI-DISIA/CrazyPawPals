@@ -12,7 +12,6 @@
 #include "MythicComponent.h"
 #include "../mythic/MythicItems.h"
 #include "AnimationComponent.h"
-#include "GhostStateComponent.h"
 #ifdef GENERATE_LOG
 #include "../log_writer_to_csv.hpp"
 #endif

@@ -16,14 +16,29 @@
       "size": 100
     },
     {
-      "id": "ALFA_SLAB",
+      "id": "ALFA_SLAB_200",
       "file": "resources/fonts/AlfaSlabOne-Regular.ttf",
       "size": 200
+    },
+    {
+      "id": "ALFA_SLAB",
+      "file": "resources/fonts/AlfaSlabOne-Regular.ttf",
+      "size": 16
     },
     {
       "id": "RUBIK_MONO",
       "file": "resources/fonts/RubikMonoOne-Regular.ttf",
       "size": 200
+    },
+    {
+      "id": "RUBIK_MONO_16",
+      "file": "resources/fonts/RubikMonoOne-Regular.ttf",
+      "size": 16
+    },
+    {
+      "id": "RUBIK_MONO_12",
+      "file": "resources/fonts/RubikMonoOne-Regular.ttf",
+      "size": 12
     },
     {
       "id": "CAL_SANS",
@@ -41,8 +56,32 @@
       "file": "resources/images/characters/mimi.png"
     },
     {
+      "id": "mimibutton",
+      "file": "resources/images/characters/mimibutton.png"
+    },
+    {
+      "id": "mimibutton_selected",
+      "file": "resources/images/characters/mimibutton_selected.png"
+    },
+    {
       "id": "piu",
       "file": "resources/images/characters/piu.png"
+    },
+    {
+      "id": "piubutton",
+      "file": "resources/images/characters/piubutton.png"
+    },
+    {
+      "id": "piubutton_selected",
+      "file": "resources/images/characters/piubutton_selected.png"
+    },
+    {
+      "id": "piu_icon",
+      "file": "resources/images/characters/piu_icon.png"
+    },
+    {
+      "id": "mimi_icon",
+      "file": "resources/images/characters/mimi_icon.png"
     },
     {
       "id": "p_revolver",
@@ -123,10 +162,6 @@
     {
       "id": "p_dash_catkuza",
       "file": "resources/images/projectiles/catkuza_dash_attack.png"
-    },
-    {
-      "id": "p_area_catkuza",
-      "file": "resources/images/projectiles/p_catkuza_area.png"
     },
     {
       "id": "attack_warning",
@@ -245,6 +280,26 @@
       "file": "resources/images/enemies/ratatouille.png"
     },
     {
+      "id": "claw1",
+      "file": "resources/images/ui/decoration/claw.png"
+    },
+    {
+      "id": "claw2",
+      "file": "resources/images/ui/decoration/claw_1.png"
+    },
+    {
+      "id": "claw3",
+      "file": "resources/images/ui/decoration/claw_2.png"
+    },
+    {
+      "id": "curtain_reaper_title",
+      "file": "resources/images/ui/decoration/curtain_reaper.png"
+    },
+    {
+      "id": "ui_star",
+      "file": "resources/images/ui/decoration/stars.png"
+    },
+    {
       "id": "manaorb",
       "file": "resources/images/ui/hud/caffeinefull.png"
     },
@@ -350,7 +405,7 @@
     },
     {
       "id": "background",
-      "file": "resources/images/ui/complete_background.png"
+      "file": "resources/images/ui/complete_background_o.png"
     },
     {
       "id": "controls",
@@ -363,6 +418,10 @@
     {
       "id": "reward",
       "file": "resources/images/enviroment/reward.png"
+    },
+    {
+      "id": "multiplayer_background",
+      "file": "resources/images/enviroment/multiplayer.png"
     },
     {
       "id": "deck1_button",
@@ -476,7 +535,6 @@
       "id": "controls_button",
       "file": "resources/images/ui/buttons/controls.png"
     },
-
     {
       "id": "controls_button_selected",
       "file": "resources/images/ui/buttons/controls_selected.png"
@@ -492,6 +550,46 @@
     {
       "id": "exit",
       "file": "resources/images/ui/buttons/exit.png"
+    },
+    {
+      "id": "multiplayer",
+      "file": "resources/images/ui/buttons/multiplayer.png"
+    },
+    {
+      "id": "multiplayer_selected",
+      "file": "resources/images/ui/buttons/multiplayer_selected.png"
+    },
+    {
+      "id": "client",
+      "file": "resources/images/ui/buttons/client.png"
+    },
+    {
+      "id": "client_selected",
+      "file": "resources/images/ui/buttons/client_selected.png"
+    },
+    {
+      "id": "host",
+      "file": "resources/images/ui/buttons/host.png"
+    },
+    {
+      "id": "host_selected",
+      "file": "resources/images/ui/buttons/host_selected.png"
+    },
+    {
+      "id": "back2",
+      "file": "resources/images/ui/buttons/back2.png"
+    },
+    {
+      "id": "back2_selected",
+      "file": "resources/images/ui/buttons/back2_selected.png"
+    },
+    {
+      "id": "copyip",
+      "file": "resources/images/ui/buttons/copyip.png"
+    },
+    {
+      "id": "copyip_selected",
+      "file": "resources/images/ui/buttons/copyip_selected.png"
     },
     {
       "id": "reward_health",
@@ -700,6 +798,46 @@
     {
       "id": "ready_selected",
       "file": "resources/images/ui/buttons/ready_selected.png"
+    },
+    {
+      "id": "multiplayer",
+      "file": "resources/images/ui/buttons/multiplayer.png"
+    },
+    {
+      "id": "multiplayer_selected",
+      "file": "resources/images/ui/buttons/multiplayer_selected.png"
+    },
+    {
+      "id": "client",
+      "file": "resources/images/ui/buttons/client.png"
+    },
+    {
+      "id": "client_selected",
+      "file": "resources/images/ui/buttons/client_selected.png"
+    },
+    {
+      "id": "host",
+      "file": "resources/images/ui/buttons/host.png"
+    },
+    {
+      "id": "host_selected",
+      "file": "resources/images/ui/buttons/host_selected.png"
+    },
+    {
+      "id": "back2",
+      "file": "resources/images/ui/buttons/back2.png"
+    },
+    {
+      "id": "back2_selected",
+      "file": "resources/images/ui/buttons/back2_selected.png"
+    },
+    {
+      "id": "edit_ip",
+      "file": "resources/images/ui/buttons/edit_ip.png"
+    },
+    {
+      "id": "edit_ip_selected",
+      "file": "resources/images/ui/buttons/edit_ip_selected.png"
     },
     {
       "id": "event_ice_skate",

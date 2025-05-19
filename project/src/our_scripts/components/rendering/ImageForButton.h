@@ -14,4 +14,12 @@ public:
 
 protected:
 	Texture* _selected_tex;
+
+public:
+	inline Texture &get_selected_texture() {
+		return *_selected_tex;
+	}
+	inline const Texture &get_selected_texture() const {
+		return *_selected_tex;
+	}
 };

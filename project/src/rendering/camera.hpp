@@ -133,12 +133,12 @@ inline rect_f32 rect_f32_ndc_from_viewport_flipped_y(rect_f32 viewport) {
 inline rect_f32 rect_f32_screen_rect_from_viewport(rect_f32 viewport, screen_rect const &screen) {
     return rect_f32(
         position2_f32(
-            viewport.position.x * screen.pixel_size.x,
-            viewport.position.y * screen.pixel_size.y
+            viewport.position.x * float(screen.pixel_size.x),
+            viewport.position.y * float(screen.pixel_size.y)
         ),
         size2_f32(
-            viewport.size.x * screen.pixel_size.x,
-            viewport.size.y * screen.pixel_size.y
+            viewport.size.x * float(screen.pixel_size.x),
+            viewport.size.y * float(screen.pixel_size.y)
         )
     );
 }
@@ -146,12 +146,12 @@ inline rect_f32 rect_f32_screen_rect_from_viewport(rect_f32 viewport, screen_rec
 inline rect_f32 rect_f32_viewport_from_screen_rect(rect_f32 in_screen_rect, screen_rect const &screen) {
     return rect_f32(
         position2_f32(
-            in_screen_rect.position.x / screen.pixel_size.x,
-            in_screen_rect.position.y / screen.pixel_size.y
+            in_screen_rect.position.x / float(screen.pixel_size.x),
+            in_screen_rect.position.y / float(screen.pixel_size.y)
         ),
         size2_f32(
-            in_screen_rect.size.x / screen.pixel_size.x,
-            in_screen_rect.size.y / screen.pixel_size.y
+            in_screen_rect.size.x / float(screen.pixel_size.x),
+            in_screen_rect.size.y / float(screen.pixel_size.y)
         )
     );
 }

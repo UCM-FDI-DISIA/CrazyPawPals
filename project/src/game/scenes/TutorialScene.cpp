@@ -7,8 +7,8 @@
 #include "../../sdlutils/SDLUtils.h"
 #include "../../sdlutils/InputHandler.h"
 #include "ecs/Manager.h"
-#include "game/Game.h"
-#include "game/scenes/GameScene.h"
+#include "../Game.h"
+#include "GameScene.h"
 
 #include "../../our_scripts/components/rendering/camera_component.hpp"
 #include "../../our_scripts/components/rendering/transformless_dyn_image.h"

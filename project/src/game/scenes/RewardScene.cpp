@@ -16,6 +16,7 @@
 #include "../../our_scripts/components/rendering/ImageForButton.h"
 #include "../../our_scripts/components/cards/RewardDataComponent.h"
 #include "../../our_scripts/components/Health.h" 
+
 #ifdef GENERATE_LOG
 #include "../../our_scripts/log_writer_to_csv.hpp"
 #endif
@@ -49,7 +50,14 @@ void RewardScene::enterScene()
     refresh_rewards();
     check_number();
     sdlutils().soundEffects().at("reward").play();
+    
     Game::Instance()->get_mngr()->change_ent_scene(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA), ecs::scene::REWARDSCENE);
+
+    if (!Game::Instance()->is_network_none()) {
+        Game::network_users_state& state = Game::Instance()->get_network_state();
+        state.game_state.ready_users.reset();
+        state.game_state.ready_user_count = 0;
+    }
 #ifdef GENERATE_LOG
     log_writer_to_csv::Instance()->add_new_log();
     log_writer_to_csv::Instance()->add_new_log("ENTERED REWARDS SCENE");
@@ -58,6 +66,8 @@ void RewardScene::enterScene()
 
 void RewardScene::exitScene()
 {
+    showing_message = false;
+
     change_pos(false);
     auto* mngr = Game::Instance()->get_mngr();
     auto cb = mngr->getHandler(ecs::hdlr::CONFIRMREWARD);
@@ -99,6 +109,27 @@ void RewardScene::exitScene()
     log_writer_to_csv::Instance()->add_new_log("EXIT REWARDS SCENE");
     log_writer_to_csv::Instance()->add_new_log();
 #endif
+}
+
+void RewardScene::render()
+{
+    Scene::render();
+    if (showing_message) {
+        auto camera = Game::Instance()->get_mngr()->getComponent<camera_component>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA));
+        rect_f32 message_rect = rect_f32_screen_rect_from_viewport(rect_f32({ { 0.4,0.7 }, { 0.2,0.05 } }), camera->cam.screen);
+        SDL_Rect message_true{
+            int(message_rect.position.x),
+            int(message_rect.position.y),
+            int(message_rect.size.x),
+            int(message_rect.size.y)
+        };
+        Texture message_tex{
+        sdlutils().renderer(),
+        message,
+        sdlutils().fonts().at("RUBIK_MONO"),
+        SDL_Color({128, 0, 32, 255}) };
+        message_tex.render(message_true);
+    }
 }
 
 //method to get a unique card (used to prevent repeated rewards)
@@ -719,6 +750,63 @@ void RewardScene::update(uint32_t delta_time) {
            _special_case = false;
        }
    }
+
+
+   if (!Game::Instance()->is_network_none()) {
+       network_context& network = Game::Instance()->get_network();
+
+       if (Game::Instance()->is_host()) {
+           if (SDLNet_CheckSockets(network.profile.host.clients_host_set, 0) > 0) {
+               for (network_connection_size i = 0; i < network.profile.host.sockets_to_clients.connection_count; ++i) {
+                   TCPsocket& connection = network.profile.host.sockets_to_clients.connections[i];
+                   if (SDLNet_SocketReady(connection)) {
+                       network_message_dynamic_pack dyn_message = network_message_dynamic_pack_receive(connection);
+                       const uint16_t type_n{ dyn_message->header.type_n };
+                       const uint16_t type_h{ SDLNet_Read16(&type_n) };
+                       switch (type_h) {
+                       case network_message_type_player_ready: {
+                           auto message = network_message_dynamic_pack_into<network_message_player_id>(std::move(dyn_message));
+                           auto&& payload = message->payload.content;
+                           uint32_t id = SDLNet_Read32(&payload.id_n);
+
+                           Game::network_users_state& state = Game::Instance()->get_network_state();
+                           state.game_state.ready_users.set(id, true);
+                           state.game_state.ready_user_count++;
+
+                           if (checkAllPlayersReady()) {
+                               if (_mythic) Game::Instance()->queue_scene(Game::MYTHICSCENE);
+                               else Game::Instance()->queue_scene(Game::GAMESCENE);
+                           }
+                           break;
+                       }
+                       default: {
+                           break;
+                       }
+                       }
+                   }
+               }
+           }
+       }
+       else {
+           int active_sockets = SDLNet_CheckSockets(network.profile.client.client_set, 0);
+           if (active_sockets > 0 && SDLNet_SocketReady(network.profile.client.socket_to_host)) {
+               auto msg = network_message_dynamic_pack_receive(network.profile.client.socket_to_host);
+               const uint16_t type_n{ msg->header.type_n };
+               const uint16_t type_h{ SDLNet_Read16(&type_n) };
+               switch (type_h) {
+               case network_message_type_start_game: {
+
+                   if (_mythic) Game::Instance()->queue_scene(Game::MYTHICSCENE);
+                   else Game::Instance()->queue_scene(Game::GAMESCENE);
+                   break;
+               }
+               default: break;
+               }
+           }
+
+       }
+
+   }
 }
 void RewardScene::create_next_round_button(const GameStructs::ButtonProperties& bp) {
     auto* mngr = Game::Instance()->get_mngr();
@@ -736,11 +824,36 @@ void RewardScene::create_next_round_button(const GameStructs::ButtonProperties& 
 
     buttonComp->connectClick([buttonComp, mngr, imgComp, this]() { if (_selected) {
         _lr->swap_textures();
-        if (!_mythic) Game::Instance()->queue_scene(Game::GAMESCENE);
-        else Game::Instance()->queue_scene(Game::MYTHICSCENE);
+        
+        if (!Game::Instance()->is_network_none()) {
+            network_context& network = Game::Instance()->get_network();
+            Game::network_users_state& state = Game::Instance()->get_network_state();
+            uint32_t id = state.connections.local_user_index;
+            if (Game::Instance()->is_host()) {
+                state.game_state.ready_users.set(0, true);
+                state.game_state.ready_user_count++;
+                if (checkAllPlayersReady()) {
+                    if (_mythic) Game::Instance()->queue_scene(Game::MYTHICSCENE);
+                    else Game::Instance()->queue_scene(Game::GAMESCENE);
+                }
+            }
+            else if (!state.game_state.ready_users.test(id)) {
+                std::cout << "Player id ready: " << std::to_string(id) << std::endl;
+                state.game_state.ready_users.set(id, true);
+                network_message_pack_send(
+                    network.profile.client.socket_to_host,
+                    network_message_pack_create(network_message_type_player_ready,
+                        create_player_id_message(id))
+                );
+            }
+            show_message("Esperando a los otros michis...", 5 * 1000);
+        }
+        else {
+            Game::Instance()->queue_scene(Game::GAMESCENE);
+        }
+        imgComp->destination_rect.position.x = 10.0f;
         imgComp->swap_textures();
         imgComp->_filter = false;
-        imgComp->destination_rect.position.x = 2.0f;
     }});
     buttonComp->connectHover([buttonComp, imgComp, this]() { 
         imgComp->swap_textures();

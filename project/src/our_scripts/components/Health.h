@@ -14,6 +14,7 @@ public:
 	void heal(int health);
 	int getMaxHealth() const;
 	void setMaxHeatlh(int h);
+	void setHeatlh(int h);
 	void resetCurrentHeatlh();
 	int getHealth() const;
 	int getShield() const;

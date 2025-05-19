@@ -44,6 +44,12 @@ void MythicScene::enterScene()
     refresh_my_mythics(m);
     _activate_confirm_button = true;
     Game::Instance()->get_mngr()->change_ent_scene(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA), ecs::scene::MYTHICSCENE);
+
+    if (!Game::Instance()->is_network_none()) {
+        Game::network_users_state& state = Game::Instance()->get_network_state();
+        state.game_state.ready_users.reset();
+        state.game_state.ready_user_count = 0;
+}
 #ifdef GENERATE_LOG
     log_writer_to_csv::Instance()->add_new_log();
     log_writer_to_csv::Instance()->add_new_log("ENTERED MYTHIC SCENE");
@@ -52,6 +58,8 @@ void MythicScene::enterScene()
 
 void MythicScene::exitScene()
 {
+    showing_message = false;
+
     _lm->resize(1.0f/1.1f);
 
     _lm = nullptr;
@@ -429,6 +437,26 @@ void MythicScene::refresh_my_mythics(const std::vector<MythicItem*>& cl) {
         }
     }
 }
+void MythicScene::render()
+{
+    Scene::render();
+    if (showing_message) {
+        auto camera = Game::Instance()->get_mngr()->getComponent<camera_component>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA));
+        rect_f32 message_rect = rect_f32_screen_rect_from_viewport(rect_f32({ { 0.4,0.7 }, { 0.2,0.05 } }), camera->cam.screen);
+        SDL_Rect message_true{
+            int(message_rect.position.x),
+            int(message_rect.position.y),
+            int(message_rect.size.x),
+            int(message_rect.size.y)
+        };
+        Texture message_tex{
+        sdlutils().renderer(),
+        message,
+        sdlutils().fonts().at("RUBIK_MONO"),
+        SDL_Color({128, 0, 32, 255}) };
+        message_tex.render(message_true);
+    }
+}
 
 void MythicScene::update(uint32_t delta_time) {
     Scene::update(delta_time);
@@ -438,6 +466,59 @@ void MythicScene::update(uint32_t delta_time) {
         auto imgCompConfirm = mngr->getComponent<ImageForButton>(mngr->getHandler(ecs::hdlr::CONFIRMMYTHIC));
         imgCompConfirm->destination_rect.position.y = 0.65f;
         _activate_confirm_button = false;
+    }
+
+
+    if (!Game::Instance()->is_network_none()) {
+        network_context& network = Game::Instance()->get_network();
+
+        if (Game::Instance()->is_host()) {
+            if (SDLNet_CheckSockets(network.profile.host.clients_host_set, 0) > 0) {
+                for (network_connection_size i = 0; i < network.profile.host.sockets_to_clients.connection_count; ++i) {
+                    TCPsocket& connection = network.profile.host.sockets_to_clients.connections[i];
+                    if (SDLNet_SocketReady(connection)) {
+                        network_message_dynamic_pack dyn_message = network_message_dynamic_pack_receive(connection);
+                        const uint16_t type_n{ dyn_message->header.type_n };
+                        const uint16_t type_h{ SDLNet_Read16(&type_n) };
+                        switch (type_h) {
+                        case network_message_type_player_ready: {
+                            auto message = network_message_dynamic_pack_into<network_message_player_id>(std::move(dyn_message));
+                            auto&& payload = message->payload.content;
+                            uint32_t id = SDLNet_Read32(&payload.id_n);
+
+                            Game::network_users_state& state = Game::Instance()->get_network_state();
+                            state.game_state.ready_users.set(id, true);
+                            state.game_state.ready_user_count++;
+
+                            if (checkAllPlayersReady())Game::Instance()->queue_scene(Game::GAMESCENE);
+                            break;
+                        }
+                        default: {
+                            break;
+                        }
+                        }
+                    }
+                }
+            }
+        }
+        else {
+            int active_sockets = SDLNet_CheckSockets(network.profile.client.client_set, 0);
+            if (active_sockets > 0 && SDLNet_SocketReady(network.profile.client.socket_to_host)) {
+                auto msg = network_message_dynamic_pack_receive(network.profile.client.socket_to_host);
+                const uint16_t type_n{ msg->header.type_n };
+                const uint16_t type_h{ SDLNet_Read16(&type_n) };
+                switch (type_h) {
+                case network_message_type_start_game: {
+                    std::cout << "mensaje de ir al juego" << std::endl;
+                    Game::Instance()->queue_scene(Game::GAMESCENE);
+                    break;
+                }
+                default: break;
+                }
+            }
+
+        }
+
     }
 }
 
@@ -457,10 +538,33 @@ void MythicScene::create_next_round_button(const GameStructs::ButtonProperties& 
 
     buttonComp->connectClick([buttonComp, mngr, imgComp, this]() { if (_selected) {
         _lm->swap_textures();
-        Game::Instance()->queue_scene(Game::GAMESCENE);
+        
+        if (!Game::Instance()->is_network_none()) {
+            network_context& network = Game::Instance()->get_network();
+            Game::network_users_state& state = Game::Instance()->get_network_state();
+            uint32_t id = state.connections.local_user_index;
+            if (Game::Instance()->is_host()) {
+                state.game_state.ready_users.set(0, true);
+                state.game_state.ready_user_count++;
+                if (checkAllPlayersReady())Game::Instance()->queue_scene(Game::GAMESCENE);
+            }
+            else if (!state.game_state.ready_users.test(id)) {
+                state.game_state.ready_users.set(id, true);
+                uint32_t id = Game::Instance()->client_id();
+                network_message_pack_send(
+                    network.profile.client.socket_to_host,
+                    network_message_pack_create(network_message_type_player_ready,
+                        create_player_id_message(id))
+                );
+            }
+            show_message("Esperando a los otros michis...", 5 * 1000);
+        }
+        else {
+            Game::Instance()->queue_scene(Game::GAMESCENE);
+        }
+        imgComp->destination_rect.position.y = 2.0f;
         imgComp->_filter = false;
         imgComp->swap_textures();
-        imgComp->destination_rect.position.y = 2.0f;
     }});
     buttonComp->connectHover([buttonComp, imgComp, this]() { 
         imgComp->swap_textures();
