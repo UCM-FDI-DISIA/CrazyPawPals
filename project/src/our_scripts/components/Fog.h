@@ -1,7 +1,7 @@
 #pragma once
+
 #include "../../ecs/Component.h"
 #include "../../sdlutils/SDLUtils.h"
-#include "../../utils/checkML.h"
 #include <SDL.h> // Add this include to resolve the incomplete type error
 
 class Transform;
@@ -32,4 +32,5 @@ private:
 	float orSize;
 	int orW;
 	int orH;
+	float orY;
 };

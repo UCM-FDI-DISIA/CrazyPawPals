@@ -1,3 +1,4 @@
+
 #include "bullet_collision_component.hpp"
 #include "rigidbody_component.hpp"
 #include "collision_triggerers.hpp"
@@ -6,12 +7,12 @@
 #include "../../game/GameStructs.h"
 #include "Health.h"
 #include "movement/MovementController.h"
-#include "../../utils/checkML.h"
 #include "collision_registration_by_id.h"
 #include "id_component.h"
 #include "cards/Mana.h"
 #include "cards/Deck.hpp"
 #include "../card_system/PlayableCards.hpp"
+#include <our_scripts/card_system/ShootPatrons.hpp>
 
 void bullet_collision_component::on_contact(const collision_manifold& tm)
 {
@@ -69,7 +70,7 @@ void bullet_collision_component::apply_weapon_effect(GameStructs::WeaponType typ
     switch (type) {
     case GameStructs::WeaponType::RAMP_CANON: {
         auto player = manager.getHandler(ecs::hdlr::PLAYER);
-        manager.getComponent<ManaComponent>(player)->change_mana(1);
+        manager.getComponent<ManaComponent>(player)->change_mana(1.5);
         break;
     }
     case GameStructs::WeaponType::CATKUZA_WEAPON: {
@@ -85,6 +86,27 @@ void bullet_collision_component::apply_weapon_effect(GameStructs::WeaponType typ
         //manager.getComponent<Deck>(player)->add_card_to_deck(new SuperMichiCard());
         manager.getComponent<MovementController>(player)->frozen(1000);
         break;
+    }
+    case GameStructs::WeaponType::FIREBALL_EFFECT: {
+        if (my_damage <= 1) return;
+
+        auto tr = Game::Instance()->get_mngr()->getComponent<Transform>(_ent);
+
+        GameStructs::BulletProperties bp;
+        bp.collision_filter = GameStructs::collide_with::enemy;
+        bp.damage = my_damage/2.0f;
+        bp.dir = tr->getDir();
+        bp.height = 1.25 + bp.damage * 0.25; //tr->getWidth() / 2.0f;
+        bp.width = 0.75 + bp.damage * 0.25;//bp.height;
+        bp.init_pos = tr->getPos();
+        bp.life_time = 0.5 + bp.damage * 0.125;
+        bp.pierce_number = 0;
+        bp.speed = tr->getSpeed() * 2;
+        bp.sprite_key = "p_fireball";
+        bp.weapon_type = GameStructs::WeaponType::FIREBALL_EFFECT;
+        bp.bitset = Game::Instance()->get_mngr()->getComponent<collision_registration_by_id>(_ent)->already_collided_with;
+        
+        patrons::ShotgunPatron(bp, ecs::grp::BULLET, 40, 2);
     }
     default:
         break;

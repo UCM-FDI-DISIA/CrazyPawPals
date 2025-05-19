@@ -1,6 +1,7 @@
 
 #pragma once
 
+
 template<typename T>
 struct ptr_iterator {
 	T *_ptr;

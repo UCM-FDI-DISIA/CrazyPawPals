@@ -1,8 +1,10 @@
 #pragma once
+
 #include "../utils/Vector2D.h"
 #include "../ecs/ecs.h"
 #include "../rendering/rect.hpp"
 #include <list>
+#include <bitset>
 class Card;
 class MythicItem;
 class Transform;
@@ -21,6 +23,7 @@ namespace GameStructs
 		CATKUZA_WEAPON,
 		SUPER_MICHI,
 		LAST_WEAPON,
+		FIREBALL_EFFECT
 	};
 	enum DeckType
 	{
@@ -50,6 +53,7 @@ namespace GameStructs
 		std::string sprite_key;
 		WeaponType weapon_type = DEFAULT;
 		collide_with collision_filter;
+		std::bitset<256> bitset;
 	};
 	enum EnemyFollow
 	{

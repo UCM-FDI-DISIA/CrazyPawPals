@@ -1,6 +1,6 @@
 #pragma region includes
+
 #include "GameScene.h"
-#include "../../utils/checkML.h"
 
 #include "../Game.h"
 #include "../../ecs/Manager.h"
@@ -31,6 +31,7 @@
 #include "../../our_scripts/components/rendering/FlipXController.h"
 #include "../../our_scripts/components/AnimationComponent.h"
 #include "../../our_scripts/components/rendering/camera_component.hpp"
+#include "../../our_scripts/components/rendering/RotationComponent.h"
 
 #include "../../our_scripts/components/Health.h"
 #include "../../our_scripts/components/weapons/BulletData.h"
@@ -145,11 +146,9 @@ static game_scene_map_walls game_scene_create_map_walls(ecs::Manager &manager, c
 
 	for (size_t i = 0; i < wall_entities.size(); ++i)
 	{
-		manager.addComponent<Transform>(wall_entities[i], *wall_transforms[i]);
-		manager.addComponent<rect_component>(wall_entities[i], *wall_rects[i]);
-		manager.addComponent<rigidbody_component>(wall_entities[i], *wall_rigidbodies[i]);
-		manager.addComponent<collisionable>(wall_entities[i], *wall_collisionables[i]);
+		manager.addExistingComponent(wall_entities[i],wall_transforms[i], wall_rects[i], wall_rigidbodies[i], wall_collisionables[i]);
 		manager.addComponent<render_ordering>(wall_entities[i], 0);
+		
 	}
 
 	return game_scene_map_walls{
@@ -179,7 +178,6 @@ void GameScene::initScene()
 
 	manager.refresh();
 	create_environment();
-	// spawn_sarno_rata(Vector2D{5.0f, 0.0f});
 	spawn_fog();
 	spawn_wave_manager();
 	auto hud = create_hud();
@@ -211,12 +209,8 @@ void GameScene::enterScene()
 	wm->start_new_wave();
 	// get the current event
 	auto e = wm->get_current_event();
-	RewardScene::will_have_mythic(e != NONE);
+	RewardScene::will_have_mythic(e != NONE || ((wm->get_current_wave()+1)%5 == 0));
 	manager.getComponent<HUD>(manager.getHandler(ecs::hdlr::HUD_ENTITY))->start_new_wave();
-	//spawn_catkuza(Vector2D{10.0f, 0.0f});
-	//spawn_rata_basurera(Vector2D{5.0f, 0.0f});
-	//spawn_rey_basurero(Vector2D{-5.0f, 0.0f});
-	//spawn_super_michi_mafioso(Vector2D{5.0f, 0.0f});
 #ifdef GENERATE_LOG
 	log_writer_to_csv::Instance()->add_new_log();
 	log_writer_to_csv::Instance()->add_new_log("ENTERED GAME SCENE");
@@ -254,7 +248,7 @@ ecs::entity_t GameScene::create_player(ecs::sceneId_t scene)
 			rect_f32{{0, 0}, {0.2, 1}},
 			player_rect,
 			camera,
-			sdlutils().images().at("mimi"),
+			sdlutils().images().at("piu"),
 			player_transform),
 		new render_ordering{1},
 		new Health(100, true),
@@ -335,6 +329,8 @@ ecs::entity_t GameScene::create_enemy(GameStructs::EnemyProperties &&ec, ecs::sc
 		&state,
 		&fll);
 
+	if (scene == ecs::scene::GAMESCENE)Game::Instance()->get_mngr()->getComponent<WaveManager>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::WAVE))->newEnemy();
+
 	return e;
 }
 #pragma endregion
@@ -363,6 +359,7 @@ void GameScene::spawn_super_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene)
 
 	Transform *tr = manager.getComponent<Transform>(e);
 	MovementController *mc = manager.getComponent<MovementController>(e);
+	mc->set_max_speed(0.06);
 	StateMachine *state = manager.getComponent<StateMachine>(e);
 
 	Follow *fll = manager.getComponent<Follow>(e);
@@ -502,7 +499,7 @@ void GameScene::spawn_catkuza(Vector2D posVec, ecs::sceneId_t scene)
 		"catkuza", 
 		posVec, 
 		GameStructs::DEFAULT, 
-		25, 
+		30, 
 		1.8f, 
 		2.5f, 
 		GameStructs::CLOSEST, 
@@ -517,6 +514,7 @@ void GameScene::spawn_catkuza(Vector2D posVec, ecs::sceneId_t scene)
 
 	Transform *tr = manager.getComponent<Transform>(e);
 	MovementController *mc = manager.getComponent<MovementController>(e);
+	mc->set_max_speed(0.04);
 	StateMachine *state = manager.getComponent<StateMachine>(e);
 
 	Follow *fll = manager.getComponent<Follow>(e);
@@ -724,6 +722,7 @@ void GameScene::spawn_sarno_rata(Vector2D posVec, ecs::sceneId_t scene)
 
 	Transform *tr = manager.getComponent<Transform>(e);
 	MovementController *mc = manager.getComponent<MovementController>(e);
+	mc->set_max_speed(0.08);
 	StateMachine *state = manager.getComponent<StateMachine>(e);
 
 	Follow *fll = manager.getComponent<Follow>(e);
@@ -771,6 +770,7 @@ void GameScene::spawn_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene)
 
 	Transform *tr = manager.getComponent<Transform>(e);
 	MovementController *mc = manager.getComponent<MovementController>(e);
+	mc->set_max_speed(0.05);
 	StateMachine *state = manager.getComponent<StateMachine>(e);
 	auto state_cm = state->getConditionManager();
 
@@ -785,8 +785,8 @@ void GameScene::spawn_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene)
 	state->add_state("Attacking", attackingState);
 	state->add_state("Backing", backingState);
 
-	float dist_to_attack = 3.0f;
-	float dist_to_fallback = 2.5f;
+	float dist_to_attack = 5.0f;
+	float dist_to_fallback = 4.5f;
 
 	state->add_transition("Walking", "Attacking", [state_cm, fll, tr, dist_to_attack]()
 						  { return state_cm->is_player_near(fll->get_act_follow(), tr, dist_to_attack); });
@@ -835,6 +835,7 @@ void GameScene::spawn_plim_plim(Vector2D posVec, ecs::sceneId_t scene)
 
 	Transform *tr = manager.getComponent<Transform>(e);
 	MovementController *mc = manager.getComponent<MovementController>(e);
+	mc->set_max_speed(0.06);
 	StateMachine *state = manager.getComponent<StateMachine>(e);
 	auto state_cm = state->getConditionManager();
 
@@ -868,7 +869,7 @@ void GameScene::spawn_boom(Vector2D posVec, ecs::sceneId_t scene)
 			"boom",				  // sprite_key
 			posVec,				  // start_pos
 			GameStructs::DEFAULT, // enemy_type
-			14,					  // health
+			28,					  // health
 			1.8f,				  // width
 			1.8f,				  // height
 			GameStructs::CLOSEST, // target_strategy
@@ -881,6 +882,7 @@ void GameScene::spawn_boom(Vector2D posVec, ecs::sceneId_t scene)
 
 	Transform *tr = manager.getComponent<Transform>(e);
 	MovementController *mc = manager.getComponent<MovementController>(e);
+	mc->set_max_speed(0.03f);
 	StateMachine *state = manager.getComponent<StateMachine>(e);
 	auto state_cm = state->getConditionManager();
 	Health *health = manager.getComponent<Health>(e);
@@ -930,7 +932,7 @@ void GameScene::spawn_ratatouille(Vector2D posVec, ecs::sceneId_t scene)
 	auto &&tr_a = *new Transform(ec.start_pos, ec.dir, ec.r, ec.s * randSize);
 	auto &&fll = *new Follow(ec.follow);
 	auto &&col = *new collisionable{tr_a, rigidbody, rect, collisionable_option_trigger};
-	auto &&mc = *new MovementController(ec.max_speed, ec.acceleration, ec.decceleration * deccel_spawned_creatures_multi);
+	auto &&mc = *new MovementController(ec.max_speed*1.4, ec.acceleration, ec.decceleration * deccel_spawned_creatures_multi);
 	auto &&state = *new StateMachine();
 
 	auto e = create_entity(
@@ -979,6 +981,10 @@ void GameScene::spawn_ratatouille(Vector2D posVec, ecs::sceneId_t scene)
 						  { return !state_cm->is_player_near(fll.get_act_follow(), tr, dist_to_rotate * 1.8f); });
 
 	state.set_initial_state("Walking");
+
+	Game::Instance()->get_mngr()->getComponent<WaveManager>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::WAVE))->newEnemy();
+
+	//Game::Instance()->get_mngr()->getHandler()
 }
 #pragma endregion
 
@@ -993,7 +999,7 @@ void GameScene::spawn_rata_basurera(Vector2D posVec, ecs::sceneId_t scene)
 			"basurero",	  // sprite_key
 			posVec,				  // start_pos
 			GameStructs::DEFAULT, // enemy_type
-			8,					  // health
+			16,					  // health
 			2.0f,				  // width
 			2.2f,				  // height
 			GameStructs::CLOSEST, // target_strategy
@@ -1050,7 +1056,7 @@ void GameScene::spawn_rey_basurero(Vector2D posVec, ecs::sceneId_t scene)
 			"rey_basurero",		  // sprite_key
 			posVec,				  // start_pos
 			GameStructs::DEFAULT, // enemy_type
-			7,					  // health
+			14,					  // health
 			2.0f,				  // width
 			2.0f,				  // height
 			GameStructs::CLOSEST, // target_strategy
@@ -1156,7 +1162,7 @@ void GameScene::spawn_fog()
 #pragma endregion
 
 #pragma region Proyectile
-void GameScene::generate_proyectile(const GameStructs::BulletProperties &bp, ecs::grpId_t gid, ecs::sceneId_t scene)
+ecs::entity_t GameScene::generate_proyectile(const GameStructs::BulletProperties &bp, ecs::grpId_t gid, ecs::sceneId_t scene)
 {
 	auto manager = Game::Instance()->get_mngr();
 	(void)gid;
@@ -1165,7 +1171,7 @@ void GameScene::generate_proyectile(const GameStructs::BulletProperties &bp, ecs
 	auto &&rect = *new rect_component{0, 0, bp.width, bp.height};
 	auto &&player_rigidbody = *new rigidbody_component{rect_f32{{0.15f, -0.125}, {0.5f, 0.75f}}, mass_f32{7.0f}, 1.0f};
 	auto &&player_collisionable = *new collisionable{transform, player_rigidbody, rect, collisionable_option_trigger};
-
+	
 	auto e = create_entity(
 		gid,
 		scene,
@@ -1182,12 +1188,18 @@ void GameScene::generate_proyectile(const GameStructs::BulletProperties &bp, ecs
 		&player_rigidbody,
 		&player_collisionable,
 		new bullet_collision_component(bp));
+
+	//if (bp.bitset != nullptr)
+		//manager->addComponent<collision_registration_by_id>(e, bp.bitset);
+	//else 
 	if (bp.collision_filter == GameStructs::collide_with::enemy || bp.collision_filter == GameStructs::collide_with::all)
 		manager->addComponent<collision_registration_by_id>(e);
+
+	return e;
 }
-void GameScene::create_proyectile(const GameStructs::BulletProperties &bp, ecs::grpId_t gid)
+ecs::entity_t GameScene::create_proyectile(const GameStructs::BulletProperties &bp, ecs::grpId_t gid)
 {
-	generate_proyectile(bp, gid);
+	return generate_proyectile(bp, gid);
 }
 #pragma endregion
 
@@ -1206,5 +1218,5 @@ void GameScene::event_callback1(const event_system::event_receiver::Msg &m)
 	if (!mngr.hasComponent<GhostStateComponent>(player)) mngr.addComponent<GhostStateComponent>(player);*/
 	// sino se resetea al jugador y pasa al gameOver
 	reset_player();
-	Game::Instance()->change_Scene(Game::GAMEOVER);
+	Game::Instance()->queue_scene(Game::GAMEOVER);
 }

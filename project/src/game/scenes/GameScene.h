@@ -1,7 +1,8 @@
 #pragma once
 
+
+
 #include "Scene.h"
-#include "../../utils/checkML.h"
 #include <functional>
 class Weapon;
 class Transform;
@@ -40,9 +41,9 @@ public:
 	static ecs::entity_t create_hud(ecs::sceneId_t scene = ecs::scene::GAMESCENE);
 	static ecs::entity_t create_environment(ecs::sceneId_t scene = ecs::scene::GAMESCENE);
 
-	static void generate_proyectile(const GameStructs::BulletProperties& bp, ecs::grpId_t gid, ecs::sceneId_t scene = ecs::scene::GAMESCENE);
+	static ecs::entity_t generate_proyectile(const GameStructs::BulletProperties& bp, ecs::grpId_t gid, ecs::sceneId_t scene = ecs::scene::GAMESCENE);
 
-	void create_proyectile(const GameStructs::BulletProperties& bp, ecs::grpId_t gid) override; //para la escena de tutorial
+	ecs::entity_t create_proyectile(const GameStructs::BulletProperties& bp, ecs::grpId_t gid) override; //para la escena de tutorial
 
 	//
 	void spawn_wave_manager();

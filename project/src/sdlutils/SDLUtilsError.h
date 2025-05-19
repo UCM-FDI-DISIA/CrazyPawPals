@@ -1,6 +1,7 @@
 
 #pragma once
 
+
 /*
  * This class stores an error message, just to avoid
  * using exceptions and pass a boolean around indicating

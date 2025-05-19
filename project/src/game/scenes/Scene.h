@@ -1,4 +1,5 @@
 #pragma once
+
 #include <vector>
 #include "../../ecs/Manager.h"
 #include "../../ecs/Entity.h"
@@ -6,7 +7,6 @@
 #include "../GameStructs.h"
 #include "../../ecs/ecs.h"
 #include "../Game.h"
-#include "../../utils/checkML.h"
 
 class Transform;
 class Texture;
@@ -26,7 +26,7 @@ public:
 
     virtual void update(uint32_t delta_time);
 	virtual void render();
-	virtual void create_proyectile(const GameStructs::BulletProperties& bp, ecs::grpId_t gid) {};
+	virtual ecs::entity_t create_proyectile(const GameStructs::BulletProperties& bp, ecs::grpId_t gid) {return nullptr;};
 	
 	template <typename ... Cmps>
 	static ecs::entity_t create_entity(ecs::grpId_t gid, ecs::sceneId_t sid,Cmps ... components) {

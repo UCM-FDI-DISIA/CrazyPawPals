@@ -1,5 +1,5 @@
+
 #include "ControlsScene.h"
-#include "../../utils/checkML.h"
 #include "../../our_scripts/components/ui/Button.h"
 #include "../GameStructs.h"
 #include "../../utils/Vector2D.h"
@@ -65,7 +65,7 @@ void ControlsScene::create_mainmenu_button(const GameStructs::ButtonProperties& 
     buttonComp->connectClick([buttonComp, &mngr]() {
         
 
-        Game::Instance()->change_Scene(Game::MAINMENU);
+        Game::Instance()->queue_scene(Game::MAINMENU);
         });
 
     buttonComp->connectHover([buttonComp]() {

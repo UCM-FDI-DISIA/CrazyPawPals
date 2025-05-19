@@ -1,7 +1,9 @@
+
 #include "WeaponCatKuza.h"
 #include "../../../../game/Game.h"
 #include "../../../../game/scenes/GameScene.h"
 #include "../../../card_system/ShootPatrons.hpp"
+#include "../../rendering/RotationComponent.h"
 
 WeaponCatKuza::WeaponCatKuza() : Weapon(4, 5000, 20.0f, 0.1f, "p_plimplim", 1.0f, 1.0f), _player_pos(), _wind_p(3), _dash_p(6), _area_p(5){ }
 
@@ -54,8 +56,13 @@ void WeaponCatKuza::wind_attack(Vector2D shootPos) {
 
 	float totalAngle = 60.0f;
 
-	patrons::ShotgunPatron(bp, ecs::grp::BULLET, totalAngle, _wind_p);
-	//std::cout << "aaaaaaaaa" << std::endl;
+	auto* mngr = Game::Instance()->get_mngr();
+	std::vector<ecs::entity_t> es = patrons::ShotgunPatron(bp, ecs::grp::BULLET, totalAngle, _wind_p);
+	for (auto e : es) {
+		mngr->addComponent<RotationComponent>(e, RotationComponent::Mode::NONE, 0.0f, 0.0f, 500, 0, 0, 0, true);
+		RotationComponent* rot = mngr->getComponent<RotationComponent>(e);
+		rot->setInitialRotation(0.0f);
+	}
 }
 
 void WeaponCatKuza::dash_attack(Vector2D shootPos, Vector2D shoot_end_pos) {
@@ -66,9 +73,9 @@ void WeaponCatKuza::dash_attack(Vector2D shootPos, Vector2D shoot_end_pos) {
 	bp.speed = 0;
 	bp.damage = _damage;
 	bp.life_time = 2;
-	bp.width = _attack_width * 0.5f;
-	bp.height = _attack_height * 0.5f;
-	bp.sprite_key = "p_plimplim";
+	bp.width = _attack_width * 2.2f;
+	bp.height = _attack_height * 1.2f;
+	bp.sprite_key = "p_dash_catkuza";
 	bp.collision_filter = GameStructs::collide_with::player;
 	
 	Vector2D espacio = (shoot_end_pos - shootPos) / (_dash_p - 1);
@@ -87,12 +94,14 @@ WeaponCatKuza::area_attack(Vector2D shootPos) {
 	bp.speed = _speed;
 	bp.damage = _damage;
 	bp.life_time = 1;
-	bp.width = _attack_width;
-	bp.height = _attack_height;
-	bp.sprite_key = "p_sarno_rata";
+	bp.width = _attack_width* 2.75f;
+	bp.height = _attack_height * 2.5f; 
+	bp.sprite_key = "p_area_catkuza";
 	bp.collision_filter = GameStructs::collide_with::player;
 
+	auto* mngr = Game::Instance()->get_mngr();
 	for (int i = 0; i < _area_p; ++i) {
-		static_cast<GameScene*>(Game::Instance()->get_currentScene())->generate_proyectile(bp, ecs::grp::BULLET);
+		auto e = Game::Instance()->get_currentScene()->create_proyectile(bp, ecs::grp::BULLET);
+		mngr->addComponent<RotationComponent>(e, RotationComponent::Mode::CONTINUOUS, 0.5f, 360.0f);
 	}
 }

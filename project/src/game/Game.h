@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../utils/Singleton.h"
 #include "../utils/Vector2D.h"
 #include "../ecs/ecs.h"
@@ -33,7 +34,8 @@ public:
 	event_system::event_manager* get_event_mngr();
 	
 	Scene* get_currentScene();
-	void change_Scene(State);
+	void update_scene();
+	void queue_scene(State);
 	std::pair<int,int> get_world_half_size() const;
 
 	//bool para salir del bucle principal
@@ -43,6 +45,7 @@ public:
 
 
 private:
+	int _next_scene_index = -1;
 	int _current_scene_index = -1;
 	std::vector<Scene*> _scenes;
 	std::vector<bool> _scene_inits;

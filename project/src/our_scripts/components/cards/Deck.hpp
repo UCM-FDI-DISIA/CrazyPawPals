@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../../card_system/CardList.h"
 #include "../../card_system/Card.hpp"
 #include "Mana.h"
@@ -20,6 +21,8 @@ struct AnimationVars {
 	Uint32 _mill_card_anim_duration = 700;
 };
 class Deck : public ecs::Component {
+private:
+	std::vector<Card*> _milled_card_to_erase;
 protected:
 	int _reload_time = 1000;
 #pragma region animation_vars

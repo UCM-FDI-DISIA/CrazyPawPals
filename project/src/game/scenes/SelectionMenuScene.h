@@ -1,8 +1,8 @@
 #pragma once
+
 #include "Scene.h"
 #include <vector>
 #include <string>
-#include "../../utils/checkML.h"
 #include <list>
 
 class ImageForButton;
@@ -20,6 +20,7 @@ public:
 private:
 	void create_weapon_button(GameStructs::WeaponType wt, const GameStructs::ButtonProperties& bp);
 	void create_deck_button(GameStructs::DeckType dt,const GameStructs::ButtonProperties& bp);
+	void create_back_button(const GameStructs::ButtonProperties& bp);
 	void create_weapon_buttons();
 	void create_deck_buttons();
 	void create_deck_info(const rect_f32& rect);

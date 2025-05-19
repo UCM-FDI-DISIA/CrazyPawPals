@@ -1,3 +1,4 @@
+
 #include "RewardScene.h"
 
 #include "../../our_scripts/components/ui/Button.h"
@@ -6,7 +7,6 @@
 #include "../../sdlutils/SDLUtils.h"
 #include "../../sdlutils/InputHandler.h"
 #include "../../ecs/Entity.h"
-#include "../../utils/checkML.h"
 
 #include "../../our_scripts/card_system/Card.hpp"
 #include "../../our_scripts/card_system/CardList.h" 
@@ -288,6 +288,10 @@ void RewardScene::create_reward_health_button(const GameStructs::ButtonPropertie
             }
             _lr = imgComp;
             _heal = true;
+            _activate_confirm_button = true;
+            _activate_exchange_button = false;
+            _special_case = false;
+            _chosen_card = nullptr;
         }
     });
     buttonComp->connectHover([mngr, buttonComp, imgComp, ri, e,this]() {
@@ -343,6 +347,7 @@ void RewardScene::create_reward_card_button(const GameStructs::ButtonProperties&
             _lr = imgComp;
             _chosen_card = e;
             _heal = false;
+            check_number();
         }
     });
     buttonComp->connectHover([mngr,buttonComp, imgComp, ri, e,this]() {
@@ -431,10 +436,10 @@ void RewardScene::create_my_deck_cards() {
     auto _m_deck = mngr->getComponent<Deck>(player);
     auto& pDeck = _m_deck->move_discard_to_draw(true).card_list();
 
-    float umbral = 0.11f;
+    float umbral = 0.09f;
     auto iterator = pDeck.begin();
     GameStructs::CardButtonProperties propTemplate = {
-        { {0.01f, 0.8f}, {0.1f, 0.175f} },
+        { {0.01f, 0.8f}, {0.075f, 0.135f} },
         0.0f, "", ecs::grp::REWARDDECK, *iterator
     };
 
@@ -690,7 +695,9 @@ void RewardScene::update(uint32_t delta_time) {
    if (_activate_confirm_button && _lr != nullptr) {
        auto mngr = Game::Instance()->get_mngr();
        auto imgCompConfirm = mngr->getComponent<ImageForButton>(mngr->getHandler(ecs::hdlr::CONFIRMREWARD));
-       imgCompConfirm->destination_rect.position.x = buttonX;
+       auto imgCompExchange = mngr->getComponent<ImageForButton>(mngr->getHandler(ecs::hdlr::EXCHANGEBUTTON));
+       imgCompConfirm->destination_rect.position.x = buttonX; 
+       imgCompExchange->destination_rect.position.x = buttonX + 10.0f;
        _activate_confirm_button = false;
    }
    else if (_activate_exchange_button && _lr != nullptr && _selected_card != nullptr) {
@@ -701,11 +708,16 @@ void RewardScene::update(uint32_t delta_time) {
        imgCompConfirm->destination_rect.position.x = buttonX + 0.185f;
        _activate_exchange_button = false;
    }
-   else if (_special_case && _lr != nullptr && _selected_card != nullptr) {
+   else if (_special_case && _lr != nullptr) {
        auto mngr = Game::Instance()->get_mngr();
-       auto imgCompExchange = mngr->getComponent<ImageForButton>(mngr->getHandler(ecs::hdlr::EXCHANGEBUTTON));
-       imgCompExchange->destination_rect.position.x = buttonX;
-       _special_case = false;
+       auto imgCompConfirm = mngr->getComponent<ImageForButton>(mngr->getHandler(ecs::hdlr::CONFIRMREWARD));
+       imgCompConfirm->destination_rect.position.x = buttonX + 10.0f;
+
+       if (_selected_card != nullptr) {
+           auto imgCompExchange = mngr->getComponent<ImageForButton>(mngr->getHandler(ecs::hdlr::EXCHANGEBUTTON));
+           imgCompExchange->destination_rect.position.x = buttonX;
+           _special_case = false;
+       }
    }
 }
 void RewardScene::create_next_round_button(const GameStructs::ButtonProperties& bp) {
@@ -724,8 +736,8 @@ void RewardScene::create_next_round_button(const GameStructs::ButtonProperties& 
 
     buttonComp->connectClick([buttonComp, mngr, imgComp, this]() { if (_selected) {
         _lr->swap_textures();
-        if (!_mythic) Game::Instance()->change_Scene(Game::GAMESCENE);
-        else Game::Instance()->change_Scene(Game::MYTHICSCENE);
+        if (!_mythic) Game::Instance()->queue_scene(Game::GAMESCENE);
+        else Game::Instance()->queue_scene(Game::MYTHICSCENE);
         imgComp->swap_textures();
         imgComp->_filter = false;
         imgComp->destination_rect.position.x = 2.0f;

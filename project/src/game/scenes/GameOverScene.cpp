@@ -1,3 +1,4 @@
+
 #include "GameOverScene.h"
 #include "../../our_scripts/components/ui/Button.h"
 #include "../GameStructs.h"
@@ -5,7 +6,6 @@
 #include "../../sdlutils/SDLUtils.h"
 #include "../../sdlutils/InputHandler.h"
 #include "../../ecs/Entity.h"
-#include "../../utils/checkML.h"
 
 #include "../../our_scripts/components/weapons/player/Revolver.h"
 #include "../../our_scripts/components/weapons/player/Rampage.h"
@@ -80,7 +80,7 @@ void GameOverScene::create_enter_button() {
     buttonComp->connectClick([buttonComp, imgComp, mngr, this]() {
         imgComp->_filter = false;
         imgComp->swap_textures();
-        Game::Instance()->change_Scene(Game::MAINMENU);
+        Game::Instance()->queue_scene(Game::MAINMENU);
     }); 
     buttonComp->connectHover([buttonComp, imgComp, this]() { 
         imgComp->swap_textures();

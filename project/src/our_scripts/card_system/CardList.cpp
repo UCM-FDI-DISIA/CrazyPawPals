@@ -1,6 +1,6 @@
+
 #include "CardList.h"
 #include "Card.hpp"
-#include "../../utils/checkML.h"
 
 CardList::CardList()
 {
@@ -9,7 +9,11 @@ CardList::CardList()
 
 CardList::~CardList()
 {
-
+	/*
+	for (auto c : _my_card_list)
+		delete c;
+	_my_card_list.clear();
+	*/
 }
 
 CardList::CardList(std::list<Card*>& l)

@@ -1,10 +1,10 @@
+
 #include "SelectionMenuScene.h"
 #include "../../our_scripts/components/ui/Button.h"
 #include "../GameStructs.h"
 #include "../../utils/Vector2D.h"
 #include "../../sdlutils/SDLUtils.h"
 #include "../../sdlutils/InputHandler.h"
-#include "../../utils/checkML.h"
 #include "../../ecs/Entity.h"
 
 #include "../../our_scripts/components/weapons/player/Revolver.h"
@@ -43,6 +43,14 @@ void SelectionMenuScene::create_weapon_buttons() {
         { { startX, startY }, {0.05f, 0.1f} },
         0.0f, "", ecs::grp::WEAPONBUTTON
     };
+
+    //Button back
+    GameStructs::ButtonProperties backB = {
+        { {0.9f, 0.9f},{0.10f, 0.1f} },
+        0.0f, ""
+    };
+    backB.sprite_key = "back";
+    create_back_button(backB);
 
     GameStructs::ButtonProperties revolverB = buttonPropTemplate;
     revolverB.sprite_key = "revolver_button";
@@ -83,6 +91,36 @@ void SelectionMenuScene::create_weapon_buttons() {
     //create_weapon_button(GameStructs::WEAPON7, another2);
 }
 
+void SelectionMenuScene::create_back_button(const GameStructs::ButtonProperties& bp) {
+    auto* mngr = Game::Instance()->get_mngr();
+    auto e = create_button(bp);
+
+    auto imgComp = mngr->addComponent<ImageForButton>(e,
+        &sdlutils().images().at(bp.sprite_key),
+        &sdlutils().images().at(bp.sprite_key + "_selected"),
+        bp.rect,
+        0,
+        Game::Instance()->get_mngr()->getComponent<camera_component>(
+            Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA))->cam
+    );
+
+    auto buttonComp = mngr->getComponent<Button>(e);
+    buttonComp->connectClick([buttonComp, imgComp, mngr]() {
+        imgComp->_filter = false;
+        imgComp->swap_textures();
+        Game::Instance()->queue_scene(Game::MAINMENU);});
+
+    buttonComp->connectHover([buttonComp, imgComp]() {
+        imgComp->_filter = true;
+        imgComp->swap_textures();
+        sdlutils().soundEffects().at("button_hover").play();
+        });
+
+    buttonComp->connectExit([buttonComp, imgComp]() {
+        imgComp->_filter = false;
+        imgComp->swap_textures();
+        });
+}
 void SelectionMenuScene::create_deck_buttons() {
     float umbral = 0.1f;
     //create the first button prop
@@ -412,7 +450,7 @@ void SelectionMenuScene::create_enter_button() {
     buttonComp->connectClick([buttonComp, mngr, imgComp,this]() {
         if (_weapon_selected && _deck_selected) {
             imgComp->_filter = false;
-            Game::Instance()->change_Scene(Game::GAMESCENE);
+            Game::Instance()->queue_scene(Game::GAMESCENE);
             imgComp->destination_rect.position.x = 10.0f;
         }
     }); 

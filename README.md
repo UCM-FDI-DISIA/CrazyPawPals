@@ -291,6 +291,10 @@ Hay 2 parametros distintos que componen la vida del jugador: El escudo y la salu
 - *Escudo:* El jugador no tiene escudo de base, pero lo puede obtener con objetos, cartas o armas. El escudo se reduce en 1, 2 veces por segundo. Al recibir daño primero se sustrae el daño de este, y el daño excesivo pasa a hacer daño a la vida.
 - *Salud:* La salud es el principal recurso del jugador, al llegar a 0 el jugador morirá. La regeneración de salud es rara, y solo suele se obtiene como recompensa de oleada al estar bajo de vida.
 
+### 3.10. Carga
+Ciertas cartas permiten obtener Carga al jugador, otorgando poder adicional a su arsenal. 
+Esto puede tomar la forma de armas que reciben una mejora directa en la presencia de Carga, o cartas que consumen Carga para adquirir un nuevo efecto.
+
 ## 4. Interfaz  
 
 ### 4.1. Controles  

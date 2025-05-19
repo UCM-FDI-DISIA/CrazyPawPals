@@ -1,6 +1,7 @@
 #ifndef CARD_RENDERING_HPP
 #define CARD_RENDERING_HPP
 
+
 #include <string>
 #include <SDL.h>
 #include <cstdint>

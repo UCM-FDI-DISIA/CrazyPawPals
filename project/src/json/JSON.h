@@ -25,13 +25,13 @@
 #ifndef _JSON_H_
 #define _JSON_H_
 
+
 #include <vector>
 #include <string>
 #include <map>
 #include <cstring>
 #include <cstdlib>
 #include <cwctype>
-#include "../utils/checkML.h"
 
 
 static inline bool simplejson_isnan(double x) {

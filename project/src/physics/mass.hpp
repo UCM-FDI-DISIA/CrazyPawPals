@@ -1,6 +1,7 @@
 #ifndef MASS_HPP
 #define MASS_HPP
 
+
 template <typename Numeric>
 struct mass {
     Numeric value;

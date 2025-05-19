@@ -1,3 +1,4 @@
+
 #include "MythicScene.h"
 
 #include "../../our_scripts/components/ui/Button.h"
@@ -5,7 +6,6 @@
 #include "../../sdlutils/SDLUtils.h"
 #include "../../sdlutils/InputHandler.h"
 #include "../../ecs/Entity.h"
-#include "../../utils/checkML.h"
 
 #include "../../our_scripts/card_system/Card.hpp"
 #include "../../our_scripts/card_system/CardList.h" 
@@ -457,7 +457,7 @@ void MythicScene::create_next_round_button(const GameStructs::ButtonProperties& 
 
     buttonComp->connectClick([buttonComp, mngr, imgComp, this]() { if (_selected) {
         _lm->swap_textures();
-        Game::Instance()->change_Scene(Game::GAMESCENE);
+        Game::Instance()->queue_scene(Game::GAMESCENE);
         imgComp->_filter = false;
         imgComp->swap_textures();
         imgComp->destination_rect.position.y = 2.0f;

@@ -1,3 +1,4 @@
+
 #include "Deck.hpp"
 #include "ecs/Manager.h"
 #include <iostream>
@@ -5,6 +6,7 @@
 #include "../movement/MovementController.h"
 #include "../movement/Transform.h"
 #include "../../../rendering/card_rendering.hpp"
+
 
 #include "../../card_system/PlayableCards.hpp"
 #ifdef GENERATE_LOG
@@ -25,7 +27,9 @@ void Deck::_put_new_card_on_hand()
 	}
 }
 
-Deck::Deck() {
+Deck::Deck() 
+	:_milled_card_to_erase()
+{
 	_discard_pile = CardList();
 	_hand = nullptr;
 	std::list<Card*> default_cardList = { new Lighting(), new Fireball(), new Minigun(), new Lighting() };
@@ -60,6 +64,12 @@ Deck::~Deck()
 	if(_hand!=nullptr)
 		delete _hand;
 	//_draw_pile y _discard_pile llamar�n a su destructor cuando esto se destruya al salir de �mbito
+	for (auto& c : _draw_pile.card_list())
+		delete c;
+	for (auto& c : _discard_pile.card_list())
+		delete c;
+	for (auto& c : _milled_card_to_erase)
+		delete c;
 }
 
 bool Deck::use_card(const Vector2D* target_pos) noexcept
@@ -75,6 +85,10 @@ bool Deck::use_card(const Vector2D* target_pos) noexcept
 			break;
 		case DRAW_PILE:
 			_draw_pile.add_card(std::move(_hand));
+			break;
+		case DESTROY:
+			delete _hand;
+			_hand = nullptr;
 			break;
 		}
 		_put_new_card_on_hand();
@@ -98,6 +112,10 @@ bool Deck::discard_card() noexcept
 			break;
 		case DRAW_PILE:
 			_draw_pile.add_card(std::move(_hand));
+			break;
+		case DESTROY:
+			delete _hand;
+			_hand = nullptr;
 			break;
 		}
 		_put_new_card_on_hand();
@@ -123,6 +141,9 @@ std::pair<bool, Card*> Deck::mill() noexcept
 			break;
 		case DRAW_PILE:
 			_draw_pile.add_card(_last_milled_card);
+			break;
+		case DESTROY:
+			_milled_card_to_erase.push_back(_last_milled_card);
 			break;
 		}
 		_av._last_milled_card_time = sdlutils().virtualTimer().currTime();
@@ -151,14 +172,19 @@ void Deck::reload() noexcept
 		event_system::event_manager::Instance()->fire_event(event_system::shuffle, event_system::event_receiver::Msg());
 		//Puts all cards on discard
 		if (_hand != nullptr) {
-			if(_hand->get_discard_destination()!=DESTROY)
+			if (_hand->get_discard_destination() == DESTROY) {
+				delete _hand;
+			}else{
 				_discard_pile.add_card(std::move(_hand));
+			}
 			_hand = nullptr;
 		}
 		//_draw_pile.move_from_this_to(_discard_pile);
 		while (!_draw_pile.empty()) {
 			Card* c = _draw_pile.pop_first();
-			if (c->get_discard_destination() != DESTROY) {
+			if (c->get_discard_destination() == DESTROY) {
+				delete c;
+			}else{
 				_discard_pile.add_card(c);
 			}
 		}
@@ -242,16 +268,26 @@ void Deck::set_primed(bool prime)
 CardList& Deck::move_discard_to_draw(bool menu) {
 	_discard_pile.move_from_this_to(_draw_pile);
 	if (menu) {
-		std::erase_if(_draw_pile.card_list(), [](Card* c) { return c->get_discard_destination() == DESTROY; });
+		std::erase_if(_draw_pile.card_list(), [](Card* c) { 
+			if (c->get_discard_destination() == DESTROY) { 
+				delete c; return true;
+			} 
+			return false; 
+		});
 		if (_hand != nullptr) {
-			if (_hand->get_discard_destination() != DESTROY)
+			if (_hand->get_discard_destination() == DESTROY)
+				delete _hand;
+			else
 				_discard_pile.add_card(std::move(_hand));
 			_hand = nullptr;
 		}
 		//_draw_pile.move_from_this_to(_discard_pile);
 		while (!_discard_pile.empty()) {
 			Card* c = _discard_pile.pop_first();
-			if (c->get_discard_destination() != DESTROY) {
+			if (c->get_discard_destination() == DESTROY) {
+				delete c;
+			}
+			else {
 				_draw_pile.add_card(c);
 			}
 		}

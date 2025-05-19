@@ -1,12 +1,12 @@
 #pragma once
 
+
 #include <functional>
 #include "../../ecs/Component.h"
 #include "../../sdlutils/SDLUtils.h"
 #include "../wave_events/wave_event.hpp"
 #include "rendering/transformless_dyn_image.h"
 #include "../../utils/EventsSystem.hpp"
-#include "../../utils/checkML.h"
 
 enum events {
     NONE = -1, // 0xffffffffff
@@ -32,12 +32,12 @@ struct enemy_spawn_definition {
 };
 //index equals enemyType
 constexpr enemy_spawn_definition enemy_spawn_data[8] = {
-    {2,2}, //0
+    {1,1}, //0
     {1,1}, //1
     {1,1}, //2
     {1,2}, //3
-    {3,1}, //4
-    {1,3}, //5
+    {3,2}, //4
+    {1,4}, //5
     {1,3}, //6
     {1,3}  //7
 };
@@ -49,8 +49,8 @@ public:
 };
 
 class Fog;
-constexpr int max_spawn_wave_time = 30 * 1000; //30 sec
-constexpr int spawn_tokens_gained_per_wave = 4; 
+constexpr int max_spawn_wave_time = 40 * 1000; //30 sec
+constexpr int spawn_tokens_gained_per_wave = 3; 
 constexpr int spawn_tokens_at_wave_0 = 3;
 
 class WaveManager : public event_system::event_receiver, public ecs::Component {
@@ -64,13 +64,14 @@ private:
     bool is_wave_finished();
     void erase_all_enemies();
     void erase_all_bullets();
+    void erase_all_popups();
     void select_event();
 
     uint32_t change_to_rewards_time;
 #ifdef GENERATE_LOG
     inline static uint32_t _ticks_on_wave = 1;
 #endif
-
+    void _spawn_boss();
     void spawn_next_group_of_enemies();
     void initialize_next_wave_params(bool normal_wave);
     Uint32 _currentWaveTime = 0; //tiempo actual (post calculo, inicial en constructor)

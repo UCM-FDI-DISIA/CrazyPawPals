@@ -1,5 +1,5 @@
+
 #include "Card.hpp"
-#include "../../utils/checkML.h"
 class MovementController;
 
 class Fireball : public Card /*, public event_system::event_receiver*/ {
@@ -43,6 +43,7 @@ private:
 	int _number_of_bullets_shot = 0;
 	int _number_of_shots = 10;
 	int _shooting_duration = 1500;
+	bool _im_primed = false;
 };
 
 // Archetypes: Mill

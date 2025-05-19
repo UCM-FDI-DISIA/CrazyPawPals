@@ -1,3 +1,4 @@
+
 #include "TutorialScene.h"
 
 #include "../../our_scripts/components/ui/Button.h"
@@ -6,7 +7,6 @@
 #include "../../sdlutils/SDLUtils.h"
 #include "../../sdlutils/InputHandler.h"
 #include "ecs/Manager.h"
-#include "../../utils/checkML.h"
 #include "game/Game.h"
 #include "game/scenes/GameScene.h"
 
@@ -225,7 +225,7 @@ void TutorialScene::render()
 	Scene::render();
 	if (_show_tutorial_hud) {
 		auto camera = Game::Instance()->get_mngr()->getComponent<camera_component>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA));
-		rect_f32 num = rect_f32_screen_rect_from_viewport(rect_f32({ 0.85,0.1 }, { 0.07,0.05 }), camera->cam.screen);
+		rect_f32 num = rect_f32_screen_rect_from_viewport(rect_f32({ { 0.85,0.1 }, { 0.07,0.05 } }), camera->cam.screen);
 		SDL_Rect numtrue{
 			int(num.position.x),
 			int(num.position.y),
@@ -236,10 +236,10 @@ void TutorialScene::render()
 			sdlutils().renderer(),
 			"01/10",
 			sdlutils().fonts().at("ARIAL16"),
-			SDL_Color(50,50,50,255) };
+			SDL_Color({50,50,50,255}) };
 		numtex.render(numtrue);
 
-		rect_f32 timer = rect_f32_screen_rect_from_viewport(rect_f32({ 0.45,0.05 }, { 0.1,0.14 }), camera->cam.screen);
+		rect_f32 timer = rect_f32_screen_rect_from_viewport(rect_f32({ { 0.45,0.05 }, { 0.1,0.14 } }), camera->cam.screen);
 		SDL_Rect timertrue{
 			int(timer.position.x),
 			int(timer.position.y),
@@ -250,7 +250,7 @@ void TutorialScene::render()
 			sdlutils().renderer(),
 			"60",
 			sdlutils().fonts().at("ARIAL16"),
-			SDL_Color(50,50,50,255) };
+			SDL_Color({50,50,50,255}) };
 		timertex.render(timertrue);
 	}
 
@@ -268,9 +268,9 @@ void TutorialScene::create_pop_up() {
 	if (current.on_enter)current.on_enter();
 }
 
-void TutorialScene::create_proyectile(const GameStructs::BulletProperties& bp, ecs::grpId_t gid)
+ecs::entity_t TutorialScene::create_proyectile(const GameStructs::BulletProperties& bp, ecs::grpId_t gid)
 {
-	GameScene::generate_proyectile(bp, gid, ecs::scene::TUTORIALSCENE);
+	return GameScene::generate_proyectile(bp, gid, ecs::scene::TUTORIALSCENE);
 }
 
 void TutorialScene::event_callback0(const event_system::event_receiver::Msg& m)
@@ -301,7 +301,7 @@ ecs::entity_t TutorialScene::create_change_scene_button(const GameStructs::Butto
 			Game::Instance()->get_mngr()->getHandler(ecs::hdlr::CAMERA))->cam
 	);
 	buttonComp->connectClick([buttonComp, &mngr, nextScene]() {
-		Game::Instance()->change_Scene(nextScene);
+		Game::Instance()->queue_scene(nextScene);
 		});
 
 	buttonComp->connectHover([buttonComp, imgComp, this]() {
