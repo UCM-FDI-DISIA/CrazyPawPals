@@ -348,15 +348,15 @@ Tiene fijado al personaje en el centro y hace movimientos según el cursor, pero
 
 | Nombre | Imagen | Descripción |
 |--------|--------|-------------|
-| **SarnoRata**  | <img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/sarno_rata.png" alt="sarno_rata" width="100" /> |Se acerca al jugador y ataca en área circular.|
-| **MichiMafioso**  | <img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/michi_mafioso.png" alt="michi_mafioso.png" width="100" /> | Se aleja y dispara un proyectil.|
-| **PlimPlim**  | <img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/plim_plim.png" alt="plim_plim" width="100" /> | Dispara tres proyectiles en arco. |
-| **Boom**  | <img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/boom.png" alt="Boom" width="100" /> | Se acerca y explota. |
-| **Ratatouille**  | <img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/ratatouille.png" alt="ratatouille" width="100" /> | Da vueltas alrededor del jugador, causando daño al chocarse.|
-| **Basurero**  | <img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/basurero.png" alt="basurero" width="100" /> | Genera enemigos, y al explotar, invoca al Rey del Basurero. |
-| **Rey del Basurero**  |<img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/rey_basurero.png" alt="rey_basurero" width="100" /> | Lanza bolsas de basura que ralentizan al jugador. |
-| **Jefe de la CatKuza**  | <img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/catkuza.png" alt="catkuza" width="100" /> |  Patrones de ataque complejos.|
-| **SuperMichiMafioso**  | <img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/super_michi_mafioso.png" alt="super_michi_mafioso" width="100" /> | Patrones de ataque en área y genera Michis Mafiosos.|
+| **SarnoRata**  | <img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/sarno_rata.png" alt="sarno_rata" width="100" /> | Se acerca al jugador y ataca en un área circular. El modo de seguimiento es aleatorio en el multijugador. |
+| **MichiMafioso**  | <img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/michi_mafioso.png" alt="michi_mafioso.png" width="100" /> | Se aleja y dispara un proyectil. El modo de seguimiento es hacia el jugador más lejano en el multijugador. |
+| **PlimPlim**  | <img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/plim_plim.png" alt="plim_plim" width="100" /> | Dispara tres proyectiles en arco. El modo de seguimiento es hacia el jugador más cercano en el multijugador. |
+| **Boom**  | <img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/boom.png" alt="Boom" width="100" /> | Se acerca y explota. El modo de seguimiento es hacia el jugador con menos vida en el multijugador. |
+| **Ratatouille**  | <img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/ratatouille.png" alt="ratatouille" width="100" /> | Da vueltas alrededor del jugador, causando daño al chocar. El modo de seguimiento es aleatorio en el multijugador. |
+| **Basurero**  | <img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/basurero.png" alt="basurero" width="100" /> | Genera enemigos y, al tener poca vida, invoca al Rey del Basurero. No persigue a ningún jugador. |
+| **Rey del Basurero**  | <img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/rey_basurero.png" alt="rey_basurero" width="100" /> | Lanza bolsas de basura que ralentizan al jugador. El modo de seguimiento es aleatorio en el multijugador. |
+| **Jefe de la CatKuza**  | <img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/catkuza.png" alt="catkuza" width="100" /> | Patrones de ataque complejos. El modo de seguimiento es hacia el jugador con menos vida en el multijugador. |
+| **SuperMichiMafioso**  | <img src="https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/super_michi_mafioso.png" alt="super_michi_mafioso" width="100" /> | Patrones de ataque en área y genera Michis Mafiosos. El modo de seguimiento es hacia el jugador con más vida en el multijugador. |
 
 
 ### 5.2. Niveles  
