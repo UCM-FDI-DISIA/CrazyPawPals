@@ -178,7 +178,6 @@ void GameScene::initScene()
 
 	manager.refresh();
 	create_environment();
-	// spawn_sarno_rata(Vector2D{5.0f, 0.0f});
 	spawn_fog();
 	spawn_wave_manager();
 	auto hud = create_hud();
@@ -212,10 +211,6 @@ void GameScene::enterScene()
 	auto e = wm->get_current_event();
 	RewardScene::will_have_mythic(e != NONE || ((wm->get_current_wave()+1)%5 == 0));
 	manager.getComponent<HUD>(manager.getHandler(ecs::hdlr::HUD_ENTITY))->start_new_wave();
-	spawn_catkuza(Vector2D{10.0f, 0.0f});
-	//spawn_rata_basurera(Vector2D{5.0f, 0.0f});
-	//spawn_rey_basurero(Vector2D{-5.0f, 0.0f});
-	//spawn_super_michi_mafioso(Vector2D{5.0f, 0.0f});
 #ifdef GENERATE_LOG
 	log_writer_to_csv::Instance()->add_new_log();
 	log_writer_to_csv::Instance()->add_new_log("ENTERED GAME SCENE");
@@ -253,7 +248,7 @@ ecs::entity_t GameScene::create_player(ecs::sceneId_t scene)
 			rect_f32{{0, 0}, {0.2, 1}},
 			player_rect,
 			camera,
-			sdlutils().images().at("mimi"),
+			sdlutils().images().at("piu"),
 			player_transform),
 		new render_ordering{1},
 		new Health(100, true),
