@@ -75,4 +75,6 @@ void EnemySynchronize::update_enemy(GameStructs::DumbEnemyProperties &data)
 	//_dy->flip = (delta.getX() >= 0) ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
 
 	_ht->setHeatlh(data._health);
+
+	if(_ht->getHealth() <= 0) Game::Instance()->get_mngr()->setAlive(_ent, false);
 }
