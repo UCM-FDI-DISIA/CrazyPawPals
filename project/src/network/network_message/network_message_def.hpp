@@ -389,7 +389,7 @@ inline network_message_enemy_create create_enemy(GameStructs::DumbEnemyPropertie
 // Struct de EnemyProperties
 struct network_message_enemy_update
 {
-    int16_t _pos[2];
+    int32_t _pos[2];
     uint16_t _health_n;
     uint16_t _enemy_id;
 };

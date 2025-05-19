@@ -393,18 +393,21 @@ ecs::entity_t GameScene::create_enemy(GameStructs::EnemyProperties &ec, ecs::sce
 		new Health(ec.health),
 		new FlipXController(),
 		new enemy_collision_triggerer(),
-		new id_component(3),
+		new id_component(),
 		weapon,
 		&rigidbody,
 		&col,
 		&mc,
 		&state,
 		&fll);
-
+	online_enemy(e);
+	
 	if (scene == ecs::scene::GAMESCENE)
 		Game::Instance()->get_mngr()->getComponent<WaveManager>(Game::Instance()->get_mngr()->getHandler(ecs::hdlr::WAVE))->newEnemy();
 	// Si es online, agregar el componente de sincronizacion
-	online_enemy(e);
+	
+	
+
 	return e;
 }
 void GameScene::select_create_dumb_enemy(GameStructs::DumbEnemyProperties &ec)
@@ -1720,11 +1723,14 @@ void GameScene::client_handle_menssage(network_context &ctx)
 			GameStructs::DumbEnemyProperties _enemy_properties;
 			_enemy_properties._id = id;
 			_enemy_properties._health = SDLNet_Read16(&payload._health_n);
-			_enemy_properties._pos.setX(static_cast<int32_t>(SDLNet_Read16(&payload._pos[0])) / static_cast<float>(fact_float_int));
-			_enemy_properties._pos.setY(static_cast<int32_t>(SDLNet_Read16(&payload._pos[1])) / static_cast<float>(fact_float_int));
+			_enemy_properties._pos.setX(static_cast<int32_t>(SDLNet_Read32(&payload._pos[0])) / static_cast<float>(fact_float_int));
+			_enemy_properties._pos.setY(static_cast<int32_t>(SDLNet_Read32(&payload._pos[1])) / static_cast<float>(fact_float_int));
 			auto enemy = get_network_enemy(_enemy_properties._id);
-			if (enemy != nullptr)
+			if (enemy != nullptr){
+				//std::cout << "Enemy ID en synchronize: " << (int)_enemy_properties._id << std::endl;
 				Game::Instance()->get_mngr()->getComponent<EnemySynchronize>(enemy)->update_enemy(_enemy_properties);
+			}
+			else std::cout << "No se encontro el enemigo ID: " << (int)_enemy_properties._id << std::endl;
 			break;
 		}
 		case network_message_type_start_wave:
