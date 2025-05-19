@@ -521,7 +521,7 @@ uint8_t GameScene::spawn_super_michi_mafioso(Vector2D posVec, ecs::sceneId_t sce
 		25,					  // health
 		1.75f,				  // width
 		2.25f,				  // height
-		GameStructs::CLOSEST, // target_strategy
+		GameStructs::HIGHEST_LIFE, // target_strategy
 		{0.0f, 0.0f},		  // velocity
 		0.0f,				  // rotation
 		2.0f				  // scale
@@ -688,7 +688,7 @@ uint8_t GameScene::spawn_catkuza(Vector2D posVec, ecs::sceneId_t scene, uint8_t 
 		30,
 		1.8f,
 		2.5f,
-		GameStructs::CLOSEST,
+		GameStructs::LOWREST_LIFE,
 		{0.0f, 0.0f},
 		0.0f,
 		2.0f};
@@ -895,6 +895,8 @@ uint8_t GameScene::spawn_catkuza(Vector2D posVec, ecs::sceneId_t scene, uint8_t 
 uint8_t GameScene::spawn_sarno_rata(Vector2D posVec, ecs::sceneId_t scene, uint8_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
+
+	int random_strategy = sdlutils().rand().nextInt(0, 3);
 	GameStructs::EnemyProperties ec =
 		GameStructs::EnemyProperties{
 			"sarno_rata", // sprite_key
@@ -904,7 +906,7 @@ uint8_t GameScene::spawn_sarno_rata(Vector2D posVec, ecs::sceneId_t scene, uint8
 			7,					  // health
 			1.125f,				  // width
 			1.5f,				  // height
-			GameStructs::CLOSEST, // target_strategy
+			static_cast<GameStructs::EnemyFollow>(random_strategy), // target_strategy
 			{0.0f, 0.0f},		  // velocity
 			0.0f,				  // rotation
 			1.0f				  // scale
@@ -967,7 +969,7 @@ uint8_t GameScene::spawn_michi_mafioso(Vector2D posVec, ecs::sceneId_t scene, ui
 			5,					  // health
 			1.0f,				  // width
 			1.125f,				  // height
-			GameStructs::CLOSEST, // target_strategy
+			GameStructs::FURTHEST, // target_strategy
 			{0.0f, 0.0f},		  // velocity
 			0.0f,				  // rotation
 			2.0f				  // scale
@@ -1104,7 +1106,7 @@ uint8_t GameScene::spawn_boom(Vector2D posVec, ecs::sceneId_t scene, uint8_t _id
 			28,					  // health
 			1.8f,				  // width
 			1.8f,				  // height
-			GameStructs::CLOSEST, // target_strategy
+			GameStructs::LOWREST_LIFE, // target_strategy
 			{0.0f, 0.0f},		  // velocity
 			0.0f,				  // rotation
 			2.0f				  // scale
@@ -1155,6 +1157,7 @@ uint8_t GameScene::spawn_boom(Vector2D posVec, ecs::sceneId_t scene, uint8_t _id
 uint8_t GameScene::spawn_ratatouille(Vector2D posVec, ecs::sceneId_t scene, uint8_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
+	int random_strategy = sdlutils().rand().nextInt(0, 3);
 
 	GameStructs::EnemyProperties ec = GameStructs::EnemyProperties{
 		"ratatouille", // sprite_key
@@ -1164,7 +1167,7 @@ uint8_t GameScene::spawn_ratatouille(Vector2D posVec, ecs::sceneId_t scene, uint
 		2,					  // health
 		0.8f,				  // width
 		0.8f,				  // height
-		GameStructs::CLOSEST, // target_strategy
+		static_cast<GameStructs::EnemyFollow>(random_strategy), // target_strategy
 		{0.0f, 0.0f},		  // velocity
 		0.0f,				  // rotation
 		2.0f				  // scale
@@ -1315,7 +1318,7 @@ uint8_t GameScene::spawn_rata_basurera(Vector2D posVec, ecs::sceneId_t scene, ui
 uint8_t GameScene::spawn_rey_basurero(Vector2D posVec, ecs::sceneId_t scene, uint8_t _id)
 {
 	auto &&manager = *Game::Instance()->get_mngr();
-
+	int random_strategy = sdlutils().rand().nextInt(0, 3);
 	GameStructs::EnemyProperties ec =
 		GameStructs::EnemyProperties{
 			"rey_basurero", // sprite_key
@@ -1325,7 +1328,7 @@ uint8_t GameScene::spawn_rey_basurero(Vector2D posVec, ecs::sceneId_t scene, uin
 			14,					  // health
 			2.0f,				  // width
 			2.0f,				  // height
-			GameStructs::CLOSEST, // target_strategy
+			static_cast<GameStructs::EnemyFollow>(random_strategy), // target_strategy
 			{0.0f, 0.0f},		  // velocity
 			0.0f,				  // rotation
 			1.0f				  // scale
