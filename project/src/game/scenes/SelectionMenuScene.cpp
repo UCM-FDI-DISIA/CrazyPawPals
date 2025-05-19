@@ -201,13 +201,19 @@ void SelectionMenuScene::exitScene()
     _activate_play_button = false;
     */
     auto* mngr = Game::Instance()->get_mngr();
-    if(_activate_play_button)mngr->getComponent<ImageForButton>(mngr->getHandler(ecs::hdlr::TOGAMEBUTTON))->swap_textures();
+    //if(_activate_play_button)mngr->getComponent<ImageForButton>(mngr->getHandler(ecs::hdlr::TOGAMEBUTTON))->swap_textures();
 
     auto playB = mngr->getHandler(ecs::hdlr::TOGAMEBUTTON);
     auto playImg = mngr->getComponent<ImageForButton>(playB);
     playImg->_filter = false;
     sdlutils().musics().at("main_menu_bgm").haltMusic();
     sdlutils().musics().at("game_bgm").play();
+
+    auto imgComp = mngr->getComponent<ImageForButton>(mngr->getHandler(ecs::hdlr::TOGAMEBUTTON));
+    imgComp->set_texture(&sdlutils().images().at("ready"));
+    imgComp->destination_rect.position.x = 10.4f;
+
+
 #ifdef GENERATE_LOG
     log_writer_to_csv::Instance()->add_new_log("EXIT SELECTION MENU SCENE");
     log_writer_to_csv::Instance()->add_new_log();
@@ -347,7 +353,7 @@ void SelectionMenuScene::create_deck_button(GameStructs::DeckType dt, const Game
             cl = { new CardSpray(), new Lighting(), new Minigun(), new Kunai()};
             break;
         case GameStructs::FOUR:
-            cl = { new Kunai(), new EldritchBlast(), new QuickFeet (), new Kunai()};
+            cl = { new Kunai(), new EldritchBlast(), new QuickFeet (), new Fulgur()};
             break;
         default:
             break;
