@@ -45,10 +45,12 @@
    4.2. [Cámara](#42-cámara)  
    4.3. [HUD](#43-hud)  
    4.4. [Menús](#44-menús)  
+   4.5. [Multijugador](#45-multijugador)
 
 5. [Mundo del juego](#5-mundo-del-juego)  
    5.1. [Personajes](#51-personajes)  
    5.2. [Niveles](#52-niveles)  
+   5.3. [Modo Multijugador](#53-modo-multijugador)
 
 6. [Experiencia de juego](#6-experiencia-de-juego)  
 
@@ -336,6 +338,21 @@ Tiene fijado al personaje en el centro y hace movimientos según el cursor, pero
 ![Boceto HUD](https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/victory.png)
 ![Boceto HUD](https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/game_over_menu.png)
 
+### 4.5. Multijugador  
+- **Menú de Multijugador**
+    - Ser host.
+    - Ser cliente.
+    - Copiar ip cuando es host.
+    - Escribir ip cuando es cliente.
+    - Elegir skin.
+![Boceto HUD](https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/multiplayer_menu1.png)
+![Boceto HUD](https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/multiplayer_menu2.png)
+
+- **HUD Multijugador**
+    - ID del jugador local.
+    - Barra de vida de otros jugadores.
+![Boceto HUD](https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/multiplayer_hud.png)
+
 ## 5. Mundo del juego  
 
 ### 5.1. Personajes  
@@ -361,6 +378,14 @@ Tiene fijado al personaje en el centro y hace movimientos según el cursor, pero
 
 ### 5.2. Niveles  
 Un único nivel con un mapa de tamaño 1.5-2 veces lo visible en pantalla. Cuyo único elemento son los bordes del escenario que no permiten al jugador avanzar más allá de estos.
+
+### 5.3. Modo Multijugador  
+En el modo multijugador, los jugadores podrán conectarse en línea mediante la apertura de un puerto con protocolo TCP, el puerto externo (WAN) y el puerto interno (LAN):"52224". El jugador que actúe como host deberá compartir su IP para que los demás puedan unirse a la partida.
+
+Durante la partida, si un jugador muere, entrará en un estado de fantasma, en el que sufrirá ciertas penalizaciones, como una menor velocidad de movimiento y un mayor tiempo de regeneración de maná. Este estado se elimina al inicio de una nueva oleada.
+
+La partida finalizará cuando todos los jugadores estén muertos al mismo tiempo.
+
 
 ## 6. Experiencia de juego  
 **Dinámicas Buscadas**
@@ -521,7 +546,11 @@ P5: **(Preguntar solo si cogió alguna carta de mill). Pq crees q a veces salía
 ### 9.2. Conclusiones
 
 #### Testing 22 de abril
-Hicimos un primer testing con 12 alumnos de 1º de Bachillerato. Las conclusiones de este fueron: Los controles básicos fueron fáciles de entender, pero el funcionamiento del sistema de mazo no se ha podido transmitir perfectamente. Es necesario realizar mejoras en las descripciones, aclarar la mecánica Mill. Además, estaría bien mejorar los efectos visuales y de sonido para facilitar la comprensión de los efectos de las cartas. 
+Hicimos un primer testing con 15 alumnos de 1º de Bachillerato. Las conclusiones de este fueron: Los controles básicos fueron fáciles de entender, pero el funcionamiento del sistema de mazo no se ha podido transmitir perfectamente. Es necesario realizar mejoras en las descripciones, aclarar la mecánica Mill. Además, estaría bien mejorar los efectos visuales y de sonido para facilitar la comprensión de los efectos de las cartas. 
+
+A partir de las conclusiones obtenidas, se implementaron varios cambios en el juego: se añadieron números rojos flotantes que indican la cantidad de daño; se ajustó el balance general aumentando el daño de las cartas y reduciendo el del ataque básico, con el objetivo de fomentar el uso estratégico del mazo; y se modificaron las descripciones de las cartas, reemplazando la palabra "Mill" por una explicación clara de su efecto.
 
 #### Testing 28 de abril
-Hicimos un segundo testing con 12 alumnos de 1º de la ESO. Las conclusiones de este fueron: El funcionamiento del sistema de mazo sigue sin entenderse del todo. Es necesario hacer que el texto del tutorial destaque más. También habría que hacer las oleadas más progresivas en cuanto a cantidad de enemigos, para evitar abrumar tanto a los jugadores, y que vayan conociendo a los enemigos y sus propias habilidades. Hacer ver de forma más clara que las cartas son más poderosas que los ataques básicos.
+Hicimos un segundo testing con 16 alumnos de 1º de la ESO. Las conclusiones fueron: el funcionamiento del sistema de mazo sigue sin entenderse completamente y que, en general, los alumnos tuvieron dificultades para comprender el tutorial. Es necesario hacer que el texto del tutorial sea más visible y destaque mejor. También se observó que las oleadas deberían tener una progresión más gradual en cuanto a la cantidad de enemigos, para evitar abrumar a los jugadores y permitirles familiarizarse poco a poco con los enemigos. 
+
+Durante este testing también detectamos la aparición de algunos bugs que no habían surgido en pruebas anteriores, y se planteó la posibilidad de que niños de 12 años no sean nuestro público objetivo. Tras este testing, se realizó un balanceo en los ataques de los enemigos y la corrección de los bugs detectados.
