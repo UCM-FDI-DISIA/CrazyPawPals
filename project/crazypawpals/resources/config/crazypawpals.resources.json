@@ -119,6 +119,10 @@
       "file": "resources/images/projectiles/catkuza_wind.png"
     },
     {
+      "id": "p_dash_catkuza",
+      "file": "resources/images/projectiles/catkuza_dash_attack.png"
+    },
+    {
       "id": "attack_warning",
       "file": "resources/images/projectiles/attack_warning.png"
     },

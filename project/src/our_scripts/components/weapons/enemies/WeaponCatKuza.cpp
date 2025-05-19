@@ -67,9 +67,9 @@ void WeaponCatKuza::dash_attack(Vector2D shootPos, Vector2D shoot_end_pos) {
 	bp.speed = 0;
 	bp.damage = _damage;
 	bp.life_time = 2;
-	bp.width = _attack_width * 0.5f;
-	bp.height = _attack_height * 0.5f;
-	bp.sprite_key = "p_plimplim";
+	bp.width = _attack_width * 2.2f;
+	bp.height = _attack_height * 1.2f;
+	bp.sprite_key = "p_dash_catkuza";
 	bp.collision_filter = GameStructs::collide_with::player;
 	
 	Vector2D espacio = (shoot_end_pos - shootPos) / (_dash_p - 1);
