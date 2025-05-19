@@ -36,9 +36,9 @@ void EnemySynchronize::update(uint32_t delta_time)
 {
 	_last_update += delta_time;
 
-	//if (_last_update >= 500) { 
-		send_enemy_update();
-		//_last_update = 0;
+	// if (_last_update >= 500) {
+	send_enemy_update();
+	//_last_update = 0;
 	//}
 }
 
@@ -48,15 +48,34 @@ void EnemySynchronize::send_enemy_update()
 
 	GameStructs::DumbEnemyProperties enemyData;
 	enemyData._id = _enemy_id;
-	//std::cout << "Enemy ID en syncronize: " << (int)enemyData._id << std::endl;
+	// std::cout << "Enemy ID en syncronize: " << (int)enemyData._id << std::endl;
 
 	enemyData._pos = _tr->getPos();
 	enemyData._health = _ht->getHealth();
-	
+
 	auto msg = create_update_enemy_message(enemyData);
-	network_message_pack_send(
-		network.profile.client.socket_to_host,
-		network_message_pack_create(network_message_type_enemy_update, msg));
+	const auto message = network_message_pack_create(network_message_type_enemy_update, msg);
+	switch (network.profile_status)
+    {
+    case network_context_profile_status_none: {
+        assert(false && "unreachable: invalid network profile status");
+        std::exit(EXIT_FAILURE);
+    }
+    case network_context_profile_status_host: {
+        for (network_connection_size i = 0; i < network.profile.host.sockets_to_clients.connection_count; ++i) {
+            TCPsocket& connection = network.profile.host.sockets_to_clients.connections[i];
+            network_message_pack_send(connection, message);
+        }
+    }
+    case network_context_profile_status_client: {
+        network_message_pack_send(network.profile.client.socket_to_host, message);
+        break;
+    }
+    default: {
+        assert(false && "unreachable: invalid network profile status");
+        std::exit(EXIT_FAILURE);
+    }
+    }
 }
 
 void EnemySynchronize::update_enemy(GameStructs::DumbEnemyProperties &data)
@@ -76,5 +95,6 @@ void EnemySynchronize::update_enemy(GameStructs::DumbEnemyProperties &data)
 
 	_ht->setHeatlh(data._health);
 
-	if(_ht->getHealth() <= 0) Game::Instance()->get_mngr()->setAlive(_ent, false);
+	if (_ht->getHealth() <= 0)
+		Game::Instance()->get_mngr()->setAlive(_ent, false);
 }

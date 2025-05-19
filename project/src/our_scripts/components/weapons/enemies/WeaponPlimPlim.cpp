@@ -5,7 +5,7 @@
 #include "../../../card_system/ShootPatrons.hpp"
 #include "../../rendering/RotationComponent.h"
 
-WeaponPlimPlim::WeaponPlimPlim() : Weapon(4, 5000, 1.0f, 0.06f, "p_plimplim", 1.0f, 1.0f) { }
+WeaponPlimPlim::WeaponPlimPlim() : Weapon(4, 5000, 1.0f, 0.06f, "p_plimplim", 1.0f, 1.0f) {}
 
 WeaponPlimPlim::~WeaponPlimPlim() {}
 
@@ -25,5 +25,4 @@ void WeaponPlimPlim::callback(Vector2D shootPos, Vector2D shootDir)
 	float totalAngle = 160.0f;
 
 	patrons::ShotgunPatron(bp, ecs::grp::BULLET, totalAngle, 3);
-
 }

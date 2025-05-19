@@ -4,14 +4,14 @@
 #include "../../../../game/scenes/GameScene.h"
 #include "our_scripts/card_system/ShootPatrons.hpp"
 
-WeaponBoom::WeaponBoom() : Weapon(15, 5000, 20.0f, 0.0f, "p_boom", 2.0f, 2.0f) { }
+WeaponBoom::WeaponBoom() : Weapon(15, 5000, 20.0f, 0.0f, "p_boom", 2.0f, 2.0f) {}
 
 WeaponBoom::~WeaponBoom() {}
 
-void 
-WeaponBoom::callback(Vector2D shootPos, Vector2D shootDir) {
+void WeaponBoom::callback(Vector2D shootPos, Vector2D shootDir)
+{
 	GameStructs::BulletProperties bp = GameStructs::BulletProperties();
-	//float dist = 0.1;
+	// float dist = 0.1;
 	bp.dir = shootDir;
 	bp.init_pos = shootPos + shootDir.normalize() * 1.5;
 	bp.speed = _speed;

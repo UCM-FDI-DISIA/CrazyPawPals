@@ -8,7 +8,7 @@
 #include <string_view>
 #include "../../utils/Vector2D.h"
 #include "../../game/GameStructs.h"
-//#include "../src/our_scripts/components/WaveManager.h"
+// #include "../src/our_scripts/components/WaveManager.h"
 #include "../network_state.hpp"
 #include "../../sdlutils/SDLUtils.h"
 
@@ -114,7 +114,8 @@ network_message_payload_dbg_print<ArgumentsSize> network_message_payload_dbg_pri
     std::copy(str.begin(), str.end(), msg.args.begin());
     return msg;
 }
-struct NetworkNewWave {
+struct NetworkNewWave
+{
     uint16_t event_type;
 };
 NetworkNewWave network_message_wave_event_create(uint16_t event_type);
@@ -174,94 +175,92 @@ inline NetworkBulletProperties network_message_bulletProperties_create(GameStruc
     return n_bp;
 }
 
-
-//si esta preparado para empezar el juego (si ha eleigo mazo y arma)
-struct network_message_player_id {
+// si esta preparado para empezar el juego (si ha eleigo mazo y arma)
+struct network_message_player_id
+{
     uint32_t id_n;
 };
 
-inline network_message_player_id create_player_id_message (uint32_t id) {
+inline network_message_player_id create_player_id_message(uint32_t id)
+{
     network_message_player_id msg;
     SDLNet_Write32(id, &msg.id_n);
     return msg;
 };
 
-//mensaje sin contenido
-struct network_message_payload_empty {
+// mensaje sin contenido
+struct network_message_payload_empty
+{
     constexpr static const network_message_type type{
-        network_message_type::network_message_type_none
-    };
+        network_message_type::network_message_type_none};
 };
-inline network_message_payload_empty create_payload_empty_message() {
+inline network_message_payload_empty create_payload_empty_message()
+{
     return network_message_payload_empty{};
 }
 
-
 constexpr static const uint8_t network_user_sprite_key_maximum_buffer_size{32};
 constexpr static const uint8_t network_user_sprite_key_maximum_key_length{
-    network_user_sprite_key_maximum_buffer_size - 1
-};
+    network_user_sprite_key_maximum_buffer_size - 1};
 template <uint8_t MaxKeyBufferSize>
-struct network_user_sprite_key {
+struct network_user_sprite_key
+{
     std::array<char, MaxKeyBufferSize> sprite_key;
     uint8_t sprite_key_length;
 };
 template <uint8_t MaxKeyBufferSize>
 network_user_sprite_key<MaxKeyBufferSize> network_user_sprite_key_create(
-    const std::string_view sprite_key
-) {
+    const std::string_view sprite_key)
+{
     static_assert(
         MaxKeyBufferSize <= std::numeric_limits<uint8_t>::max(),
-        "static error: sprite key length exceeds uint8_t max"
-    );
+        "static error: sprite key length exceeds uint8_t max");
     assert(
-        sprite_key.size() <= MaxKeyBufferSize && "error: sprite key size exceeds capacity"
-    );
+        sprite_key.size() <= MaxKeyBufferSize && "error: sprite key size exceeds capacity");
     network_user_sprite_key<MaxKeyBufferSize> payload;
     payload.sprite_key_length = uint8_t(sprite_key.size());
     std::copy_n(sprite_key.begin(), sprite_key.size(), payload.sprite_key.begin());
     return payload;
 }
 
-struct network_message_payload_new_connection_sync_request {
+struct network_message_payload_new_connection_sync_request
+{
     network_user_sprite_key<network_user_sprite_key_maximum_buffer_size> sprite_key;
 };
 network_message_payload_new_connection_sync_request network_message_payload_new_connection_sync_create(
-    const std::string_view sprite_key
-);
-
+    const std::string_view sprite_key);
 
 template <size_t MaximumConnections>
-struct network_message_payload_new_connection_sync_response {
+struct network_message_payload_new_connection_sync_response
+{
     std::array<network_user_sprite_key<network_user_sprite_key_maximum_buffer_size>, MaximumConnections> sprite_keys;
     network_connections connections;
 };
 template <size_t MaximumConnections>
 network_message_payload_new_connection_sync_response<MaximumConnections> network_message_payload_new_connection_sync_response_create(
     const network_connections connections,
-    const std::vector<std::string_view> &sprite_keys
-) {
+    const std::vector<std::string_view> &sprite_keys)
+{
     network_message_payload_new_connection_sync_response<MaximumConnections> payload;
     payload.connections = connections;
     assert(
-        sprite_keys.size() <= MaximumConnections && "error: sprite keys size exceeds maximum connections"
-    );
-    for (size_t i = 0; i < sprite_keys.size(); ++i) {
+        sprite_keys.size() <= MaximumConnections && "error: sprite keys size exceeds maximum connections");
+    for (size_t i = 0; i < sprite_keys.size(); ++i)
+    {
         payload.sprite_keys[i] = network_user_sprite_key_create<network_user_sprite_key_maximum_buffer_size>(sprite_keys[i]);
     }
     return payload;
 }
 
-
-struct network_payload_skin_selection_request {
+struct network_payload_skin_selection_request
+{
     uint8_t requester_id;
     network_user_sprite_key<network_user_sprite_key_maximum_buffer_size> sprite_key;
 };
 using network_payload_skin_selection_response = network_payload_skin_selection_request;
 network_payload_skin_selection_request network_payload_skin_selection_create(
     const uint8_t requester_id,
-    const std::string_view sprite_key
-);
+    const std::string_view sprite_key);
 
 // Struct sincronizar player
 struct network_message_player_update
@@ -354,20 +353,23 @@ inline network_message_enemy_update create_update_enemy_message(GameStructs::Dum
     return n_ep;
 };
 
-
-struct network_message_start_wave {
+struct network_message_start_wave
+{
     uint16_t wave_event;
 };
-inline network_message_start_wave create_start_wave_message(uint16_t wave_event) {
+inline network_message_start_wave create_start_wave_message(uint16_t wave_event)
+{
     network_message_start_wave n_sw;
     SDLNet_Write16(wave_event, &n_sw.wave_event);
     return n_sw;
 };
 
-struct network_message_end_wave {
+struct network_message_end_wave
+{
     bool mythics_reward;
 };
-inline network_message_end_wave create_end_wave_message() {
+inline network_message_end_wave create_end_wave_message()
+{
     network_message_end_wave ew;
     return ew;
 };

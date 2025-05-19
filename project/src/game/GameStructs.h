@@ -109,7 +109,7 @@ namespace GameStructs
 		std::string sprite_key;
 		ecs::grpId_t ID;
 	};
-	
+
 	struct CardButtonProperties : public ButtonProperties
 	{
 		Card *iterator;
@@ -164,7 +164,8 @@ namespace GameStructs
 		int health;
 	};
 
-	struct NetPlayerData {
+	struct NetPlayerData
+	{
 		uint32_t id;
 		Vector2D pos;
 		int health;
@@ -172,7 +173,8 @@ namespace GameStructs
 		std::string sprite_key;
 		std::string current_anim;
 	};
-	struct filter {
+	struct filter
+	{
 		int r, g, b, a;
 	};
 }
