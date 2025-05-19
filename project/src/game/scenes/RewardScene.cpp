@@ -849,7 +849,8 @@ void RewardScene::create_next_round_button(const GameStructs::ButtonProperties& 
             show_message("Esperando a los otros michis...", 5 * 1000);
         }
         else {
-            Game::Instance()->queue_scene(Game::GAMESCENE);
+            if (_mythic) Game::Instance()->queue_scene(Game::MYTHICSCENE);
+            else Game::Instance()->queue_scene(Game::GAMESCENE);
         }
         imgComp->destination_rect.position.x = 10.0f;
         imgComp->swap_textures();

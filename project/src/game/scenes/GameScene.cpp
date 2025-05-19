@@ -245,7 +245,7 @@ void GameScene::exitScene()
 
 	auto wm = Game::Instance()->get_wave_manager();
 	auto e = wm->get_current_event();
-	RewardScene::will_have_mythic((wm->get_current_wave() + 1) % 5 == 0);
+	RewardScene::will_have_mythic(e!=NONE || (wm->get_current_wave()) % 5 == 0);
 	wm->reset_wave_time();
 #ifdef GENERATE_LOG
 	log_writer_to_csv::Instance()->add_new_log("EXIT GAME SCENE");
