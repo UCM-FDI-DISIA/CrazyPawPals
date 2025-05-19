@@ -56,21 +56,21 @@ MainMenuScene::initScene()
     exitB.sprite_key = "exit_game";
     create_exit_button(exitB);
 
-   
-    GameStructs::ButtonProperties curtain_reaper_text = buttonPropTemplate;
-    curtain_reaper_text.rect.position.x = 0.85f;
-    curtain_reaper_text.rect.position.y = 0.86f;
-    curtain_reaper_text.rect.size.x = 0.15f;
-    curtain_reaper_text.rect.size.y = 0.15f;
+    // Test para hacer el fondo con animaciones
+    // GameStructs::ButtonProperties curtain_reaper_text = buttonPropTemplate;
+    // curtain_reaper_text.rect.position.x = 0.85f;
+    // curtain_reaper_text.rect.position.y = 0.86f;
+    // curtain_reaper_text.rect.size.x = 0.15f;
+    // curtain_reaper_text.rect.size.y = 0.15f;
 
-    curtain_reaper_text.sprite_key = "curtain_reaper_title";
-    create_decoration_images(curtain_reaper_text);
+    // curtain_reaper_text.sprite_key = "curtain_reaper_title";
+    // create_decoration_images(curtain_reaper_text);
 
-    GameStructs::ButtonProperties star_derecha = buttonPropTemplate;
-    GameStructs::ButtonProperties star_izquierda = buttonPropTemplate;
-    GameStructs::ButtonProperties claw_type_1 = buttonPropTemplate;
-    GameStructs::ButtonProperties claw_type_2 = buttonPropTemplate;
-    GameStructs::ButtonProperties claw_type_3 = buttonPropTemplate;
+    // GameStructs::ButtonProperties star_derecha = buttonPropTemplate;
+    // GameStructs::ButtonProperties star_izquierda = buttonPropTemplate;
+    // GameStructs::ButtonProperties claw_type_1 = buttonPropTemplate;
+    // GameStructs::ButtonProperties claw_type_2 = buttonPropTemplate;
+    // GameStructs::ButtonProperties claw_type_3 = buttonPropTemplate;
 
     // image_p.sprite_key = "ui_star";
     // image_p.rect.position.y += 0.18f;
