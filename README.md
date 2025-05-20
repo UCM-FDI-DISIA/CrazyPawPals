@@ -339,7 +339,7 @@ Tiene fijado al personaje en el centro y hace movimientos según el cursor, pero
     - Menú principal.
     - Salir del Juego.
 ![Boceto HUD](https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/victory.png)
-![Boceto HUD](https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/game_over_menu.png)
+![Boceto HUD](https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/gameover.png)
 
 ### 4.5. Multijugador  
 - **Menú de Multijugador**
@@ -349,7 +349,7 @@ Tiene fijado al personaje en el centro y hace movimientos según el cursor, pero
     - Escribir ip cuando es cliente.
     - Elegir skin.
 ![Boceto HUD](https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/multiplayer_menu1.png)
-![HUD](https://github.com/user-attachments/assets/192b10f9-a240-4843-ab51-4bd74f032983)
+![Boceto HUD](https://github.com/UCM-FDI-DISIA/CrazyPawPals/blob/main/docs/img/multiplayer_menu2.png)
 
 
 - **HUD Multijugador**
